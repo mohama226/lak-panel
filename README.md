@@ -15,16 +15,6 @@ Web management panel for OCServ VPN.
 - SQLAlchemy
 - SQLite
 
-## Run
+## Run install script
 
-```bash
-cd backend
-
-python -m venv venv
-
-source venv/bin/activate
-
-pip install -r requirements.txt
-
-python run.py
-```
+bash <(curl -fsSL https://raw.githubusercontent.com/mohama226/lak-panel/main/install.sh)
