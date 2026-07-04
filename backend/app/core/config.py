@@ -1,11 +1,15 @@
-import os
 from dotenv import load_dotenv
+import os
 
 load_dotenv()
 
+
 class Settings:
-    PROJECT_NAME = "lak-panel"
-    DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./lakpanel.db")
-    OC_SERV_USERS_FILE = os.getenv("OC_SERV_USERS_FILE", "/etc/ocserv/ocpasswd")
+    APP_NAME = os.getenv("APP_NAME")
+    HOST = os.getenv("HOST")
+    PORT = int(os.getenv("PORT"))
+    DATABASE_URL = os.getenv("DATABASE_URL")
+    SECRET_KEY = os.getenv("SECRET_KEY")
+
 
 settings = Settings()
