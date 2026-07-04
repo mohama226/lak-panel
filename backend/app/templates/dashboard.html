@@ -2,35 +2,54 @@
 
 {% block content %}
 
-<h1>Dashboard</h1>
+<h2 class="page-title">
 
-<table style="font-size:20px">
+Dashboard
 
-<tr>
-<td><b>CPU Usage</b></td>
-<td>{{ cpu }} %</td>
-</tr>
+</h2>
 
-<tr>
-<td><b>RAM Usage</b></td>
-<td>{{ ram }} %</td>
-</tr>
+<div class="cards">
 
-<tr>
-<td><b>Disk Usage</b></td>
-<td>{{ disk }} %</td>
-</tr>
+    <div class="card">
 
-<tr>
-<td><b>System Uptime</b></td>
-<td>{{ uptime }}</td>
-</tr>
+        <h3>CPU</h3>
 
-<tr>
-<td><b>OCServ Status</b></td>
-<td>{{ ocserv }}</td>
-</tr>
+        <span>{{ cpu }}%</span>
 
-</table>
+    </div>
+
+    <div class="card">
+
+        <h3>RAM</h3>
+
+        <span>{{ ram }}%</span>
+
+    </div>
+
+    <div class="card">
+
+        <h3>DISK</h3>
+
+        <span>{{ disk }}%</span>
+
+    </div>
+
+    <div class="card">
+
+        <h3>OCSERV</h3>
+
+        <span>{{ ocserv }}</span>
+
+    </div>
+
+</div>
+
+<div class="info-box">
+
+    <h3>System Uptime</h3>
+
+    <p>{{ uptime }}</p>
+
+</div>
 
 {% endblock %}
