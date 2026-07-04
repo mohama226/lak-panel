@@ -1,15 +1,30 @@
-from dotenv import load_dotenv
-import os
+from pathlib import Path
 
-load_dotenv()
+from pydantic_settings import BaseSettings
 
 
-class Settings:
-    APP_NAME = os.getenv("APP_NAME")
-    HOST = os.getenv("HOST")
-    PORT = int(os.getenv("PORT"))
-    DATABASE_URL = os.getenv("DATABASE_URL")
-    SECRET_KEY = os.getenv("SECRET_KEY")
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
+
+
+class Settings(BaseSettings):
+
+    APP_NAME: str = "LAK Panel"
+
+    APP_VERSION: str = "0.1.0-alpha"
+
+    APP_HOST: str = "0.0.0.0"
+
+    APP_PORT: int = 2096
+
+    SECRET_KEY: str = "CHANGE_ME"
+
+    DATABASE_URL: str = "sqlite:///./database.db"
+
+    LOG_LEVEL: str = "INFO"
+
+    class Config:
+        env_file = BASE_DIR / ".env"
+        case_sensitive = True
 
 
 settings = Settings()
