@@ -2,62 +2,80 @@
 
 set -e
 
-REPO_URL="https://github.com/YOUR_USERNAME/lak-panel.git"
-INSTALL_DIR="/opt/lak-panel"
+REPO="https://github.com/mohama226/lak-panel.git"
+DIR="/opt/lak-panel"
 
-echo "======================================"
-echo " LAK Panel Installer v0.0.1"
-echo "======================================"
+GREEN="\033[0;32m"
+RED="\033[0;31m"
+NC="\033[0m"
 
 if [ "$EUID" -ne 0 ]; then
-    echo "Please run as root."
+    echo -e "${RED}Please run as root${NC}"
     exit 1
 fi
 
-echo "[1/8] Updating packages..."
+echo -e "${GREEN}Updating packages...${NC}"
+
 apt-get update
 
-echo "[2/8] Installing dependencies..."
-apt-get install -y git python3 python3-pip python3-venv
+apt-get install -y \
+git \
+python3 \
+python3-pip \
+python3-venv
 
-if [ -d "$INSTALL_DIR" ]; then
-    echo "[3/8] Removing old installation..."
-    rm -rf "$INSTALL_DIR"
+if [ -d "$DIR" ]; then
+    rm -rf "$DIR"
 fi
 
-echo "[4/8] Cloning project..."
-git clone "$REPO_URL" "$INSTALL_DIR"
+echo -e "${GREEN}Downloading LAK Panel...${NC}"
 
-cd "$INSTALL_DIR/backend"
+git clone "$REPO" "$DIR"
 
-echo "[5/8] Creating virtual environment..."
+cd "$DIR/backend"
+
 python3 -m venv venv
 
 source venv/bin/activate
 
-echo "[6/8] Installing python packages..."
 pip install --upgrade pip
 
 pip install -r requirements.txt
 
-echo "[7/8] Creating .env..."
+if [ ! -f ".env" ]; then
+    cp .env.example .env
+fi
 
-cp .env.example .env
+cp "$DIR/systemd/lak-panel.service" /etc/systemd/system/
 
-echo "[8/8] Starting application..."
+systemctl daemon-reload
 
-nohup venv/bin/python run.py > /tmp/lak-panel.log 2>&1 &
+systemctl enable lak-panel
 
-sleep 3
+systemctl restart lak-panel
+
+sleep 2
 
 IP=$(hostname -I | awk '{print $1}')
 
-echo ""
-echo "======================================"
-echo "LAK Panel Installed Successfully"
-echo ""
+echo
+
+echo "========================================"
+
+echo "LAK Panel Installed"
+
+echo
+
 echo "Open:"
-echo ""
+
 echo "http://$IP:8000"
-echo ""
-echo "======================================"
+
+echo
+
+echo "Health:"
+
+echo "http://$IP:8000/health"
+
+echo
+
+echo "========================================"
