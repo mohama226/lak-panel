@@ -3,53 +3,45 @@
 {% block content %}
 
 <h2 class="page-title">
-
 Dashboard
-
 </h2>
 
 <div class="cards">
 
-    <div class="card">
+<div class="card">
+<h3>CPU</h3>
+<span id="cpu">{{ cpu }} %</span>
+</div>
 
-        <h3>CPU</h3>
+<div class="card">
+<h3>RAM</h3>
+<span id="ram">{{ ram }} %</span>
+</div>
 
-        <span>{{ cpu }}%</span>
+<div class="card">
+<h3>DISK</h3>
+<span id="disk">{{ disk }} %</span>
+</div>
 
-    </div>
-
-    <div class="card">
-
-        <h3>RAM</h3>
-
-        <span>{{ ram }}%</span>
-
-    </div>
-
-    <div class="card">
-
-        <h3>DISK</h3>
-
-        <span>{{ disk }}%</span>
-
-    </div>
-
-    <div class="card">
-
-        <h3>OCSERV</h3>
-
-        <span>{{ ocserv }}</span>
-
-    </div>
+<div class="card">
+<h3>OCSERV</h3>
+<span id="ocserv">{{ ocserv }}</span>
+</div>
 
 </div>
 
 <div class="info-box">
 
-    <h3>System Uptime</h3>
+<h3>System Uptime</h3>
 
-    <p>{{ uptime }}</p>
+<p id="uptime">
+
+{{ uptime }}
+
+</p>
 
 </div>
+
+<script src="/static/js/app.js"></script>
 
 {% endblock %}
