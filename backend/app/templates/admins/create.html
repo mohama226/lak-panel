@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>Create Admin</h2>
+
+<form method="post">
+
+<label>Username</label><br>
+<input type="text" name="username"><br><br>
+
+<label>Password</label><br>
+<input type="password" name="password"><br><br>
+
+<label>Full Name</label><br>
+<input type="text" name="fullname"><br><br>
+
+<label>Role</label><br>
+
+<select name="role">
+
+<option value="1">Super Admin</option>
+
+<option value="2">Admin</option>
+
+<option value="3">Operator</option>
+
+<option value="4">Support</option>
+
+<option value="5">Viewer</option>
+
+</select>
+
+<br><br>
+
+<button type="submit">
+
+Create Admin
+
+</button>
+
+</form>
+
+{% endblock %}
