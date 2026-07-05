@@ -1,24 +1,38 @@
 <!DOCTYPE html>
-<html lang="fa" dir="rtl">
+<html lang="en">
+
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>{{ title if title else "LAK Panel" }}</title>
-  <link rel="stylesheet" href="/static/css/style.css" />
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>{{ title if title else "LAK Panel" }}</title>
+
+    <link rel="stylesheet" href="/static/css/style.css">
+
 </head>
+
 <body>
 
-  {% include "navbar.html" %}
+{% include "navbar.html" %}
 
-  <div class="layout">
+<div class="layout">
+
     {% include "sidebar.html" %}
-    <main class="content">
-      {% block content %}
-      {% endblock %}
-    </main>
-  </div>
 
-  <script src="/static/js/clock.js"></script>
+    <main class="content">
+
+        {% block content %}
+        {% endblock %}
+
+    </main>
+
+</div>
+
+<!-- بارگذاری اسکریپت‌ها -->
+<script src="/static/js/clock.js"></script>
 
 </body>
+
 </html>
