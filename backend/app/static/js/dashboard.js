@@ -1,14 +1,14 @@
-// ==============================
-// LAK PANEL Dashboard Auto Refresh
-// ==============================
+// ===============================
+// LAK PANEL Live Dashboard
+// ===============================
 
-let refreshTimer = null;
+let dashboardTimer = null;
 
-async function refreshDashboard() {
+async function updateDashboard() {
 
     try {
 
-        const response = await fetch("/dashboard/content", {
+        const response = await fetch("/api/dashboard/stats", {
             cache: "no-store"
         });
 
@@ -16,19 +16,33 @@ async function refreshDashboard() {
             return;
         }
 
-        const html = await response.text();
+        const data = await response.json();
 
-        const target = document.getElementById("dashboard-content");
+        const set = (id, value) => {
+            const el = document.getElementById(id);
+            if (el) el.textContent = value;
+        };
 
-        if (target) {
+        set("users", data.users);
+        set("admins", data.admins);
+        set("servers", data.servers);
+        set("online", data.online);
 
-            target.innerHTML = html;
+        set("cpu", data.cpu + "%");
+        set("ram", data.ram + "%");
+        set("disk", data.disk + "%");
 
-        }
+        set("uptime", data.uptime);
+        set("load", data.load);
 
-    } catch (err) {
+        set("upload", data.traffic_up + " MB");
+        set("download", data.traffic_down + " MB");
 
-        console.error("Dashboard Refresh Error:", err);
+        set("logs", data.logs);
+
+    } catch (e) {
+
+        console.log(e);
 
     }
 
@@ -36,50 +50,31 @@ async function refreshDashboard() {
 
 function startDashboardRefresh() {
 
-    if (typeof window.dashboardSettings === "undefined") {
+    if (dashboardTimer)
+        clearInterval(dashboardTimer);
 
-        return;
+    let interval = 2000;
 
-    }
+    if (
+        window.dashboardSettings &&
+        window.dashboardSettings.autoRefresh
+    ) {
 
-    if (!window.dashboardSettings.autoRefresh) {
-
-        return;
-
-    }
-
-    let interval = parseInt(window.dashboardSettings.interval);
-
-    if (isNaN(interval) || interval < 1) {
-
-        interval = 2;
+        interval =
+            parseInt(window.dashboardSettings.interval) * 1000;
 
     }
 
-    if (refreshTimer) {
+    updateDashboard();
 
-        clearInterval(refreshTimer);
-
-    }
-
-    refreshTimer = setInterval(
-
-        refreshDashboard,
-
-        interval * 1000
-
+    dashboardTimer = setInterval(
+        updateDashboard,
+        interval
     );
 
 }
 
 document.addEventListener(
-
     "DOMContentLoaded",
-
-    function () {
-
-        startDashboardRefresh();
-
-    }
-
+    startDashboardRefresh
 );
