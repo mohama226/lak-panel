@@ -2,33 +2,67 @@
 
     <div class="topbar-left">
 
-        <span class="logo">
+        <div class="logo-box">
 
-            {{ panel_name }}
+            <div class="logo-icon">
+                🛡️
+            </div>
 
-        </span>
+            <div>
+
+                <div class="logo-title">
+                    {{ panel_name }}
+                </div>
+
+                <div class="logo-subtitle">
+                    VPN Management Panel
+                </div>
+
+            </div>
+
+        </div>
 
     </div>
 
     <div class="topbar-center">
 
-        {{ server_time.strftime("%Y-%m-%d %H:%M:%S") }}
+        <div class="clock-box">
+
+            <div class="clock-title">
+                Server Time
+            </div>
+
+            <div class="clock-value">
+                {{ server_time.strftime("%Y-%m-%d %H:%M:%S") }}
+            </div>
+
+        </div>
 
     </div>
 
     <div class="topbar-right">
 
-        <span class="status online">
+        <div class="status-box">
 
-            🟢 Online
+            <span class="status-dot"></span>
 
-        </span>
+            <span>
+                Online
+            </span>
 
-        <span class="version">
+        </div>
 
-            v{{ panel_version }}
+        <div class="version-box">
 
-        </span>
+            Version {{ panel_version }}
+
+        </div>
+
+        <a href="/logout" class="logout-btn">
+
+            Logout
+
+        </a>
 
     </div>
 
