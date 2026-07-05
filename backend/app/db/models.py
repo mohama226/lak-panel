@@ -18,9 +18,7 @@ class Role(Base):
     __tablename__ = "roles"
 
     id = Column(Integer, primary_key=True, index=True)
-
-    name = Column(String(50), unique=True, nullable=False)
-
+    name = Column(String(100), unique=True, nullable=False)
     description = Column(String(255))
 
     admins = relationship("Admin", back_populates="role")
@@ -31,9 +29,9 @@ class Admin(Base):
 
     id = Column(Integer, primary_key=True, index=True)
 
-    username = Column(String(100), unique=True)
+    username = Column(String(100), unique=True, nullable=False)
 
-    password = Column(String(255))
+    password = Column(String(255), nullable=False)
 
     fullname = Column(String(100))
 
@@ -55,13 +53,15 @@ class Server(Base):
 
     host = Column(String(100))
 
-    port = Column(Integer, default=22)
+    ssh_port = Column(Integer, default=22)
 
     username = Column(String(100))
 
     password = Column(String(255))
 
     enabled = Column(Boolean, default=True)
+
+    created_at = Column(DateTime, default=datetime.utcnow)
 
     users = relationship("VPNUser", back_populates="server")
 
@@ -74,6 +74,8 @@ class Group(Base):
     name = Column(String(100), unique=True)
 
     description = Column(String(255))
+
+    created_at = Column(DateTime, default=datetime.utcnow)
 
     users = relationship("VPNUser", back_populates="group")
 
@@ -93,6 +95,8 @@ class VPNUser(Base):
 
     enabled = Column(Boolean, default=True)
 
+    created_at = Column(DateTime, default=datetime.utcnow)
+
     server_id = Column(Integer, ForeignKey("servers.id"))
 
     group_id = Column(Integer, ForeignKey("groups.id"))
@@ -100,3 +104,13 @@ class VPNUser(Base):
     server = relationship("Server", back_populates="users")
 
     group = relationship("Group", back_populates="users")
+
+
+class Setting(Base):
+    __tablename__ = "settings"
+
+    id = Column(Integer, primary_key=True)
+
+    key = Column(String(100), unique=True)
+
+    value = Column(String(500))
