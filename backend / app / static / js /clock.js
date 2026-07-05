@@ -1,25 +1,26 @@
 (function () {
   function updateClock() {
-    var el = document.getElementById('datetime');
-    if (!el) return;
+    var timeEl = document.getElementById('clock-time');
+    var dateEl = document.getElementById('clock-date');
+    if (!timeEl || !dateEl) return;
 
     var now = new Date();
+
     var h = String(now.getHours()).padStart(2, '0');
     var m = String(now.getMinutes()).padStart(2, '0');
     var s = String(now.getSeconds()).padStart(2, '0');
-    var time = h + ':' + m + ':' + s;
+    timeEl.textContent = h + ':' + m + ':' + s;
 
     try {
-      var date = new Intl.DateTimeFormat('fa-IR', {
+      dateEl.textContent = new Intl.DateTimeFormat('fa-IR', {
         calendar: 'persian',
         weekday: 'long',
         year:    'numeric',
         month:   'long',
         day:     'numeric',
       }).format(now);
-      el.textContent = date + ' | ' + time;
     } catch (e) {
-      el.textContent = time;
+      dateEl.textContent = now.toLocaleDateString('fa-IR');
     }
   }
 
