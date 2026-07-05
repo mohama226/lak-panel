@@ -1,80 +1,87 @@
-// ===============================
-// LAK PANEL Live Dashboard
-// ===============================
+let refreshTimer = null;
 
-let dashboardTimer = null;
+function updateDashboard() {
 
-async function updateDashboard() {
+    fetch("/api/dashboard/stats")
+        .then(r => r.json())
+        .then(data => {
 
-    try {
+            const map = {
+                users: data.users,
+                admins: data.admins,
+                servers: data.servers,
+                online: data.online
+            };
 
-        const response = await fetch("/api/dashboard/stats", {
-            cache: "no-store"
-        });
+            document.querySelectorAll(".stat-card").forEach(card => {
 
-        if (!response.ok) {
-            return;
-        }
+                const title = card.querySelector(".stat-title").innerText.toLowerCase();
 
-        const data = await response.json();
+                const value = card.querySelector(".stat-value");
 
-        const set = (id, value) => {
-            const el = document.getElementById(id);
-            if (el) el.textContent = value;
-        };
+                if (title.includes("users"))
+                    value.innerText = map.users;
 
-        set("users", data.users);
-        set("admins", data.admins);
-        set("servers", data.servers);
-        set("online", data.online);
+                else if (title.includes("admins"))
+                    value.innerText = map.admins;
 
-        set("cpu", data.cpu + "%");
-        set("ram", data.ram + "%");
-        set("disk", data.disk + "%");
+                else if (title.includes("servers"))
+                    value.innerText = map.servers;
 
-        set("uptime", data.uptime);
-        set("load", data.load);
+                else if (title.includes("online"))
+                    value.innerText = map.online;
 
-        set("upload", data.traffic_up + " MB");
-        set("download", data.traffic_down + " MB");
+            });
 
-        set("logs", data.logs);
+            const progressCards = document.querySelectorAll(".progress-card");
 
-    } catch (e) {
+            if (progressCards.length >= 3) {
 
-        console.log(e);
+                // CPU
+                progressCards[0].querySelector(".progress-bar").style.width = data.cpu + "%";
+                progressCards[0].querySelector(".progress-header span:last-child").innerText = data.cpu + "%";
 
-    }
+                // RAM
+                progressCards[1].querySelector(".progress-bar").style.width = data.ram + "%";
+                progressCards[1].querySelector(".progress-header span:last-child").innerText = data.ram + "%";
 
+                // Disk
+                progressCards[2].querySelector(".progress-bar").style.width = data.disk + "%";
+                progressCards[2].querySelector(".progress-header span:last-child").innerText = data.disk + "%";
+            }
+
+            const info = document.querySelectorAll(".info-card");
+
+            if (info.length >= 4) {
+
+                info[0].querySelector("p").innerText = data.load;
+
+                info[1].querySelector("p").innerText = data.uptime;
+
+                info[2].querySelector("p").innerText = data.traffic_up + " MB";
+
+                info[3].querySelector("p").innerText = data.traffic_down + " MB";
+
+            }
+
+        })
+        .catch(() => {});
 }
 
-function startDashboardRefresh() {
+document.addEventListener("DOMContentLoaded", () => {
 
-    if (dashboardTimer)
-        clearInterval(dashboardTimer);
+    if (typeof window.dashboardSettings === "undefined")
+        return;
 
-    let interval = 2000;
+    if (!window.dashboardSettings.autoRefresh)
+        return;
 
-    if (
-        window.dashboardSettings &&
-        window.dashboardSettings.autoRefresh
-    ) {
+    refreshTimer = setInterval(
 
-        interval =
-            parseInt(window.dashboardSettings.interval) * 1000;
-
-    }
-
-    updateDashboard();
-
-    dashboardTimer = setInterval(
         updateDashboard,
-        interval
+
+        window.dashboardSettings.interval * 1000
+
     );
 
-}
-
-document.addEventListener(
-    "DOMContentLoaded",
-    startDashboardRefresh
-);
+});
