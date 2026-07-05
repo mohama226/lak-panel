@@ -6,23 +6,23 @@ function updateClock() {
 
     const now = new Date();
 
-    const date = now.toLocaleDateString("fa-IR", {
+    const date = now.toLocaleDateString("en-GB", {
         weekday: "long",
         year: "numeric",
         month: "long",
         day: "numeric"
     });
 
-    const time = now.toLocaleTimeString("fa-IR", {
+    const time = now.toLocaleTimeString("en-GB", {
         hour: "2-digit",
         minute: "2-digit",
         second: "2-digit",
         hour12: false
     });
 
-    el.innerHTML = date + " | " + time;
+    el.innerHTML = "📅 " + date + " &nbsp;&nbsp; 🕒 " + time;
 }
 
 updateClock();
 
-setInterval(updateClock,1000);
+setInterval(updateClock, 1000);
