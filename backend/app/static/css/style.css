@@ -1,4 +1,10 @@
-* {
+/* ============================
+   stylesheet اصلی پروژه (کامل)
+   این فایل جایگزین style.css فعلی شود
+   ============================ */
+
+/* پایه */
+*{
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -10,9 +16,8 @@ body {
   color: #fff;
 }
 
-/* ─── LOGIN ─────────────────────────────── */
-
-.login-box {
+/* لوگو */
+.login-box{
   width: 380px;
   margin: 120px auto;
   background: #1e293b;
@@ -57,8 +62,7 @@ body {
   text-align: center;
 }
 
-/* ─── TOPBAR ─────────────────────────────── */
-
+/* TOPBAR */
 .topbar {
   height: 65px;
   background: #111827;
@@ -77,8 +81,7 @@ body {
   flex-shrink: 0;
 }
 
-/* ─── CLOCK BOX (وسط topbar) ─────────────── */
-
+/* CLOCK BOX */
 .topbar-clock-box {
   display: flex;
   flex-direction: column;
@@ -107,8 +110,7 @@ body {
   direction: rtl;
 }
 
-/* ─── TOPBAR RIGHT ───────────────────────── */
-
+/* topbar-right */
 .topbar-right {
   display: flex;
   gap: 12px;
@@ -131,6 +133,7 @@ body {
   border: 1px solid #334155;
 }
 
+/* logout button */
 .logout-btn {
   background: #dc2626;
   color: white;
@@ -145,21 +148,20 @@ body {
   background: #b91c1c;
 }
 
-/* ─── LAYOUT ─────────────────────────────── */
-
+/* layout */
 .layout {
   display: flex;
   min-height: calc(100vh - 65px);
 }
 
-/* ─── SIDEBAR ────────────────────────────── */
-
+/* SIDEBAR */
 .sidebar {
   width: 240px;
   background: #111827;
   border-right: 1px solid #1f2937;
 }
 
+/* sidebar header */
 .sidebar-header {
   padding: 25px;
   text-align: center;
@@ -181,7 +183,7 @@ body {
 .sidebar li a {
   display: block;
   padding: 15px 22px;
-  color: #e2e8f0;
+  color: #e28f0;
   text-decoration: none;
   transition: .2s;
 }
@@ -191,15 +193,12 @@ body {
   color: #38bdf8;
 }
 
-/* ─── CONTENT ────────────────────────────── */
-
 .content {
   flex: 1;
   padding: 30px;
 }
 
-/* ─── PAGE HEADER ────────────────────────── */
-
+/* PAGE HEADER */
 .page-header {
   margin-bottom: 30px;
 }
@@ -213,8 +212,7 @@ body {
   margin-top: 8px;
 }
 
-/* ─── DASHBOARD ──────────────────────────── */
-
+/* DASHBOARD GRID */
 .dashboard-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
@@ -243,8 +241,7 @@ body {
   color: #94a3b8;
 }
 
-/* ─── TABLE ──────────────────────────────── */
-
+/* TABLE */
 table {
   width: 100%;
   border-collapse: collapse;
@@ -264,8 +261,7 @@ td {
   border-bottom: 1px solid #334155;
 }
 
-/* ─── BUTTON ─────────────────────────────── */
-
+/* buttons */
 button {
   background: #2563eb;
   color: white;
@@ -279,8 +275,7 @@ button:hover {
   background: #1d4ed8;
 }
 
-/* ─── INPUT ──────────────────────────────── */
-
+/* inputs, select */
 input,
 select {
   width: 100%;
@@ -293,14 +288,12 @@ select {
   margin-bottom: 18px;
 }
 
-/* ─── STATUS ─────────────────────────────── */
-
+/* STATUS */
 .online {
   color: #22c55e;
 }
 
-/* ─── MOBILE ─────────────────────────────── */
-
+/* MOBILE / RESPONSIVE */
 @media (max-width: 900px) {
   .layout {
     flex-direction: column;
@@ -329,4 +322,30 @@ select {
   .clock-time {
     font-size: 16px;
   }
+}
+
+/* ========== ADDITIONS: styles for clock element (if not covered above) ========== */
+.topbar-center {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.topbar-clock {
+    margin-left: 8px;
+    padding: 4px 8px;
+    border-radius: 6px;
+    background: rgba(255,255,255,0.03);
+    color: #e6eef8;
+    font-weight: 600;
+    font-size: 0.95rem;
+    min-width: 160px;
+    text-align: center;
+}
+
+/* کوچک‌شدن در موبایل */
+@media (max-width: 600px) {
+    .topbar-clock {
+        display: none;
+    }
 }
