@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>Admins</h2>
+
+<a href="/admins/create">
+    <button>Create Admin</button>
+</a>
+
+<br><br>
+
+<table border="1" width="100%">
+
+<tr>
+
+<th>ID</th>
+
+<th>Username</th>
+
+<th>Role</th>
+
+<th>Status</th>
+
+<th>Actions</th>
+
+</tr>
+
+{% for admin in admins %}
+
+<tr>
+
+<td>{{admin.id}}</td>
+
+<td>{{admin.username}}</td>
+
+<td>{{admin.role}}</td>
+
+<td>{{admin.active}}</td>
+
+<td>Edit Delete</td>
+
+</tr>
+
+{% endfor %}
+
+</table>
+
+{% endblock %}
