@@ -3,117 +3,86 @@
 {% block content %}
 
 <div class="page-header">
-
     <h1>⚙ Panel Settings</h1>
-
+    <p>General panel configuration</p>
 </div>
 
-<div class="card">
+<form action="/settings/dashboard" method="post">
 
-    <h2>Localization</h2>
+    <div class="dashboard-card">
 
-    <form method="post">
+        <h2 style="margin-bottom:20px;">
+            Dashboard Auto Refresh
+        </h2>
 
-        <div class="form-group">
+        <div style="margin-bottom:20px;">
 
-            <label>Calendar Type</label>
+            <label>
 
-            <select name="calendar">
+                <input
+                    type="checkbox"
+                    name="auto_refresh"
+                    {% if dashboard.auto_refresh %}checked{% endif %}
+                >
 
-                <option value="gregorian"
-                    {% if settings.calendar=="gregorian" %}selected{% endif %}>
-                    Gregorian
+                Enable Auto Refresh
+
+            </label>
+
+        </div>
+
+        <div style="margin-bottom:20px;">
+
+            <label>
+
+                Refresh Interval
+
+            </label>
+
+            <select name="refresh_interval">
+
+                <option value="1"
+                {% if dashboard.refresh_interval==1 %}selected{% endif %}>
+                    Every 1 second
                 </option>
 
-                <option value="jalali"
-                    {% if settings.calendar=="jalali" %}selected{% endif %}>
-                    Jalali (Persian)
+                <option value="2"
+                {% if dashboard.refresh_interval==2 %}selected{% endif %}>
+                    Every 2 seconds
+                </option>
+
+                <option value="5"
+                {% if dashboard.refresh_interval==5 %}selected{% endif %}>
+                    Every 5 seconds
+                </option>
+
+                <option value="10"
+                {% if dashboard.refresh_interval==10 %}selected{% endif %}>
+                    Every 10 seconds
+                </option>
+
+                <option value="30"
+                {% if dashboard.refresh_interval==30 %}selected{% endif %}>
+                    Every 30 seconds
+                </option>
+
+                <option value="60"
+                {% if dashboard.refresh_interval==60 %}selected{% endif %}>
+                    Every 60 seconds
                 </option>
 
             </select>
 
         </div>
 
-        <div class="form-group">
+        <button type="submit">
 
-            <label>Timezone</label>
-
-            <select name="timezone">
-
-                <option value="Asia/Tehran"
-                    {% if settings.timezone=="Asia/Tehran" %}selected{% endif %}>
-                    Asia / Tehran
-                </option>
-
-                <option value="UTC"
-                    {% if settings.timezone=="UTC" %}selected{% endif %}>
-                    UTC
-                </option>
-
-                <option value="Europe/London"
-                    {% if settings.timezone=="Europe/London" %}selected{% endif %}>
-                    Europe / London
-                </option>
-
-                <option value="Europe/Berlin"
-                    {% if settings.timezone=="Europe/Berlin" %}selected{% endif %}>
-                    Europe / Berlin
-                </option>
-
-                <option value="America/New_York"
-                    {% if settings.timezone=="America/New_York" %}selected{% endif %}>
-                    America / New York
-                </option>
-
-                <option value="America/Los_Angeles"
-                    {% if settings.timezone=="America/Los_Angeles" %}selected{% endif %}>
-                    America / Los Angeles
-                </option>
-
-                <option value="Asia/Dubai"
-                    {% if settings.timezone=="Asia/Dubai" %}selected{% endif %}>
-                    Asia / Dubai
-                </option>
-
-                <option value="Asia/Istanbul"
-                    {% if settings.timezone=="Asia/Istanbul" %}selected{% endif %}>
-                    Asia / Istanbul
-                </option>
-
-            </select>
-
-        </div>
-
-        <div class="form-group">
-
-            <label>Time Format</label>
-
-            <select name="time_format">
-
-                <option value="24"
-                    {% if settings.time_format=="24" %}selected{% endif %}>
-                    24 Hour
-                </option>
-
-                <option value="12"
-                    {% if settings.time_format=="12" %}selected{% endif %}>
-                    12 Hour (AM/PM)
-                </option>
-
-            </select>
-
-        </div>
-
-        <br>
-
-        <button class="btn btn-primary">
-
-            Save Settings
+            💾 Save Settings
 
         </button>
 
-    </form>
+    </div>
 
-</div>
+</form>
 
 {% endblock %}
