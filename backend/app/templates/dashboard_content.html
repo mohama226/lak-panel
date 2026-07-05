@@ -1,0 +1,57 @@
+<h1>Dashboard</h1>
+
+<p class="welcome">
+    Welcome Admin #{{ admin_id }}
+</p>
+
+<div class="dashboard-grid">
+
+    <div class="card">
+        <div class="card-title">👥 Users</div>
+        <div class="card-value">{{ users }}</div>
+        <div class="card-desc">Total VPN Users</div>
+    </div>
+
+    <div class="card">
+        <div class="card-title">🧑‍💼 Admins</div>
+        <div class="card-value">{{ admins }}</div>
+        <div class="card-desc">Panel Administrators</div>
+    </div>
+
+    <div class="card">
+        <div class="card-title">📂 Groups</div>
+        <div class="card-value">{{ groups }}</div>
+        <div class="card-desc">User Groups</div>
+    </div>
+
+    <div class="card">
+        <div class="card-title">🖥️ Servers</div>
+        <div class="card-value">{{ servers }}</div>
+        <div class="card-desc">OCServ Servers</div>
+    </div>
+
+    <div class="card">
+        <div class="card-title">🟢 Online Users</div>
+        <div class="card-value">{{ online }}</div>
+        <div class="card-desc">Connected Users</div>
+    </div>
+
+    <div class="card">
+        <div class="card-title">📊 Traffic Today</div>
+        <div class="card-value">{{ traffic }}</div>
+        <div class="card-desc">Today's Usage</div>
+    </div>
+
+    <div class="card">
+        <div class="card-title">💾 Backups</div>
+        <div class="card-value">{{ backups }}</div>
+        <div class="card-desc">Available Backups</div>
+    </div>
+
+    <div class="card">
+        <div class="card-title">📜 Logs</div>
+        <div class="card-value">{{ logs }}</div>
+        <div class="card-desc">System Logs</div>
+    </div>
+
+</div>
