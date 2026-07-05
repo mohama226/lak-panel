@@ -270,3 +270,27 @@ select{
 }
 
 }
+
+*/
+.topbar-center {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.topbar-clock {
+    margin-left: 8px;
+    padding: 4px 8px;
+    border-radius: 6px;
+    background: rgba(0,0,0,0.05);
+    color: #222;
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+/* در صورت نیاز برای اندازه‌های کوچک‌تر */
+@media (max-width: 600px) {
+    .topbar-clock {
+        display: none; /* یا تغییر دهید تا به صورت آیکونی نشان داده شود */
+    }
+}
