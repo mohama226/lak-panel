@@ -20,7 +20,11 @@ BASE_DIR = Path(__file__).resolve().parent
 
 # ساخت خودکار جداول
 Base.metadata.create_all(bind=engine)
+db = SessionLocal()
 
+seed_roles(db)
+
+db.close()
 app = FastAPI(
     title=settings.APP_NAME,
     version=settings.APP_VERSION,
