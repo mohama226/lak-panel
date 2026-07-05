@@ -1,4 +1,7 @@
-from fastapi import APIRouter, Form, Request
+from fastapi import APIRouter
+from fastapi import Form
+from fastapi import Request
+
 from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
 
@@ -8,17 +11,20 @@ from app.core.security import verify_password
 
 router = APIRouter()
 
-templates = Jinja2Templates(directory="app/templates")
+templates = Jinja2Templates(
+    directory="app/templates"
+)
 
 
 @router.get("/login")
 async def login_page(request: Request):
+
     return templates.TemplateResponse(
         "login.html",
         {
             "request": request,
-            "error": None
-        }
+            "error": None,
+        },
     )
 
 
@@ -26,7 +32,7 @@ async def login_page(request: Request):
 async def login(
     request: Request,
     username: str = Form(...),
-    password: str = Form(...)
+    password: str = Form(...),
 ):
 
     db = SessionLocal()
@@ -37,33 +43,49 @@ async def login(
         .first()
     )
 
-    if not admin:
+    if admin is None:
+
         return templates.TemplateResponse(
             "login.html",
             {
                 "request": request,
-                "error": "Invalid username or password"
-            }
+                "error": "Invalid username",
+            },
         )
 
     if not verify_password(password, admin.password):
+
         return templates.TemplateResponse(
             "login.html",
             {
                 "request": request,
-                "error": "Invalid username or password"
-            }
+                "error": "Invalid password",
+            },
         )
 
     response = RedirectResponse(
-        url="/dashboard",
-        status_code=302
+        "/dashboard",
+        status_code=302,
     )
 
     response.set_cookie(
         key="lak_admin",
         value=str(admin.id),
-        httponly=True
+        httponly=True,
+        samesite="lax",
     )
+
+    return response
+
+
+@router.get("/logout")
+async def logout():
+
+    response = RedirectResponse(
+        "/login",
+        status_code=302,
+    )
+
+    response.delete_cookie("lak_admin")
 
     return response
