@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Cookie, Request
 from fastapi.responses import RedirectResponse, JSONResponse
 
-from app.core.template import render
+from app.core.template import render, get_setting
 
 import psutil
 import shutil
@@ -31,35 +31,21 @@ def get_stats():
 
     uptime = f"{days}d {hours}h"
 
-    load = "0.00"
-
     try:
-
         load = "%.2f" % psutil.getloadavg()[0]
-
-    except:
-
-        pass
+    except Exception:
+        load = "0.00"
 
     network = psutil.net_io_counters()
 
     return {
-
         "cpu": cpu,
-
         "ram": ram,
-
         "disk": disk,
-
         "uptime": uptime,
-
         "load": load,
-
         "traffic_up": round(network.bytes_sent / 1024 / 1024, 2),
-
         "traffic_down": round(network.bytes_recv / 1024 / 1024, 2),
-
-        # بعدا از دیتابیس
         "users": 0,
         "admins": 1,
         "groups": 0,
@@ -67,7 +53,23 @@ def get_stats():
         "online": 0,
         "backups": 0,
         "logs": 0,
+    }
 
+
+def get_dashboard_settings():
+
+    return {
+        "auto_refresh": get_setting(
+            "dashboard_auto_refresh",
+            "true",
+        ) == "true",
+
+        "refresh_interval": int(
+            get_setting(
+                "dashboard_refresh_interval",
+                "2",
+            )
+        ),
     }
 
 
@@ -78,23 +80,18 @@ async def dashboard(
 ):
 
     if lak_admin is None:
-
         return RedirectResponse("/login")
 
+    context = get_stats()
+
+    context["admin_id"] = lak_admin
+
+    context["dashboard"] = get_dashboard_settings()
+
     return render(
-
         request,
-
         "dashboard.html",
-
-        {
-
-            "admin_id": lak_admin,
-
-            **get_stats()
-
-        },
-
+        context,
     )
 
 
@@ -105,23 +102,16 @@ async def dashboard_content(
 ):
 
     if lak_admin is None:
-
         return RedirectResponse("/login")
 
+    context = get_stats()
+
+    context["admin_id"] = lak_admin
+
     return render(
-
         request,
-
         "dashboard_content.html",
-
-        {
-
-            "admin_id": lak_admin,
-
-            **get_stats()
-
-        },
-
+        context,
     )
 
 
