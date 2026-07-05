@@ -1,73 +1,31 @@
-<!DOCTYPE html>
+{% extends "base.html" %}
 
-<html>
-
-<head>
-
-<meta charset="UTF-8">
-
-<title>Dashboard</title>
-
-<link rel="stylesheet" href="/static/css/style.css">
-
-</head>
-
-<body>
-
-<div class="sidebar">
-
-<h2>LAK PANEL</h2>
-
-<ul>
-
-<li>Dashboard</li>
-
-<li>Users</li>
-
-<li>Servers</li>
-
-<li>Groups</li>
-
-<li>Admins</li>
-
-<li><a href="/logout">Logout</a></li>
-
-</ul>
-
-</div>
-
-<div class="content">
+{% block content %}
 
 <h1>Dashboard</h1>
 
 <p>Welcome Admin #{{ admin_id }}</p>
 
-<div class="card">
-
-Users : 0
-
-</div>
+<br>
 
 <div class="card">
-
-Servers : 0
-
+    <h3>Users</h3>
+    <h2>0</h2>
 </div>
 
 <div class="card">
-
-Groups : 0
-
+    <h3>Servers</h3>
+    <h2>0</h2>
 </div>
 
 <div class="card">
-
-Admins : 1
-
+    <h3>Groups</h3>
+    <h2>0</h2>
 </div>
 
+<div class="card">
+    <h3>Admins</h3>
+    <h2>1</h2>
 </div>
 
-</body>
-
-</html>
+{% endblock %}
