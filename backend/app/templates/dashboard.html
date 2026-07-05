@@ -2,30 +2,94 @@
 
 {% block content %}
 
-<h1>Dashboard</h1>
+<div class="page-header">
 
-<p>Welcome Admin #{{ admin_id }}</p>
+    <h1>Dashboard</h1>
 
-<br>
+    <p>
+        Welcome Admin #{{ admin_id }}
+    </p>
 
-<div class="card">
-    <h3>Users</h3>
-    <h2>0</h2>
 </div>
 
-<div class="card">
-    <h3>Servers</h3>
-    <h2>0</h2>
+<div class="dashboard-grid">
+
+    <div class="dashboard-card">
+
+        <h3>👥 Users</h3>
+
+        <h1>0</h1>
+
+        <p>Total VPN Users</p>
+
+    </div>
+
+    <div class="dashboard-card">
+
+        <h3>👮 Admins</h3>
+
+        <h1>1</h1>
+
+        <p>Panel Administrators</p>
+
+    </div>
+
+    <div class="dashboard-card">
+
+        <h3>📁 Groups</h3>
+
+        <h1>0</h1>
+
+        <p>User Groups</p>
+
+    </div>
+
+    <div class="dashboard-card">
+
+        <h3>🖥 Servers</h3>
+
+        <h1>0</h1>
+
+        <p>OCServ Servers</p>
+
+    </div>
+
 </div>
 
-<div class="card">
-    <h3>Groups</h3>
-    <h2>0</h2>
-</div>
+<div class="dashboard-grid">
 
-<div class="card">
-    <h3>Admins</h3>
-    <h2>1</h2>
+    <div class="dashboard-card">
+
+        <h3>🟢 Online Users</h3>
+
+        <h1>0</h1>
+
+    </div>
+
+    <div class="dashboard-card">
+
+        <h3>📊 Traffic Today</h3>
+
+        <h1>0 GB</h1>
+
+    </div>
+
+    <div class="dashboard-card">
+
+        <h3>💾 Backups</h3>
+
+        <h1>0</h1>
+
+    </div>
+
+    <div class="dashboard-card">
+
+        <h3>📜 Logs</h3>
+
+        <h1>0</h1>
+
+    </div>
+
 </div>
 
 {% endblock %}
