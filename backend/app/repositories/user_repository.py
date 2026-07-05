@@ -8,14 +8,14 @@ class UserRepository:
     def __init__(self, db: Session):
         self.db = db
 
-    def all(self):
+    def get_all(self):
         return (
             self.db.query(VPNUser)
             .order_by(VPNUser.id.desc())
             .all()
         )
 
-    def by_username(self, username: str):
+    def get(self, username: str):
         return (
             self.db.query(VPNUser)
             .filter(VPNUser.username == username)
