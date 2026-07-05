@@ -1,3 +1,5 @@
+from typing import Optional
+
 from fastapi import APIRouter, Form, Request
 from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
@@ -30,7 +32,7 @@ async def settings_page(request: Request):
 @router.post("/settings/dashboard")
 async def save_dashboard_settings(
 
-    auto_refresh: str = Form(...),
+    auto_refresh: Optional[str] = Form(None),
 
     refresh_interval: int = Form(...),
 
@@ -38,13 +40,16 @@ async def save_dashboard_settings(
 
     update_dashboard_settings(
 
-        auto_refresh == "on",
+        auto_refresh is not None,
 
         refresh_interval,
 
     )
 
     return RedirectResponse(
-        "/settings",
+
+        url="/settings",
+
         status_code=303,
+
     )
