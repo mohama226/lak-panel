@@ -1,4 +1,5 @@
 from typing import Optional
+from datetime import datetime
 
 from fastapi import APIRouter, Form, Request
 from fastapi.responses import RedirectResponse
@@ -24,6 +25,12 @@ async def settings_page(request: Request):
         {
             "request": request,
             "dashboard": dashboard,
+
+            # برای navbar
+            "server_time": datetime.now(),
+            "panel_name": "LAK PANEL",
+            "panel_version": "1.0.0",
+
             "title": "Panel Settings",
         },
     )
@@ -47,9 +54,6 @@ async def save_dashboard_settings(
     )
 
     return RedirectResponse(
-
-        url="/settings",
-
+        "/settings",
         status_code=303,
-
     )
