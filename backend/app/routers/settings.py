@@ -1,59 +1,130 @@
-from typing import Optional
-from datetime import datetime
-
 from fastapi import APIRouter, Form, Request
 from fastapi.responses import RedirectResponse
-from fastapi.templating import Jinja2Templates
 
-from app.core.settings import (
-    get_dashboard_settings,
-    update_dashboard_settings,
-)
+from app.core.template import render
+from app.db.database import SessionLocal
+from app.db.models import Setting
 
 router = APIRouter()
 
-templates = Jinja2Templates(directory="app/templates")
+
+def get_setting(db, key, default=""):
+
+    item = (
+        db.query(Setting)
+        .filter(Setting.key == key)
+        .first()
+    )
+
+    if item:
+        return item.value
+
+    return default
+
+
+def set_setting(db, key, value):
+
+    item = (
+        db.query(Setting)
+        .filter(Setting.key == key)
+        .first()
+    )
+
+    if item:
+
+        item.value = str(value)
+
+    else:
+
+        db.add(
+            Setting(
+                key=key,
+                value=str(value),
+            )
+        )
+
+    db.commit()
 
 
 @router.get("/settings")
 async def settings_page(request: Request):
 
-    dashboard = get_dashboard_settings()
+    db = SessionLocal()
 
-    return templates.TemplateResponse(
+    dashboard = {
+
+        "auto_refresh":
+            get_setting(
+                db,
+                "dashboard_auto_refresh",
+                "true",
+            ) == "true",
+
+        "refresh_interval":
+            int(
+                get_setting(
+                    db,
+                    "dashboard_refresh_interval",
+                    "2",
+                )
+            ),
+
+    }
+
+    db.close()
+
+    return render(
+
+        request,
+
         "settings/index.html",
+
         {
-            "request": request,
+
             "dashboard": dashboard,
 
-            # برای navbar
-            "server_time": datetime.now(),
-            "panel_name": "LAK PANEL",
-            "panel_version": "1.0.0",
-
-            "title": "Panel Settings",
         },
+
     )
 
 
 @router.post("/settings/dashboard")
-async def save_dashboard_settings(
+async def save_dashboard(
 
-    auto_refresh: Optional[str] = Form(None),
+    auto_refresh: str | None = Form(default=None),
 
     refresh_interval: int = Form(...),
 
 ):
 
-    update_dashboard_settings(
+    db = SessionLocal()
 
-        auto_refresh is not None,
+    set_setting(
+
+        db,
+
+        "dashboard_auto_refresh",
+
+        "true" if auto_refresh else "false",
+
+    )
+
+    set_setting(
+
+        db,
+
+        "dashboard_refresh_interval",
 
         refresh_interval,
 
     )
 
+    db.close()
+
     return RedirectResponse(
+
         "/settings",
+
         status_code=303,
+
     )
