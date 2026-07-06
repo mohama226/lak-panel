@@ -1,89 +1,104 @@
-from datetime import datetime, timedelta
+from sqlalchemy.orm import Session
 
 from app.db.models import VPNUser
 from app.repositories.user_repository import UserRepository
-from app.drivers.ocserv import OCServDriver
+from app.services.ocserv_service import OcservService
 
 
 class UserService:
 
-    def __init__(self, repository: UserRepository):
-        self.repository = repository
-        self.driver = OCServDriver()
+    def __init__(self, db: Session):
+        self.repo = UserRepository(db)
 
-    def get_users(self):
-        return self.repository.get_all()
+    def list(self):
+        return self.repo.get_all()
 
-    def get_user(self, username: str):
-        return self.repository.get(username)
+    def get(self, username: str):
+        return self.repo.get(username)
 
-    def create_user(
+    def create(
         self,
         username: str,
         password: str,
-        days: int,
-        server_id: int | None = None,
-        group_id: int | None = None,
+        expire=None,
+        traffic: int = 0,
+        group_id=None,
+        server_id=None,
     ):
 
-        # بررسی تکراری نبودن کاربر
-        if self.repository.get(username):
-            raise Exception("User already exists.")
+        exists = self.repo.get(username)
 
-        # ساخت کاربر در OCServ
-        if not self.driver.create_user(username, password):
-            raise Exception("Failed to create user in OCServ.")
+        if exists:
+            raise ValueError("User already exists.")
 
-        # ثبت اطلاعات مدیریتی در دیتابیس
-        user = VPNUser(
+        OcservService.add_user(
             username=username,
-            expire=datetime.utcnow() + timedelta(days=days),
-            enabled=True,
-            server_id=server_id,
-            group_id=group_id,
+            password=password,
         )
 
-        return self.repository.create(user)
+        user = VPNUser(
+            username=username,
+            password="ocserv",
+            expire=expire,
+            traffic=traffic,
+            enabled=True,
+            group_id=group_id,
+            server_id=server_id,
+        )
 
-    def delete_user(self, username: str):
+        return self.repo.create(user)
 
-        user = self.repository.get(username)
+    def delete(self, username: str):
 
-        if user is None:
-            raise Exception("User not found.")
+        user = self.repo.get(username)
 
-        # حذف از OCServ
-        self.driver.delete_user(username)
+        if not user:
+            raise ValueError("User not found.")
 
-        # حذف از دیتابیس
-        return self.repository.delete(user)
+        OcservService.delete_user(username)
 
-    def suspend_user(self, username: str):
+        self.repo.delete(user)
 
-        user = self.repository.get(username)
+        return True
 
-        if user is None:
-            raise Exception("User not found.")
+    def enable(self, username: str):
 
-        self.driver.lock_user(username)
+        user = self.repo.get(username)
 
-        user.enabled = False
-
-        self.repository.db.commit()
-
-        return user
-
-    def activate_user(self, username: str):
-
-        user = self.repository.get(username)
-
-        if user is None:
-            raise Exception("User not found.")
-
-        self.driver.unlock_user(username)
+        if not user:
+            raise ValueError("User not found.")
 
         user.enabled = True
 
-        self.repository.db.commit()
+        return self.repo.update(user)
+
+    def disable(self, username: str):
+
+        user = self.repo.get(username)
+
+        if not user:
+            raise ValueError("User not found.")
+
+        user.enabled = False
+
+        return self.repo.update(user)
+
+    def change_password(
+        self,
+        username: str,
+        password: str,
+    ):
+
+        user = self.repo.get(username)
+
+        if not user:
+            raise ValueError("User not found.")
+
+        OcservService.delete_user(username)
+
+        OcservService.add_user(
+            username=username,
+            password=password,
+        )
 
         return user
