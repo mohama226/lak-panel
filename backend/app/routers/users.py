@@ -16,8 +16,17 @@ from app.repositories.user_log_repository import UserLogRepository
 from app.services.user_service import UserService
 
 from app.schemas.user import UserCreate
+from app.schemas.user import UserPassword
 
 router = APIRouter()
+
+
+def get_service(db: Session):
+
+    repo = UserRepository(db)
+    log_repo = UserLogRepository(db)
+
+    return UserService(repo, log_repo)
 
 
 @router.get("/users")
@@ -27,12 +36,7 @@ def users_page(
     db: Session = Depends(get_db),
 ):
 
-    repo = UserRepository(db)
-    log_repo = UserLogRepository(db)
-
-    service = UserService(repo, log_repo)
-
-    users = service.list()
+    users = get_service(db).list()
 
     return render(
         request,
@@ -62,14 +66,9 @@ def create_user(
     db: Session = Depends(get_db),
 ):
 
-    repo = UserRepository(db)
-    log_repo = UserLogRepository(db)
-
-    service = UserService(repo, log_repo)
-
     try:
 
-        service.create(data)
+        get_service(db).create(data)
 
         return {
             "detail": "User created successfully"
@@ -91,10 +90,7 @@ def profile(
     db: Session = Depends(get_db),
 ):
 
-    repo = UserRepository(db)
-    log_repo = UserLogRepository(db)
-
-    service = UserService(repo, log_repo)
+    service = get_service(db)
 
     user = service.get(username)
 
@@ -115,3 +111,101 @@ def profile(
             "logs": logs,
         },
     )
+
+
+@router.delete("/users/{username}")
+def delete_user(
+    username: str,
+    admin=Depends(require_login),
+    db: Session = Depends(get_db),
+):
+
+    get_service(db).delete(username)
+
+    return {
+        "detail": "User deleted"
+    }
+
+
+@router.post("/users/{username}/enable")
+def enable_user(
+    username: str,
+    admin=Depends(require_login),
+    db: Session = Depends(get_db),
+):
+
+    get_service(db).enable(username)
+
+    return {
+        "detail": "User enabled"
+    }
+
+
+@router.post("/users/{username}/disable")
+def disable_user(
+    username: str,
+    admin=Depends(require_login),
+    db: Session = Depends(get_db),
+):
+
+    get_service(db).disable(username)
+
+    return {
+        "detail": "User disabled"
+    }
+
+
+@router.post("/users/{username}/block")
+def block_user(
+    username: str,
+    admin=Depends(require_login),
+    db: Session = Depends(get_db),
+):
+
+    get_service(db).block(username)
+
+    return {
+        "detail": "User blocked"
+    }
+
+
+@router.post("/users/{username}/unblock")
+def unblock_user(
+    username: str,
+    admin=Depends(require_login),
+    db: Session = Depends(get_db),
+):
+
+    get_service(db).unblock(username)
+
+    return {
+        "detail": "User unblocked"
+    }
+
+
+@router.post("/users/{username}/suspend")
+def suspend_user(
+    username: str,
+    admin=Depends(require_login),
+    db: Session = Depends(get_db),
+):
+
+    get_service(db).suspend(username)
+
+    return {
+        "detail": "User suspended"
+    }
+
+
+@router.post("/users/{username}/unsuspend")
+def unsuspend_user(
+    username: str,
+    admin=Depends(require_login),
+    db: Session = Depends(get_db),
+):
+
+    get_service(db).unsuspend(username)
+
+    return {
+        "detail": "User unsuspended"
+    }
