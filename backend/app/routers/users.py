@@ -1,20 +1,20 @@
-from datetime import datetime
-
 from fastapi import APIRouter
 from fastapi import Depends
 from fastapi import HTTPException
 from fastapi import Request
+
+from sqlalchemy.orm import Session
 
 from app.core.auth import require_login
 from app.core.template import render
 
 from app.db.database import get_db
 
-from sqlalchemy.orm import Session
-
 from app.repositories.user_repository import UserRepository
+from app.repositories.user_log_repository import UserLogRepository
 
 from app.services.user_service import UserService
+from app.services.user_log_service import UserLogService
 
 from app.schemas.user import UserCreate
 
@@ -25,7 +25,7 @@ router = APIRouter()
 def users_page(
     request: Request,
     admin=Depends(require_login),
-    db: Session = Depends(get_db),
+    db: Session =Depends(get_db),
 ):
 
     repo = UserRepository(db)
@@ -64,9 +64,18 @@ def create_user(
     repo = UserRepository(db)
     service = UserService(repo)
 
+    log_repo = UserLogRepository(db)
+    log_service = UserLogService(log_repo)
+
     try:
 
-        service.create(data)
+        user = service.create(data)
+
+        log_service.log(
+            username=user.username,
+            event="CREATE",
+            details="User created",
+        )
 
         return {
             "detail": "User created successfully"
@@ -99,10 +108,16 @@ def profile(
             detail="User not found",
         )
 
+    log_repo = UserLogRepository(db)
+    log_service = UserLogService(log_repo)
+
+    logs = log_service.list(username)
+
     return render(
         request,
         "users/profile.html",
         {
             "user": user,
+            "logs": logs,
         },
     )
