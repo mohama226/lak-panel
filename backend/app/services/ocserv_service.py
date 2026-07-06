@@ -1,81 +1,142 @@
-import os
-import shutil
 import subprocess
-
-from app.core.config import settings
 
 
 class OcservService:
 
-    @staticmethod
-    def binary():
-        return shutil.which("ocpasswd") or "/usr/bin/ocpasswd"
+    PASSWD_FILE = "/etc/ocserv/ocpasswd"
 
-    @staticmethod
-    def ensure():
+    @classmethod
+    def add_user(
+        cls,
+        username: str,
+        password: str,
+    ):
 
-        binary = OcservService.binary()
+        cmd = [
+            "ocpasswd",
+            "-c",
+            cls.PASSWD_FILE,
+            username,
+        ]
 
-        if not os.path.exists(binary):
-            raise RuntimeError(
-                "ocpasswd not found. Install ocserv first."
-            )
-
-        users_file = settings.OC_SERV_USERS_FILE
-
-        directory = os.path.dirname(users_file)
-
-        os.makedirs(directory, exist_ok=True)
-
-        if not os.path.exists(users_file):
-            open(users_file, "a").close()
-
-    @staticmethod
-    def add_user(username: str, password: str):
-
-        OcservService.ensure()
-
-        subprocess.run(
-            [
-                OcservService.binary(),
-                "-c",
-                settings.OC_SERV_USERS_FILE,
-                username,
-            ],
-            input=f"{password}\n{password}\n",
+        p = subprocess.Popen(
+            cmd,
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
             text=True,
-            check=True,
         )
 
-    @staticmethod
-    def delete_user(username: str):
+        p.communicate(
+            password + "\n" + password + "\n"
+        )
 
-        OcservService.ensure()
+        if p.returncode != 0:
 
-        subprocess.run(
+            raise Exception(
+                "Failed to create ocserv user"
+            )
+
+    @classmethod
+    def delete_user(
+        cls,
+        username: str,
+    ):
+
+        result = subprocess.run(
             [
-                OcservService.binary(),
+                "ocpasswd",
                 "-c",
-                settings.OC_SERV_USERS_FILE,
+                cls.PASSWD_FILE,
                 "-d",
                 username,
             ],
-            check=True,
+            capture_output=True,
+            text=True,
         )
 
-    @staticmethod
-    def change_password(username: str, password: str):
+        if result.returncode != 0:
 
-        OcservService.ensure()
+            raise Exception(
+                result.stderr.strip()
+            )
+
+    @classmethod
+    def change_password(
+        cls,
+        username: str,
+        password: str,
+    ):
+
+        cmd = [
+            "ocpasswd",
+            "-c",
+            cls.PASSWD_FILE,
+            username,
+        ]
+
+        p = subprocess.Popen(
+            cmd,
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+        )
+
+        p.communicate(
+            password + "\n" + password + "\n"
+        )
+
+        if p.returncode != 0:
+
+            raise Exception(
+                "Failed to change password"
+            )
+
+    @classmethod
+    def user_exists(
+        cls,
+        username: str,
+    ):
+
+        try:
+
+            with open(cls.PASSWD_FILE) as f:
+
+                for line in f:
+
+                    if line.startswith(username + ":"):
+
+                        return True
+
+        except Exception:
+
+            return False
+
+        return False
+
+    @classmethod
+    def status(cls):
+
+        result = subprocess.run(
+            [
+                "systemctl",
+                "is-active",
+                "ocserv",
+            ],
+            capture_output=True,
+            text=True,
+        )
+
+        return result.stdout.strip() == "active"
+
+    @classmethod
+    def restart(cls):
 
         subprocess.run(
             [
-                OcservService.binary(),
-                "-c",
-                settings.OC_SERV_USERS_FILE,
-                username,
-            ],
-            input=f"{password}\n{password}\n",
-            text=True,
-            check=True,
+                "systemctl",
+                "restart",
+                "ocserv",
+            ]
         )
