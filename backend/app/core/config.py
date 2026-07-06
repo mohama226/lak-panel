@@ -23,7 +23,7 @@ class Settings(BaseSettings):
 
     SECRET_KEY: str = "CHANGE_ME"
 
-    DATABASE_URL: str = "sqlite:///./database.db"
+    DATABASE_URL: str = "sqlite:///./lakpanel.db"
 
     LOG_LEVEL: str = "INFO"
 
