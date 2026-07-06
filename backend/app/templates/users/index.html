@@ -8,19 +8,29 @@
 
         <h1>Users</h1>
 
-        <p>Manage VPN Users</p>
+        <p>Manage VPN users</p>
 
     </div>
 
-    <a href="/users/new" class="btn-primary">
+    <div class="page-actions">
 
-        ➕ New User
+        <a href="/users/new" class="btn-primary">
 
-    </a>
+            ➕ Create User
+
+        </a>
+
+    </div>
 
 </div>
 
 <div class="dashboard-box">
+
+    <div class="box-header">
+
+        <h3>Users List</h3>
+
+    </div>
 
     <div class="box-content">
 
@@ -28,16 +38,23 @@
 
             <thead>
 
-                <tr>
+            <tr>
 
-                    <th>Username</th>
-                    <th>Status</th>
-                    <th>Traffic</th>
-                    <th>Expire</th>
-                    <th>Group</th>
-                    <th width="320">Actions</th>
+                <th>Username</th>
 
-                </tr>
+                <th>Group</th>
+
+                <th>Server</th>
+
+                <th>Status</th>
+
+                <th>Traffic</th>
+
+                <th>Expire</th>
+
+                <th>Actions</th>
+
+            </tr>
 
             </thead>
 
@@ -45,86 +62,111 @@
 
             {% for user in users %}
 
-                <tr id="user-{{ user.username }}">
+            <tr>
 
-                    <td>
+                <td>
+
+                    <a href="/users/{{ user.username }}">
 
                         <strong>{{ user.username }}</strong>
 
-                    </td>
+                    </a>
 
-                    <td>
+                </td>
 
-                        {% if user.status == "Active" %}
+                <td>
 
-                            <span class="badge success">
+                    {% if user.group %}
 
-                                Active
+                        {{ user.group.name }}
 
-                            </span>
+                    {% else %}
 
-                        {% else %}
+                        -
 
-                            <span class="badge danger">
+                    {% endif %}
 
-                                Disabled
+                </td>
 
-                            </span>
+                <td>
 
-                        {% endif %}
+                    {% if user.server %}
 
-                    </td>
+                        {{ user.server.name }}
 
-                    <td>
+                    {% else %}
 
-                        {{ user.traffic }}
+                        Local
 
-                    </td>
+                    {% endif %}
 
-                    <td>
+                </td>
 
-                        {{ user.expire }}
+                <td>
 
-                    </td>
+                    {% if user.enabled %}
 
-                    <td>
+                        <span class="badge success">
 
-                        {{ user.group }}
+                            Enabled
 
-                    </td>
+                        </span>
 
-                    <td>
+                    {% else %}
+
+                        <span class="badge danger">
+
+                            Disabled
+
+                        </span>
+
+                    {% endif %}
+
+                </td>
+
+                <td>
+
+                    {{ user.traffic }} GB
+
+                </td>
+
+                <td>
+
+                    {% if user.expire %}
+
+                        {{ user.expire.strftime("%Y-%m-%d") }}
+
+                    {% else %}
+
+                        Unlimited
+
+                    {% endif %}
+
+                </td>
+
+                <td>
+
+                    <div style="display:flex;gap:8px;">
 
                         <a
-                            href="/users/{{ user.username }}"
-                            class="btn-primary"
+                        class="btn-primary"
+                        href="/users/{{ user.username }}"
                         >
-
-                            Profile
-
+                            View
                         </a>
 
                         <button
-                            class="btn-primary"
-                            onclick="changePassword('{{ user.username }}')"
+                        class="logout-btn delete-user"
+                        data-user="{{ user.username }}"
                         >
-
-                            Password
-
-                        </button>
-
-                        <button
-                            class="logout-btn"
-                            onclick="deleteUser('{{ user.username }}')"
-                        >
-
                             Delete
-
                         </button>
 
-                    </td>
+                    </div>
 
-                </tr>
+                </td>
+
+            </tr>
 
             {% endfor %}
 
@@ -138,67 +180,27 @@
 
 <script>
 
-async function deleteUser(username){
+document.querySelectorAll(".delete-user").forEach(btn=>{
 
-    if(!confirm("Delete "+username+" ?"))
-        return;
+btn.onclick=async()=>{
 
-    const r = await fetch("/users/"+username,{
-        method:"DELETE"
-    });
+if(!confirm("Delete user?")) return;
 
-    if(r.ok){
+const r=await fetch("/users/"+btn.dataset.user,{
 
-        document
-            .getElementById("user-"+username)
-            .remove();
+method:"DELETE"
 
-    }else{
+});
 
-        alert("Delete failed");
+const j=await r.json();
 
-    }
+alert(j.detail);
 
-}
+location.reload();
 
-async function changePassword(username){
+};
 
-    const password = prompt("New password");
-
-    if(!password)
-        return;
-
-    const r = await fetch(
-        "/users/"+username+"/password",
-        {
-
-            method:"PATCH",
-
-            headers:{
-                "Content-Type":"application/json"
-            },
-
-            body:JSON.stringify({
-
-                password:password
-
-            })
-
-        }
-
-    );
-
-    if(r.ok){
-
-        alert("Password changed");
-
-    }else{
-
-        alert("Failed");
-
-    }
-
-}
+});
 
 </script>
 
