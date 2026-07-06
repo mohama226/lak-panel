@@ -3,50 +3,110 @@
 {% block content %}
 
 <div class="page-header">
-
     <div>
-
         <h1>Create User</h1>
+        <p>Create a new VPN user</p>
+    </div>
 
-        <p>Create a new VPN account</p>
+    <a href="/users" class="btn btn-secondary">
+        ← Back
+    </a>
+</div>
+
+<div class="dashboard-box">
+
+    <div class="box-header">
+        <h3>New User</h3>
+    </div>
+
+    <div class="box-content">
+
+        <form id="createUserForm">
+
+            <label>Username</label>
+            <input
+                type="text"
+                id="username"
+                required
+            >
+
+            <label>Password</label>
+            <input
+                type="text"
+                id="password"
+                required
+            >
+
+            <label>Traffic (GB)</label>
+            <input
+                type="number"
+                id="traffic"
+                value="0"
+            >
+
+            <label>Expire</label>
+            <input
+                type="date"
+                id="expire"
+            >
+
+            <button
+                type="submit"
+                class="btn-primary"
+            >
+                Create User
+            </button>
+
+        </form>
 
     </div>
 
 </div>
 
-<div class="settings-card">
+<script>
 
-    <form method="post" action="/users/new">
+document
+.getElementById("createUserForm")
+.addEventListener("submit",async(e)=>{
 
-        <label>Username</label>
+e.preventDefault();
 
-        <input
-            type="text"
-            name="username"
-            required
-            minlength="3"
-        >
+const res=await fetch("/users",{
 
-        <label>Password</label>
+method:"POST",
 
-        <input
-            type="password"
-            name="password"
-            required
-            minlength="4"
-        >
+headers:{
+"Content-Type":"application/json"
+},
 
-        <button
-            type="submit"
-            class="btn-primary"
-        >
+body:JSON.stringify({
 
-            Create User
+username:username.value,
 
-        </button>
+password:password.value,
 
-    </form>
+traffic:Number(traffic.value),
 
-</div>
+expire:expire.value||null
+
+})
+
+});
+
+if(res.ok){
+
+location="/users";
+
+}else{
+
+const data=await res.json();
+
+alert(data.detail||"Error");
+
+}
+
+});
+
+</script>
 
 {% endblock %}
