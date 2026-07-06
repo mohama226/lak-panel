@@ -95,8 +95,6 @@ class VPNUser(Base):
 
     enabled = Column(Boolean, default=True)
 
-    created_at = Column(DateTime, default=datetime.utcnow)
-
     server_id = Column(Integer, ForeignKey("servers.id"))
 
     group_id = Column(Integer, ForeignKey("groups.id"))
