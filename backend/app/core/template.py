@@ -5,11 +5,7 @@ templates = Jinja2Templates(
 )
 
 
-def render(
-    request,
-    template,
-    context=None,
-):
+def render(request, template, context=None):
     if context is None:
         context = {}
 
@@ -19,3 +15,7 @@ def render(
         template,
         context,
     )
+
+
+def get_setting(key, default=None):
+    return default
