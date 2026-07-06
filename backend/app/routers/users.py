@@ -48,7 +48,6 @@ def users_page(
                 "expire": user.expire,
                 "group": user.group.name if user.group else "-",
                 "server": user.server.name if user.server else "-",
-                "created_at": user.created_at,
             }
         )
 
@@ -85,7 +84,6 @@ def list_users(
                 "online": False,
                 "group": user.group.name if user.group else None,
                 "server": user.server.name if user.server else None,
-                "created_at": user.created_at,
             }
         )
 
