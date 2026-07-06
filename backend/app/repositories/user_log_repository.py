@@ -15,7 +15,6 @@ class UserLogRepository:
         ip: str = "",
         details: str = "",
     ):
-
         log = UserLog(
             username=username,
             event=event,
@@ -34,7 +33,6 @@ class UserLogRepository:
         username: str,
         limit: int = 200,
     ):
-
         return (
             self.db.query(UserLog)
             .filter(UserLog.username == username)
@@ -43,8 +41,18 @@ class UserLogRepository:
             .all()
         )
 
-    def clear(self, username: str):
+    # این متد برای سازگاری با UserService اضافه شده
+    def get_user_logs(
+        self,
+        username: str,
+        limit: int = 200,
+    ):
+        return self.list(username, limit)
 
+    def clear(
+        self,
+        username: str,
+    ):
         (
             self.db.query(UserLog)
             .filter(UserLog.username == username)
