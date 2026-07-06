@@ -1,29 +1,42 @@
 from fastapi import FastAPI
-from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
 
-from app.routers.auth import router as auth_router
-from app.routers.dashboard import router as dashboard_router
-from app.routers.settings import router as settings_router
-from app.routers.users import router as users_router
+from app.db.database import Base
+from app.db.database import engine
+from app.db.database_init import migrate
+
+# مدل‌ها را import می‌کنیم تا SQLAlchemy همه جدول‌ها را بشناسد
+from app.db import models
+
+# Routers
+from app.routers import auth
+from app.routers import dashboard
+from app.routers import users
+from app.routers import servers
+from app.routers import groups
+from app.routers import settings
 
 app = FastAPI(
-    title="LAK PANEL",
+    title="LAK Panel",
 )
 
+# ایجاد جداول
+Base.metadata.create_all(bind=engine)
 
-@app.get("/", include_in_schema=False)
-async def root():
-    return RedirectResponse("/login")
+# اجرای Migration های خودکار
+migrate()
 
-
+# Static Files
 app.mount(
     "/static",
     StaticFiles(directory="app/static"),
     name="static",
 )
 
-app.include_router(auth_router)
-app.include_router(dashboard_router)
-app.include_router(settings_router)
-app.include_router(users_router)
+# Routers
+app.include_router(auth.router)
+app.include_router(dashboard.router)
+app.include_router(users.router)
+app.include_router(servers.router)
+app.include_router(groups.router)
+app.include_router(settings.router)
