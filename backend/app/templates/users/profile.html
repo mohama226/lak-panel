@@ -90,6 +90,7 @@
 
 </div>
 
+
 <div class="dashboard-box">
 
     <div class="box-header">
@@ -103,107 +104,59 @@
         <table class="table">
 
             <tr>
-
                 <th>Username</th>
-
                 <td>{{ user.username }}</td>
-
             </tr>
 
             <tr>
-
                 <th>Group</th>
-
                 <td>
-
-                {% if user.group %}
-
-                    {{ user.group.name }}
-
-                {% else %}
-
-                    -
-
-                {% endif %}
-
+                    {% if user.group %}
+                        {{ user.group.name }}
+                    {% else %}
+                        -
+                    {% endif %}
                 </td>
-
             </tr>
 
             <tr>
-
                 <th>Server</th>
-
                 <td>
-
-                {% if user.server %}
-
-                    {{ user.server.name }}
-
-                {% else %}
-
-                    Local
-
-                {% endif %}
-
+                    {% if user.server %}
+                        {{ user.server.name }}
+                    {% else %}
+                        Local
+                    {% endif %}
                 </td>
-
             </tr>
 
             <tr>
-
                 <th>Status</th>
-
                 <td>
-
-                {% if user.enabled %}
-
-                    <span class="badge success">
-
-                        Enabled
-
-                    </span>
-
-                {% else %}
-
-                    <span class="badge danger">
-
-                        Disabled
-
-                    </span>
-
-                {% endif %}
-
+                    {% if user.enabled %}
+                        <span class="badge success">Enabled</span>
+                    {% else %}
+                        <span class="badge danger">Disabled</span>
+                    {% endif %}
                 </td>
-
             </tr>
 
             <tr>
-
                 <th>Traffic</th>
-
                 <td>{{ user.traffic }} GB</td>
-
             </tr>
 
             <tr>
-
                 <th>Expire</th>
-
                 <td>
 
-                {% if user.expire %}
-
-                    {{ user.expire }}
-
-                {% else %}
-
-                    Unlimited
-
-                {% endif %}
+                    {% if user.expire %}
+                        {{ user.expire }}
+                    {% else %}
+                        Unlimited
+                    {% endif %}
 
                 </td>
-
             </tr>
 
         </table>
@@ -213,30 +166,93 @@
         <div style="display:flex;gap:12px;flex-wrap:wrap;">
 
             <button class="btn-primary">
-
                 Change Password
-
             </button>
 
             <button class="btn-primary">
-
                 Extend Account
-
             </button>
 
             <button class="btn-primary">
-
                 Reset Traffic
-
             </button>
 
             <button class="btn-danger">
-
                 Delete User
-
             </button>
 
         </div>
+
+    </div>
+
+</div>
+
+
+<div class="dashboard-box">
+
+    <div class="box-header">
+
+        <h3>User Activity</h3>
+
+    </div>
+
+    <div class="box-content">
+
+        <table class="table">
+
+            <thead>
+
+            <tr>
+
+                <th>Time</th>
+
+                <th>Event</th>
+
+                <th>IP</th>
+
+                <th>Details</th>
+
+            </tr>
+
+            </thead>
+
+            <tbody>
+
+            {% if logs %}
+
+                {% for log in logs %}
+
+                <tr>
+
+                    <td>{{ log.created_at }}</td>
+
+                    <td>{{ log.event }}</td>
+
+                    <td>{{ log.ip }}</td>
+
+                    <td>{{ log.details }}</td>
+
+                </tr>
+
+                {% endfor %}
+
+            {% else %}
+
+                <tr>
+
+                    <td colspan="4">
+
+                        No activity found.
+
+                    </td>
+
+                </tr>
+
+            {% endif %}
+
+            </tbody>
+
+        </table>
 
     </div>
 
