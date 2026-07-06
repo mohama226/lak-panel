@@ -3,63 +3,58 @@
 {% block content %}
 
 <div class="page-header">
+
     <div>
         <h1>Create User</h1>
-        <p>Create a new VPN user</p>
+        <p>Create new VPN account</p>
     </div>
 
-    <a href="/users" class="btn btn-secondary">
-        ← Back
-    </a>
 </div>
 
-<div class="dashboard-box">
+<div class="settings-card">
 
-    <div class="box-header">
-        <h3>New User</h3>
-    </div>
+<form id="createUserForm">
 
-    <div class="box-content">
+<label>Username</label>
+<input
+type="text"
+name="username"
+required
+>
 
-        <form id="createUserForm">
+<label>Password</label>
+<input
+type="text"
+name="password"
+required
+>
 
-            <label>Username</label>
-            <input
-                type="text"
-                id="username"
-                required
-            >
+<label>Traffic (GB)</label>
+<input
+type="number"
+name="traffic"
+value="0"
+>
 
-            <label>Password</label>
-            <input
-                type="text"
-                id="password"
-                required
-            >
+<label>Expire</label>
+<input
+type="datetime-local"
+name="expire"
+>
 
-            <label>Traffic (GB)</label>
-            <input
-                type="number"
-                id="traffic"
-                value="0"
-            >
+<button
+class="save-btn"
+type="submit"
+>
+Create User
+</button>
 
-            <label>Expire</label>
-            <input
-                type="date"
-                id="expire"
-            >
+</form>
 
-            <button
-                type="submit"
-                class="btn-primary"
-            >
-                Create User
-            </button>
-
-        </form>
-
-    </div>
+<div
+id="result"
+style="margin-top:20px;"
+></div>
 
 </div>
 
@@ -69,43 +64,53 @@ document
 .getElementById("createUserForm")
 .addEventListener("submit",async(e)=>{
 
-e.preventDefault();
+e.preventDefault()
 
-const res=await fetch("/users",{
+const fd=new FormData(e.target)
+
+const body={
+
+username:fd.get("username"),
+
+password:fd.get("password"),
+
+traffic:Number(fd.get("traffic")),
+
+expire:fd.get("expire")||null
+
+}
+
+const r=await fetch("/users",{
 
 method:"POST",
 
 headers:{
+
 "Content-Type":"application/json"
+
 },
 
-body:JSON.stringify({
-
-username:username.value,
-
-password:password.value,
-
-traffic:Number(traffic.value),
-
-expire:expire.value||null
+body:JSON.stringify(body)
 
 })
 
-});
+const j=await r.json()
 
-if(res.ok){
+const box=document.getElementById("result")
 
-location="/users";
+if(r.ok){
+
+box.innerHTML=`<div class="alert alert-success">${j.detail}</div>`
+
+e.target.reset()
 
 }else{
 
-const data=await res.json();
-
-alert(data.detail||"Error");
+box.innerHTML=`<div class="alert alert-danger">${j.detail}</div>`
 
 }
 
-});
+})
 
 </script>
 
