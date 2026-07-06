@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="page-header">
+
+    <h1>Users</h1>
+
+    <a href="/users/new" class="btn btn-primary">
+
+        <i class="fa-solid fa-plus"></i>
+
+        New User
+
+    </a>
+
+</div>
+
+<div class="table-card">
+
+    <table class="table">
+
+        <thead>
+
+            <tr>
+
+                <th>Username</th>
+
+                <th>Group</th>
+
+                <th>Status</th>
+
+                <th>Online</th>
+
+                <th>Traffic</th>
+
+                <th>Expire</th>
+
+                <th>Actions</th>
+
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+        {% for user in users %}
+
+            <tr>
+
+                <td>{{ user.username }}</td>
+
+                <td>{{ user.group }}</td>
+
+                <td>
+
+                    <span class="badge success">
+
+                        {{ user.status }}
+
+                    </span>
+
+                </td>
+
+                <td>
+
+                    {% if user.online %}
+
+                        🟢
+
+                    {% else %}
+
+                        ⚪
+
+                    {% endif %}
+
+                </td>
+
+                <td>{{ user.traffic }}</td>
+
+                <td>{{ user.expire }}</td>
+
+                <td>
+
+                    <button class="btn btn-sm">
+
+                        Edit
+
+                    </button>
+
+                    <button class="btn btn-danger btn-sm">
+
+                        Delete
+
+                    </button>
+
+                </td>
+
+            </tr>
+
+        {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</div>
+
+{% endblock %}
