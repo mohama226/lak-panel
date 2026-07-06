@@ -14,6 +14,8 @@ from sqlalchemy.orm import relationship
 from app.db.database import Base
 
 
+# ---------------- Roles ----------------
+
 class Role(Base):
     __tablename__ = "roles"
 
@@ -24,25 +26,36 @@ class Role(Base):
     admins = relationship("Admin", back_populates="role")
 
 
+# ---------------- Admins ----------------
+
 class Admin(Base):
     __tablename__ = "admins"
 
     id = Column(Integer, primary_key=True, index=True)
 
     username = Column(String(100), unique=True)
-
     password = Column(String(255))
-
     fullname = Column(String(100))
 
     active = Column(Boolean, default=True)
 
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(
+        DateTime,
+        default=datetime.utcnow,
+    )
 
-    role_id = Column(Integer, ForeignKey("roles.id"))
+    role_id = Column(
+        Integer,
+        ForeignKey("roles.id"),
+    )
 
-    role = relationship("Role", back_populates="admins")
+    role = relationship(
+        "Role",
+        back_populates="admins",
+    )
 
+
+# ---------------- Servers ----------------
 
 class Server(Base):
     __tablename__ = "servers"
@@ -61,8 +74,13 @@ class Server(Base):
 
     enabled = Column(Boolean, default=True)
 
-    users = relationship("VPNUser", back_populates="server")
+    users = relationship(
+        "VPNUser",
+        back_populates="server",
+    )
 
+
+# ---------------- Groups ----------------
 
 class Group(Base):
     __tablename__ = "groups"
@@ -73,15 +91,24 @@ class Group(Base):
 
     description = Column(String(255))
 
-    users = relationship("VPNUser", back_populates="group")
+    users = relationship(
+        "VPNUser",
+        back_populates="group",
+    )
 
+
+# ---------------- VPN Users ----------------
 
 class VPNUser(Base):
     __tablename__ = "users"
 
     id = Column(Integer, primary_key=True)
 
-    username = Column(String(100), unique=True)
+    username = Column(
+        String(100),
+        unique=True,
+        index=True,
+    )
 
     password = Column(String(255))
 
@@ -91,40 +118,94 @@ class VPNUser(Base):
 
     enabled = Column(Boolean, default=True)
 
-    server_id = Column(Integer, ForeignKey("servers.id"))
+    suspended = Column(Boolean, default=False)
 
-    group_id = Column(Integer, ForeignKey("groups.id"))
+    blocked = Column(Boolean, default=False)
 
-    server = relationship("Server", back_populates="users")
+    created_at = Column(
+        DateTime,
+        default=datetime.utcnow,
+    )
 
-    group = relationship("Group", back_populates="users")
+    last_login = Column(
+        DateTime,
+        nullable=True,
+    )
 
+    last_ip = Column(
+        String(64),
+        nullable=True,
+    )
+
+    server_id = Column(
+        Integer,
+        ForeignKey("servers.id"),
+    )
+
+    group_id = Column(
+        Integer,
+        ForeignKey("groups.id"),
+    )
+
+    server = relationship(
+        "Server",
+        back_populates="users",
+    )
+
+    group = relationship(
+        "Group",
+        back_populates="users",
+    )
+
+    logs = relationship(
+        "UserLog",
+        back_populates="user",
+        cascade="all, delete-orphan",
+    )
+
+
+# ---------------- User Logs ----------------
+
+class UserLog(Base):
+    __tablename__ = "user_logs"
+
+    id = Column(
+        Integer,
+        primary_key=True,
+    )
+
+    username = Column(
+        String(100),
+        ForeignKey("users.username"),
+    )
+
+    event = Column(String(100))
+
+    ip = Column(String(64))
+
+    details = Column(String(500))
+
+    created_at = Column(
+        DateTime,
+        default=datetime.utcnow,
+    )
+
+    user = relationship(
+        "VPNUser",
+        back_populates="logs",
+    )
+
+
+# ---------------- Settings ----------------
 
 class Setting(Base):
     __tablename__ = "settings"
 
     id = Column(Integer, primary_key=True)
 
-    key = Column(String(100), unique=True)
+    key = Column(
+        String(100),
+        unique=True,
+    )
 
     value = Column(String(500))
-
-
-# ===========================
-# User Activity Logs
-# ===========================
-
-class UserLog(Base):
-    __tablename__ = "user_logs"
-
-    id = Column(Integer, primary_key=True, index=True)
-
-    username = Column(String(100), index=True, nullable=False)
-
-    event = Column(String(100), nullable=False)
-
-    ip = Column(String(100), default="")
-
-    details = Column(String(500), default="")
-
-    created_at = Column(DateTime, default=datetime.utcnow)
