@@ -1,14 +1,13 @@
-from sqlalchemy.orm import Session
+from datetime import datetime
 
 from app.db.models import VPNUser
-from app.repositories.user_repository import UserRepository
 from app.services.ocserv_service import OcservService
 
 
 class UserService:
 
-    def __init__(self, db: Session):
-        self.repo = UserRepository(db)
+    def __init__(self, repo):
+        self.repo = repo
 
     def list(self):
         return self.repo.get_all()
@@ -16,32 +15,27 @@ class UserService:
     def get(self, username: str):
         return self.repo.get(username)
 
-    def create(
-        self,
-        username: str,
-        password: str,
-        expire=None,
-        traffic=0,
-        group_id=None,
-        server_id=None,
-    ):
+    def create(self, data):
 
-        if self.repo.get(username):
-            raise Exception("User already exists")
+        exists = self.repo.get(data.username)
 
+        if exists:
+            raise Exception("Username already exists")
+
+        # ساخت کاربر داخل ocserv
         OcservService.add_user(
-            username,
-            password,
+            data.username,
+            data.password,
         )
 
         user = VPNUser(
-            username=username,
+            username=data.username,
             password="",
-            expire=expire,
-            traffic=traffic,
+            expire=data.expire,
+            traffic=data.traffic,
             enabled=True,
-            group_id=group_id,
-            server_id=server_id,
+            server_id=data.server_id,
+            group_id=data.group_id,
         )
 
         return self.repo.create(user)
@@ -78,21 +72,3 @@ class UserService:
         user.enabled = False
 
         return self.repo.update(user)
-
-    def change_password(
-        self,
-        username: str,
-        password: str,
-    ):
-
-        user = self.repo.get(username)
-
-        if not user:
-            raise Exception("User not found")
-
-        OcservService.change_password(
-            username,
-            password,
-        )
-
-        return user
