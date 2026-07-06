@@ -1,6 +1,6 @@
 let dashboardTimer = null;
 
-function setText(id, value) {
+function setValue(id, value) {
 
     const el = document.getElementById(id);
 
@@ -9,85 +9,116 @@ function setText(id, value) {
 
 }
 
-function setBar(barId, textId, value) {
+function updateBar(barId, textId, value) {
 
     const bar = document.getElementById(barId);
 
     const text = document.getElementById(textId);
 
-    if (bar)
-        bar.style.width = value + "%";
+    if (!bar || !text)
+        return;
 
-    if (text)
-        text.textContent = value + "%";
+    bar.style.width = value + "%";
+
+    text.textContent = value + "%";
+
+    bar.classList.remove(
+        "green-bar",
+        "yellow-bar",
+        "orange-bar",
+        "red-bar"
+    );
+
+    if (value < 50)
+        bar.classList.add("green-bar");
+
+    else if (value < 70)
+        bar.classList.add("yellow-bar");
+
+    else if (value < 90)
+        bar.classList.add("orange-bar");
+
+    else
+        bar.classList.add("red-bar");
 
 }
 
-async function updateDashboard() {
+async function refreshDashboard() {
 
     try {
 
-        const response = await fetch("/api/dashboard/stats", {
-            cache: "no-store"
-        });
+        const response = await fetch(
+            "/api/dashboard/stats",
+            {
+                cache: "no-store"
+            }
+        );
 
         if (!response.ok)
             return;
 
         const data = await response.json();
 
-        setText("users-value", data.users);
-        setText("admins-value", data.admins);
-        setText("servers-value", data.servers);
-        setText("online-value", data.online);
+        setValue("users-value", data.users);
+        setValue("admins-value", data.admins);
+        setValue("servers-value", data.servers);
+        setValue("online-value", data.online);
 
-        setBar("cpu-bar", "cpu-text", data.cpu);
-        setBar("ram-bar", "ram-text", data.ram);
-        setBar("disk-bar", "disk-text", data.disk);
+        updateBar(
+            "cpu-bar",
+            "cpu-text",
+            data.cpu
+        );
 
-        setText("load-value", data.load);
-        setText("uptime-value", data.uptime);
+        updateBar(
+            "ram-bar",
+            "ram-text",
+            data.ram
+        );
 
-        setText("upload-value", data.traffic_up + " MB");
-        setText("download-value", data.traffic_down + " MB");
+        updateBar(
+            "disk-bar",
+            "disk-text",
+            data.disk
+        );
 
-    }
+        setValue(
+            "load-value",
+            data.load
+        );
 
-    catch (e) {
+        setValue(
+            "uptime-value",
+            data.uptime
+        );
 
-        console.log("Dashboard refresh failed.", e);
+        setValue(
+            "upload-value",
+            data.traffic_up + " MB"
+        );
 
-    }
+        setValue(
+            "download-value",
+            data.traffic_down + " MB"
+        );
 
-}
+        setValue(
+            "upload-speed",
+            data.upload_speed + " KB/s"
+        );
 
-function startDashboardRefresh() {
-
-    if (dashboardTimer)
-        clearInterval(dashboardTimer);
-
-    let interval = 2;
-
-    if (
-        window.dashboardSettings &&
-        window.dashboardSettings.autoRefresh
-    ) {
-
-        interval = parseInt(
-            window.dashboardSettings.interval
+        setValue(
+            "download-speed",
+            data.download_speed + " KB/s"
         );
 
     }
 
-    updateDashboard();
+    catch (err) {
 
-    dashboardTimer = setInterval(
+        console.log(err);
 
-        updateDashboard,
-
-        interval * 1000
-
-    );
+    }
 
 }
 
@@ -95,6 +126,26 @@ document.addEventListener(
 
     "DOMContentLoaded",
 
-    startDashboardRefresh
+    () => {
+
+        if (
+            typeof window.dashboardSettings === "undefined"
+        )
+            return;
+
+        refreshDashboard();
+
+        if (!window.dashboardSettings.autoRefresh)
+            return;
+
+        dashboardTimer = setInterval(
+
+            refreshDashboard,
+
+            window.dashboardSettings.interval * 1000
+
+        );
+
+    }
 
 );
