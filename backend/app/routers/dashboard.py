@@ -4,6 +4,7 @@ from fastapi.responses import RedirectResponse, JSONResponse
 from app.core.template import render, get_setting
 
 import shutil
+import subprocess
 import time
 
 try:
@@ -25,27 +26,84 @@ LAST_NETWORK = {
 }
 
 
+def get_ocserv_status():
+
+    try:
+
+        result = subprocess.run(
+            ["systemctl", "is-active", "ocserv"],
+            capture_output=True,
+            text=True,
+            timeout=2,
+        )
+
+        return result.stdout.strip()
+
+    except Exception:
+
+        return "unknown"
+
+
+def get_online_users():
+
+    try:
+
+        result = subprocess.run(
+            ["occtl", "show", "users"],
+            capture_output=True,
+            text=True,
+            timeout=2,
+        )
+
+        lines = result.stdout.splitlines()
+
+        count = 0
+
+        for line in lines:
+
+            if line.strip():
+
+                count += 1
+
+        return max(count - 2, 0)
+
+    except Exception:
+
+        return 0
+
+
 def get_stats():
 
     if psutil is None:
 
         return {
+
             "cpu": 0,
             "ram": 0,
             "disk": 0,
+
             "uptime": "-",
+
             "load": "0.00",
+
             "traffic_up": 0,
             "traffic_down": 0,
+
             "upload_speed": 0,
             "download_speed": 0,
+
             "users": 0,
             "admins": 1,
             "groups": 0,
             "servers": 0,
+
             "online": 0,
+
             "backups": 0,
             "logs": 0,
+
+            "ocserv_status": "unknown",
+
         }
 
     vm = psutil.virtual_memory()
@@ -69,8 +127,11 @@ def get_stats():
     uptime = f"{days}d {hours}h {minutes}m"
 
     try:
+
         load = "%.2f" % psutil.getloadavg()[0]
+
     except Exception:
+
         load = "0.00"
 
     network = psutil.net_io_counters()
@@ -90,9 +151,13 @@ def get_stats():
     ) / elapsed
 
     LAST_NETWORK = {
+
         "sent": network.bytes_sent,
+
         "recv": network.bytes_recv,
+
         "time": now,
+
     }
 
     return {
@@ -128,12 +193,20 @@ def get_stats():
         ),
 
         "users": 0,
+
         "admins": 1,
+
         "groups": 0,
+
         "servers": 0,
-        "online": 0,
+
+        "online": get_online_users(),
+
         "backups": 0,
+
         "logs": 0,
+
+        "ocserv_status": get_ocserv_status(),
 
     }
 
@@ -164,6 +237,7 @@ async def dashboard(
 ):
 
     if lak_admin is None:
+
         return RedirectResponse("/login")
 
     context = get_stats()
@@ -186,6 +260,7 @@ async def dashboard_content(
 ):
 
     if lak_admin is None:
+
         return RedirectResponse("/login")
 
     context = get_stats()
@@ -202,4 +277,6 @@ async def dashboard_content(
 @router.get("/api/dashboard/stats")
 async def dashboard_api():
 
-    return JSONResponse(get_stats())
+    return JSONResponse(
+        get_stats()
+    )
