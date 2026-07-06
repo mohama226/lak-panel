@@ -3,7 +3,6 @@ from fastapi.staticfiles import StaticFiles
 
 from app.db.database import Base
 from app.db.database import engine
-from app.db.database_init import migrate
 
 # مدل‌ها را import می‌کنیم تا SQLAlchemy همه جدول‌ها را بشناسد
 from app.db import models
@@ -24,7 +23,6 @@ app = FastAPI(
 Base.metadata.create_all(bind=engine)
 
 # اجرای Migration های خودکار
-migrate()
 
 # Static Files
 app.mount(
