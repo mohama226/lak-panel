@@ -5,21 +5,14 @@
 <div class="page-header">
 
     <div>
-
         <h1>Users</h1>
-
         <p>Manage VPN users</p>
-
     </div>
 
     <div class="page-actions">
-
         <a href="/users/new" class="btn-primary">
-
             ➕ Create User
-
         </a>
-
     </div>
 
 </div>
@@ -27,9 +20,7 @@
 <div class="dashboard-box">
 
     <div class="box-header">
-
         <h3>Users List</h3>
-
     </div>
 
     <div class="box-content">
@@ -37,25 +28,15 @@
         <table>
 
             <thead>
-
             <tr>
-
                 <th>Username</th>
-
                 <th>Group</th>
-
                 <th>Server</th>
-
                 <th>Status</th>
-
                 <th>Traffic</th>
-
                 <th>Expire</th>
-
-                <th>Actions</th>
-
+                <th style="width:70px;text-align:center;">Actions</th>
             </tr>
-
             </thead>
 
             <tbody>
@@ -65,41 +46,25 @@
             <tr>
 
                 <td>
-
                     <a href="/users/{{ user.username }}">
-
                         <strong>{{ user.username }}</strong>
-
                     </a>
-
                 </td>
 
                 <td>
-
                     {% if user.group %}
-
                         {{ user.group.name }}
-
                     {% else %}
-
                         -
-
                     {% endif %}
-
                 </td>
 
                 <td>
-
                     {% if user.server %}
-
                         {{ user.server.name }}
-
                     {% else %}
-
                         Local
-
                     {% endif %}
-
                 </td>
 
                 <td>
@@ -107,17 +72,13 @@
                     {% if user.enabled %}
 
                         <span class="badge success">
-
                             Enabled
-
                         </span>
 
                     {% else %}
 
                         <span class="badge danger">
-
                             Disabled
-
                         </span>
 
                     {% endif %}
@@ -125,42 +86,96 @@
                 </td>
 
                 <td>
-
                     {{ user.traffic }} GB
-
                 </td>
 
                 <td>
 
                     {% if user.expire %}
-
                         {{ user.expire.strftime("%Y-%m-%d") }}
-
                     {% else %}
-
                         Unlimited
-
                     {% endif %}
 
                 </td>
 
-                <td>
+                <td style="text-align:center;">
 
-                    <div style="display:flex;gap:8px;">
+                    <div class="actions-menu">
 
-                        <a
-                        class="btn-primary"
-                        href="/users/{{ user.username }}"
-                        >
-                            View
-                        </a>
-
-                        <button
-                        class="logout-btn delete-user"
-                        data-user="{{ user.username }}"
-                        >
-                            Delete
+                        <button class="menu-btn">
+                            <i class="fa-solid fa-ellipsis-vertical"></i>
                         </button>
+
+                        <div class="dropdown">
+
+                            <a href="/users/{{ user.username }}">
+                                <i class="fa-regular fa-user"></i>
+                                Profile
+                            </a>
+
+                            <a href="/users/{{ user.username }}/edit">
+                                <i class="fa-solid fa-pen"></i>
+                                Edit User
+                            </a>
+
+                            <a href="#">
+                                <i class="fa-solid fa-key"></i>
+                                Change Password
+                            </a>
+
+                            <hr>
+
+                            {% if user.enabled %}
+
+                            <a href="#">
+                                <i class="fa-solid fa-ban"></i>
+                                Block User
+                            </a>
+
+                            {% else %}
+
+                            <a href="#">
+                                <i class="fa-solid fa-circle-check"></i>
+                                Enable User
+                            </a>
+
+                            {% endif %}
+
+                            <a href="#">
+                                <i class="fa-solid fa-plug-circle-xmark"></i>
+                                Disconnect User
+                            </a>
+
+                            <hr>
+
+                            <a href="#">
+                                <i class="fa-solid fa-clock-rotate-left"></i>
+                                Session Logs
+                            </a>
+
+                            <a href="#">
+                                <i class="fa-solid fa-chart-column"></i>
+                                Traffic Usage
+                            </a>
+
+                            <a href="#">
+                                <i class="fa-solid fa-arrows-rotate"></i>
+                                Reset Traffic
+                            </a>
+
+                            <hr>
+
+                            <a
+                                href="javascript:void(0)"
+                                class="delete-user"
+                                data-user="{{ user.username }}"
+                                style="color:#ff6666;">
+                                <i class="fa-solid fa-trash"></i>
+                                Delete User
+                            </a>
+
+                        </div>
 
                     </div>
 
@@ -187,9 +202,7 @@ btn.onclick=async()=>{
 if(!confirm("Delete user?")) return;
 
 const r=await fetch("/users/"+btn.dataset.user,{
-
 method:"DELETE"
-
 });
 
 const j=await r.json();
