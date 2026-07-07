@@ -53,11 +53,7 @@ class OcservService:
             raise Exception(result.stderr.strip())
 
     @classmethod
-    def change_password(
-        cls,
-        username,
-        password,
-    ):
+    def change_password(cls, username: str, password: str):
 
         cmd = [
             "ocpasswd",
@@ -74,15 +70,13 @@ class OcservService:
             text=True,
         )
 
-        p.communicate(
-            password + "\n" + password + "\n"
-        )
+        p.communicate(password + "\n" + password + "\n")
 
         if p.returncode != 0:
             raise Exception("Failed to change password")
 
     @classmethod
-    def user_exists(cls, username):
+    def user_exists(cls, username: str):
 
         try:
 
@@ -169,5 +163,95 @@ class OcservService:
             return []
 
         except Exception:
-
             return []
+
+    # =====================================================
+    # Single User
+    # =====================================================
+
+    @classmethod
+    def user_info(cls, username: str) -> Dict:
+
+        result = subprocess.run(
+            [
+                "occtl",
+                "--json",
+                "show",
+                "user",
+                username,
+            ],
+            capture_output=True,
+            text=True,
+        )
+
+        if result.returncode != 0:
+            return {}
+
+        try:
+            return json.loads(result.stdout)
+        except Exception:
+            return {}
+
+    # =====================================================
+    # Active Sessions
+    # =====================================================
+
+    @classmethod
+    def sessions(cls, username: str) -> List[Dict]:
+
+        users = cls.online_users()
+
+        sessions = []
+
+        for user in users:
+
+            name = (
+                user.get("Username")
+                or user.get("username")
+                or user.get("User")
+                or user.get("user")
+            )
+
+            if name != username:
+                continue
+
+            sessions.append(user)
+
+        return sessions
+
+    # =====================================================
+    # Disconnect
+    # =====================================================
+
+    @classmethod
+    def disconnect_user(cls, username: str):
+
+        result = subprocess.run(
+            [
+                "occtl",
+                "disconnect",
+                "user",
+                username,
+            ],
+            capture_output=True,
+            text=True,
+        )
+
+        if result.returncode != 0:
+            raise Exception(result.stderr.strip())
+
+        return True
+
+    # =====================================================
+    # Traffic / Live Stats
+    # =====================================================
+
+    @classmethod
+    def traffic(cls, username: str) -> Dict:
+
+        info = cls.user_info(username)
+
+        if not info:
+            return {}
+
+        return info
