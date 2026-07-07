@@ -54,15 +54,25 @@
 
 
 
-                <td class="online-cell">
+                
+
+    <div class="online-status">
 
     {% if user.online %}
-        <span class="online-dot"></span>
+
+        <span class="status-dot online"></span>
+        <span class="status-text online">Online</span>
+
     {% else %}
-        <span class="offline-dot"></span>
+
+        <span class="status-dot offline"></span>
+        <span class="status-text offline">Offline</span>
+
     {% endif %}
 
-                 </td>
+    </div>
+
+
 
 
                 
