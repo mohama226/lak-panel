@@ -66,6 +66,29 @@ class UserService:
 
         self.repo.delete(user)
 
+    # -------------------------
+    # Disconnect
+    # -------------------------
+
+    def disconnect(self, username):
+
+        user = self.repo.get(username)
+
+        if not user:
+            raise Exception("User not found")
+
+        OcservService.disconnect_user(username)
+
+        self.log_repo.create(
+            username,
+            "DISCONNECT",
+            details="User disconnected",
+        )
+
+    # -------------------------
+    # Enable / Disable
+    # -------------------------
+
     def enable(self, username):
 
         user = self.repo.get(username)
@@ -102,6 +125,10 @@ class UserService:
 
         return user
 
+    # -------------------------
+    # Suspend
+    # -------------------------
+
     def suspend(self, username):
 
         user = self.repo.get(username)
@@ -137,6 +164,10 @@ class UserService:
         )
 
         return user
+
+    # -------------------------
+    # Block
+    # -------------------------
 
     def block(self, username):
 
