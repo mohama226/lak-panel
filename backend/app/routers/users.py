@@ -272,3 +272,19 @@ def unsuspend_user(
     return {
         "detail": "User unsuspended"
     }
+
+
+
+
+
+
+@router.get("/users/{username}/sessions")
+def user_sessions(
+    username: str,
+    admin=Depends(require_login),
+    db: Session = Depends(get_db),
+):
+
+    sessions = get_service(db).sessions(username)
+
+    return sessions
