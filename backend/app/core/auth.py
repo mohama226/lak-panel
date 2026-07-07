@@ -1,3 +1,5 @@
+from contextlib import closing
+
 from fastapi import Cookie
 from fastapi import HTTPException
 
@@ -12,9 +14,7 @@ def require_login(
     if not lak_admin:
         raise HTTPException(status_code=401)
 
-    db = SessionLocal()
-
-    try:
+    with closing(SessionLocal()) as db:
 
         admin = (
             db.query(Admin)
@@ -22,11 +22,17 @@ def require_login(
             .first()
         )
 
-        if not admin:
+        if admin is None:
             raise HTTPException(status_code=401)
 
-        return admin
+        admin_id = admin.id
+        admin_username = admin.username
+        admin_fullname = admin.fullname
+        admin_role_id = admin.role_id
 
-    finally:
-
-        db.close()
+    return {
+        "id": admin_id,
+        "username": admin_username,
+        "fullname": admin_fullname,
+        "role_id": admin_role_id,
+    }
