@@ -45,32 +45,7 @@ def get_ocserv_status():
         return "unknown"
 
 
-def get_online_users():
 
-    try:
-
-        result = subprocess.run(
-            ["occtl", "show", "users"],
-            capture_output=True,
-            text=True,
-            timeout=2,
-        )
-
-        lines = result.stdout.splitlines()
-
-        count = 0
-
-        for line in lines:
-
-            if line.strip():
-
-                count += 1
-
-        return max(count - 2, 0)
-
-    except Exception:
-
-        return 0
 
 
 def get_stats():
@@ -201,7 +176,7 @@ def get_stats():
 
         "servers": 0,
 
-        "online": get_online_users(),
+        "online": OcservCache.online_count(),
 
         "backups": 0,
 
