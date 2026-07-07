@@ -1,17 +1,13 @@
-from app.db.models import Admin
-from fastapi import APIRouter
-from fastapi import Request
-from fastapi import Form
-from fastapi import Cookie
-
+from fastapi import APIRouter, Request, Form, Cookie
 from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
 
 from app.db.database import SessionLocal
-from app.db.models import Role
+from app.db.models import Admin, Role
 
 from app.repositories.admin_repository import AdminRepository
 from app.services.admin_service import AdminService
+from app.core.security import hash_password
 
 router = APIRouter()
 
@@ -22,10 +18,7 @@ templates = Jinja2Templates(
 
 def check_login(admin_cookie):
 
-    if admin_cookie is None:
-        return False
-
-    return True
+    return admin_cookie is not None
 
 
 @router.get("/admins")
@@ -39,19 +32,24 @@ async def admin_list(
 
     db = SessionLocal()
 
-    repo = AdminRepository(db)
+    try:
 
-    service = AdminService(repo)
+        repo = AdminRepository(db)
+        service = AdminService(repo)
 
-    admins = service.get_admins()
+        admins = service.get_admins()
 
-    return templates.TemplateResponse(
-        "admins/list.html",
-        {
-            "request": request,
-            "admins": admins,
-        },
-    )
+        return templates.TemplateResponse(
+            "admins/list.html",
+            {
+                "request": request,
+                "admins": admins,
+            },
+        )
+
+    finally:
+
+        db.close()
 
 
 @router.get("/admins/create")
@@ -65,15 +63,21 @@ async def create_page(
 
     db = SessionLocal()
 
-    roles = db.query(Role).all()
+    try:
 
-    return templates.TemplateResponse(
-        "admins/create.html",
-        {
-            "request": request,
-            "roles": roles,
-        },
-    )
+        roles = db.query(Role).all()
+
+        return templates.TemplateResponse(
+            "admins/create.html",
+            {
+                "request": request,
+                "roles": roles,
+            },
+        )
+
+    finally:
+
+        db.close()
 
 
 @router.post("/admins/create")
@@ -87,36 +91,41 @@ async def create_admin(
 
     db = SessionLocal()
 
-    repo = AdminRepository(db)
-
-    service = AdminService(repo)
-
     try:
 
-        service.create_admin(
-            username=username,
-            password=password,
-            fullname=fullname,
-            role_id=role_id,
+        repo = AdminRepository(db)
+        service = AdminService(repo)
+
+        try:
+
+            service.create_admin(
+                username=username,
+                password=password,
+                fullname=fullname,
+                role_id=role_id,
+            )
+
+        except Exception as e:
+
+            roles = db.query(Role).all()
+
+            return templates.TemplateResponse(
+                "admins/create.html",
+                {
+                    "request": request,
+                    "roles": roles,
+                    "error": str(e),
+                },
+            )
+
+        return RedirectResponse(
+            "/admins",
+            status_code=302,
         )
 
-    except Exception as e:
+    finally:
 
-        roles = db.query(Role).all()
-
-        return templates.TemplateResponse(
-            "admins/create.html",
-            {
-                "request": request,
-                "roles": roles,
-                "error": str(e),
-            },
-        )
-
-    return RedirectResponse(
-        "/admins",
-        status_code=302,
-    )
+        db.close()
 
 
 @router.get("/admins/delete/{admin_id}")
@@ -130,23 +139,24 @@ async def delete_admin(
 
     db = SessionLocal()
 
-    repo = AdminRepository(db)
+    try:
 
-    service = AdminService(repo)
+        repo = AdminRepository(db)
+        service = AdminService(repo)
 
-    admin = service.get_admin(admin_id)
+        admin = service.get_admin(admin_id)
 
-    if admin:
-        service.delete_admin(admin)
+        if admin:
+            service.delete_admin(admin)
 
-    return RedirectResponse(
-        "/admins",
-        status_code=302,
-    )
+        return RedirectResponse(
+            "/admins",
+            status_code=302,
+        )
 
+    finally:
 
-
-from app.core.security import hash_password
+        db.close()
 
 
 @router.get("/admins/edit/{admin_id}")
@@ -161,25 +171,34 @@ async def edit_page(
 
     db = SessionLocal()
 
-    repo = AdminRepository(db)
+    try:
 
-    service = AdminService(repo)
+        repo = AdminRepository(db)
+        service = AdminService(repo)
 
-    admin = service.get_admin(admin_id)
+        admin = service.get_admin(admin_id)
 
-    if admin is None:
-        return RedirectResponse("/admins", status_code=302)
+        if admin is None:
 
-    roles = db.query(Role).all()
+            return RedirectResponse(
+                "/admins",
+                status_code=302,
+            )
 
-    return templates.TemplateResponse(
-        "admins/edit.html",
-        {
-            "request": request,
-            "admin": admin,
-            "roles": roles,
-        },
-    )
+        roles = db.query(Role).all()
+
+        return templates.TemplateResponse(
+            "admins/edit.html",
+            {
+                "request": request,
+                "admin": admin,
+                "roles": roles,
+            },
+        )
+
+    finally:
+
+        db.close()
 
 
 @router.post("/admins/edit/{admin_id}")
@@ -194,26 +213,37 @@ async def edit_admin(
 
     db = SessionLocal()
 
-    admin = (
-        db.query(Admin)
-        .filter(Admin.id == admin_id)
-        .first()
-    )
+    try:
 
-    if admin is None:
-        return RedirectResponse("/admins", status_code=302)
+        admin = (
+            db.query(Admin)
+            .filter(Admin.id == admin_id)
+            .first()
+        )
 
-    admin.username = username
-    admin.fullname = fullname
-    admin.role_id = role_id
-    admin.active = active is not None
+        if admin is None:
 
-    if password.strip():
-        admin.password = hash_password(password)
+            return RedirectResponse(
+                "/admins",
+                status_code=302,
+            )
 
-    db.commit()
+        admin.username = username
+        admin.fullname = fullname
+        admin.role_id = role_id
+        admin.active = active is not None
 
-    return RedirectResponse(
-        "/admins",
-        status_code=302,
-    )
+        if password.strip():
+
+            admin.password = hash_password(password)
+
+        db.commit()
+
+        return RedirectResponse(
+            "/admins",
+            status_code=302,
+        )
+
+    finally:
+
+        db.close()
