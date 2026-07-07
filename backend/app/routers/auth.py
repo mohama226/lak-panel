@@ -1,7 +1,6 @@
-from fastapi import APIRouter
-from fastapi import Form
-from fastapi import Request
+from contextlib import closing
 
+from fastapi import APIRouter, Form, Request
 from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
 
@@ -35,9 +34,7 @@ async def login(
     password: str = Form(...),
 ):
 
-    db = SessionLocal()
-
-    try:
+    with closing(SessionLocal()) as db:
 
         admin = (
             db.query(Admin)
@@ -65,23 +62,21 @@ async def login(
                 },
             )
 
-        response = RedirectResponse(
-            "/dashboard",
-            status_code=302,
-        )
+        admin_id = admin.id
 
-        response.set_cookie(
-            key="lak_admin",
-            value=str(admin.id),
-            httponly=True,
-            samesite="lax",
-        )
+    response = RedirectResponse(
+        "/dashboard",
+        status_code=302,
+    )
 
-        return response
+    response.set_cookie(
+        key="lak_admin",
+        value=str(admin_id),
+        httponly=True,
+        samesite="lax",
+    )
 
-    finally:
-
-        db.close()
+    return response
 
 
 @router.get("/logout")
