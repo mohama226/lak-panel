@@ -1,119 +1,279 @@
-<div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:20px;">
+{% extends "base.html" %}
 
-    {% if user.enabled %}
-    <button class="btn-warning" onclick="disableUser()">
-        Disable
-    </button>
-    {% else %}
-    <button class="btn-success" onclick="enableUser()">
-        Enable
-    </button>
-    {% endif %}
+{% block content %}
 
-    {% if user.blocked %}
-    <button class="btn-success" onclick="unblockUser()">
-        Unblock
-    </button>
-    {% else %}
-    <button class="btn-warning" onclick="blockUser()">
-        Block
-    </button>
-    {% endif %}
+<div class="page-header">
 
-    {% if user.suspended %}
-    <button class="btn-success" onclick="unsuspendUser()">
-        Unsuspend
-    </button>
-    {% else %}
-    <button class="btn-warning" onclick="suspendUser()">
-        Suspend
-    </button>
-    {% endif %}
-
-    <button class="btn-primary" onclick="changePassword()">
-        Change Password
-    </button>
-
-    <button class="btn-primary" onclick="extendUser()">
-        Extend Account
-    </button>
-
-    <button class="btn-primary" onclick="resetTraffic()">
-        Reset Traffic
-    </button>
-
-    <button class="btn-danger" onclick="deleteUser()">
-        Delete User
-    </button>
+    <div>
+        <h1>{{ user.username }}</h1>
+        <p>User Profile</p>
+    </div>
 
 </div>
 
+
+<div class="dashboard-grid">
+
+    <div class="stat-card blue">
+        <h3>Status</h3>
+        <h2>
+            {% if user.enabled %}
+                Active
+            {% else %}
+                Disabled
+            {% endif %}
+        </h2>
+    </div>
+
+    <div class="stat-card green">
+        <h3>Traffic</h3>
+        <h2>{{ user.traffic }} GB</h2>
+    </div>
+
+    <div class="stat-card orange">
+        <h3>Expire</h3>
+        <h2>
+        {% if user.expire %}
+            {{ user.expire.strftime("%Y-%m-%d") }}
+        {% else %}
+            Unlimited
+        {% endif %}
+        </h2>
+    </div>
+
+</div>
+
+
+<div class="dashboard-box">
+
+    <div class="box-header">
+        <h3>User Information</h3>
+    </div>
+
+    <div class="box-content">
+
+        <table class="table">
+
+            <tr>
+                <th>Username</th>
+                <td>{{ user.username }}</td>
+            </tr>
+
+            <tr>
+                <th>Status</th>
+                <td>
+                    {% if user.enabled %}
+                        <span class="badge success">Enabled</span>
+                    {% else %}
+                        <span class="badge danger">Disabled</span>
+                    {% endif %}
+                </td>
+            </tr>
+
+            <tr>
+                <th>Blocked</th>
+                <td>
+                    {% if user.blocked %}
+                        Yes
+                    {% else %}
+                        No
+                    {% endif %}
+                </td>
+            </tr>
+
+            <tr>
+                <th>Suspended</th>
+                <td>
+                    {% if user.suspended %}
+                        Yes
+                    {% else %}
+                        No
+                    {% endif %}
+                </td>
+            </tr>
+
+            <tr>
+                <th>Traffic</th>
+                <td>{{ user.traffic }} GB</td>
+            </tr>
+
+            <tr>
+                <th>Expire</th>
+                <td>
+                    {% if user.expire %}
+                        {{ user.expire }}
+                    {% else %}
+                        Unlimited
+                    {% endif %}
+                </td>
+            </tr>
+
+        </table>
+
+        <hr>
+
+
+        <div style="display:flex;flex-wrap:wrap;gap:10px;">
+
+
+            <button class="btn-primary" onclick="changePassword()">
+                Change Password
+            </button>
+
+            <button class="btn-primary" onclick="extendUser()">
+                Extend Account
+            </button>
+
+            <button class="btn-primary" onclick="resetTraffic()">
+                Reset Traffic
+            </button>
+
+            <button class="btn-danger" onclick="deleteUser()">
+                Delete User
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<div class="dashboard-box">
+
+    <div class="box-header">
+        <h3>User Activity</h3>
+    </div>
+
+    <div class="box-content">
+
+        <table class="table">
+
+            <thead>
+
+            <tr>
+
+                <th>Time</th>
+                <th>Event</th>
+                <th>IP</th>
+                <th>Details</th>
+
+            </tr>
+
+            </thead>
+
+            <tbody>
+
+            {% for log in logs %}
+
+            <tr>
+
+                <td>{{ log.created_at }}</td>
+                <td>{{ log.event }}</td>
+                <td>{{ log.ip }}</td>
+                <td>{{ log.details }}</td>
+
+            </tr>
+
+            {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+
 <script>
 
-async function enableUser(){
+const username="{{ user.username }}";
 
-    const r=await fetch(`/users/${username}/enable`,{
-        method:"POST"
+async function changePassword(){
+
+    const password=prompt("New Password");
+
+    if(!password) return;
+
+    const r=await fetch(`/users/${username}/password`,{
+
+        method:"POST",
+
+        headers:{
+            "Content-Type":"application/json"
+        },
+
+        body:JSON.stringify({
+            password:password
+        })
+
     });
 
     alert((await r.json()).detail);
+
+}
+
+async function extendUser(){
+
+    const expire=prompt("Expire (YYYY-MM-DD HH:MM:SS)");
+
+    if(!expire) return;
+
+    const r=await fetch(`/users/${username}/extend`,{
+
+        method:"POST",
+
+        headers:{
+            "Content-Type":"application/json"
+        },
+
+        body:JSON.stringify({
+            expire:expire
+        })
+
+    });
+
+    alert((await r.json()).detail);
+
     location.reload();
 
 }
 
-async function disableUser(){
+async function resetTraffic(){
 
-    const r=await fetch(`/users/${username}/disable`,{
+    if(!confirm("Reset traffic?"))
+        return;
+
+    const r=await fetch(`/users/${username}/traffic/reset`,{
+
         method:"POST"
+
     });
 
     alert((await r.json()).detail);
+
     location.reload();
 
 }
 
-async function blockUser(){
+async function deleteUser(){
 
-    const r=await fetch(`/users/${username}/block`,{
-        method:"POST"
+    if(!confirm("Delete user?"))
+        return;
+
+    const r=await fetch(`/users/${username}`,{
+
+        method:"DELETE"
+
     });
 
     alert((await r.json()).detail);
-    location.reload();
 
-}
-
-async function unblockUser(){
-
-    const r=await fetch(`/users/${username}/unblock`,{
-        method:"POST"
-    });
-
-    alert((await r.json()).detail);
-    location.reload();
-
-}
-
-async function suspendUser(){
-
-    const r=await fetch(`/users/${username}/suspend`,{
-        method:"POST"
-    });
-
-    alert((await r.json()).detail);
-    location.reload();
-
-}
-
-async function unsuspendUser(){
-
-    const r=await fetch(`/users/${username}/unsuspend`,{
-        method:"POST"
-    });
-
-    alert((await r.json()).detail);
-    location.reload();
+    location.href="/users";
 
 }
 
 </script>
+
+{% endblock %}
