@@ -1,3 +1,5 @@
+from contextlib import closing
+
 from fastapi import APIRouter, Form, Request
 from fastapi.responses import RedirectResponse
 
@@ -31,11 +33,8 @@ def set_setting(db, key, value):
     )
 
     if item:
-
         item.value = str(value)
-
     else:
-
         db.add(
             Setting(
                 key=key,
@@ -49,42 +48,34 @@ def set_setting(db, key, value):
 @router.get("/settings")
 async def settings_page(request: Request):
 
-    db = SessionLocal()
+    with closing(SessionLocal()) as db:
 
-    dashboard = {
+        dashboard = {
 
-        "auto_refresh":
-            get_setting(
-                db,
-                "dashboard_auto_refresh",
-                "true",
-            ) == "true",
-
-        "refresh_interval":
-            int(
+            "auto_refresh":
                 get_setting(
                     db,
-                    "dashboard_refresh_interval",
-                    "2",
-                )
-            ),
+                    "dashboard_auto_refresh",
+                    "true",
+                ) == "true",
 
-    }
+            "refresh_interval":
+                int(
+                    get_setting(
+                        db,
+                        "dashboard_refresh_interval",
+                        "2",
+                    )
+                ),
 
-    db.close()
+        }
 
     return render(
-
         request,
-
         "settings/index.html",
-
         {
-
             "dashboard": dashboard,
-
         },
-
     )
 
 
@@ -92,39 +83,25 @@ async def settings_page(request: Request):
 async def save_dashboard(
 
     auto_refresh: str | None = Form(default=None),
-
     refresh_interval: int = Form(...),
 
 ):
 
-    db = SessionLocal()
+    with closing(SessionLocal()) as db:
 
-    set_setting(
+        set_setting(
+            db,
+            "dashboard_auto_refresh",
+            "true" if auto_refresh else "false",
+        )
 
-        db,
-
-        "dashboard_auto_refresh",
-
-        "true" if auto_refresh else "false",
-
-    )
-
-    set_setting(
-
-        db,
-
-        "dashboard_refresh_interval",
-
-        refresh_interval,
-
-    )
-
-    db.close()
+        set_setting(
+            db,
+            "dashboard_refresh_interval",
+            refresh_interval,
+        )
 
     return RedirectResponse(
-
         "/settings",
-
         status_code=303,
-
     )
