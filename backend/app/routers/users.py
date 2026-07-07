@@ -1,3 +1,11 @@
+from app.schemas.user import (
+    UserCreate,
+    UserPassword,
+    UserExpire,
+)
+
+
+
 from fastapi import APIRouter
 from fastapi import Depends
 from fastapi import HTTPException
@@ -83,6 +91,63 @@ def create_user(
 
 
 @router.get("/users/{username}")
+
+
+
+
+@router.post("/users/{username}/password")
+def change_password(
+    username: str,
+    data: UserPassword,
+    admin=Depends(require_login),
+    db: Session = Depends(get_db),
+):
+
+    get_service(db).change_password(
+        username,
+        data.password,
+    )
+
+    return {
+        "detail": "Password changed"
+    }
+
+
+@router.post("/users/{username}/extend")
+def extend_user(
+    username: str,
+    data: UserExpire,
+    admin=Depends(require_login),
+    db: Session = Depends(get_db),
+):
+
+    get_service(db).extend(
+        username,
+        data.expire,
+    )
+
+    return {
+        "detail": "Account extended"
+    }
+
+
+@router.post("/users/{username}/traffic/reset")
+def reset_traffic(
+    username: str,
+    admin=Depends(require_login),
+    db: Session = Depends(get_db),
+):
+
+    get_service(db).reset_traffic(
+        username,
+    )
+
+    return {
+        "detail": "Traffic reset"
+    }
+
+
+
 def profile(
     username: str,
     request: Request,
