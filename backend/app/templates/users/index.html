@@ -107,75 +107,73 @@
                             <i class="fa-solid fa-ellipsis-vertical"></i>
                         </button>
 
+
                         <div class="dropdown">
 
-                            <a href="/users/{{ user.username }}">
-                                <i class="fa-regular fa-user"></i>
-                                Profile
-                            </a>
+    <a href="/users/{{ user.username }}">
+        <i class="fa-regular fa-user"></i>
+        Profile
+    </a>
 
-                            <a href="/users/{{ user.username }}/edit">
-                                <i class="fa-solid fa-pen"></i>
-                                Edit User
-                            </a>
+    <a href="/users/{{ user.username }}/edit">
+        <i class="fa-solid fa-pen"></i>
+        Edit User
+    </a>
 
-                            <a href="#">
-                                <i class="fa-solid fa-key"></i>
-                                Change Password
-                            </a>
+    <hr>
 
-                            <hr>
+    {% if user.enabled %}
 
-                            {% if user.enabled %}
+    <a href="javascript:void(0)"
+       class="disable-user"
+       data-user="{{ user.username }}">
+        <i class="fa-solid fa-circle-xmark"></i>
+        Disable User
+    </a>
 
-                            <a href="#">
-                                <i class="fa-solid fa-ban"></i>
-                                Block User
-                            </a>
+    {% else %}
 
-                            {% else %}
+    <a href="javascript:void(0)"
+       class="enable-user"
+       data-user="{{ user.username }}">
+        <i class="fa-solid fa-circle-check"></i>
+        Enable User
+    </a>
 
-                            <a href="#">
-                                <i class="fa-solid fa-circle-check"></i>
-                                Enable User
-                            </a>
+    {% endif %}
 
-                            {% endif %}
 
-                            <a href="#">
-                                <i class="fa-solid fa-plug-circle-xmark"></i>
-                                Disconnect User
-                            </a>
+    {% if user.blocked %}
 
-                            <hr>
+    <a href="javascript:void(0)"
+       class="unblock-user"
+       data-user="{{ user.username }}">
+        <i class="fa-solid fa-lock-open"></i>
+        Unblock User
+    </a>
 
-                            <a href="#">
-                                <i class="fa-solid fa-clock-rotate-left"></i>
-                                Session Logs
-                            </a>
+    {% else %}
 
-                            <a href="#">
-                                <i class="fa-solid fa-chart-column"></i>
-                                Traffic Usage
-                            </a>
+    <a href="javascript:void(0)"
+       class="block-user"
+       data-user="{{ user.username }}">
+        <i class="fa-solid fa-ban"></i>
+        Block User
+    </a>
 
-                            <a href="#">
-                                <i class="fa-solid fa-arrows-rotate"></i>
-                                Reset Traffic
-                            </a>
+    {% endif %}
 
-                            <hr>
+    <hr>
 
-                            <a
-                                href="javascript:void(0)"
-                                class="delete-user"
-                                data-user="{{ user.username }}"
-                                style="color:#ff6666;">
-                                <i class="fa-solid fa-trash"></i>
-                                Delete User
-                            </a>
+    <a href="javascript:void(0)"
+       class="delete-user"
+       data-user="{{ user.username }}"
+       style="color:#ff6666;">
+        <i class="fa-solid fa-trash"></i>
+        Delete User
+    </a>
 
-                        </div>
+</div>
 
                     </div>
 
