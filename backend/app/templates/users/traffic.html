@@ -1,0 +1,165 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="page-header">
+
+    <div>
+        <h1>Traffic Usage</h1>
+        <p>{{ user.username }}</p>
+    </div>
+
+    <div class="page-actions">
+
+        <a href="/users/{{ user.username }}" class="btn-primary">
+            ← Back To Profile
+        </a>
+
+    </div>
+
+</div>
+
+<div class="dashboard-grid">
+
+    <div class="stat-card">
+
+        <div class="stat-icon blue">
+            <i class="fa-solid fa-chart-column"></i>
+        </div>
+
+        <div class="stat-info">
+            <div class="stat-value" id="total-traffic">
+                {{ user.traffic }}
+            </div>
+            <div class="stat-title">
+                Total Traffic (GB)
+            </div>
+        </div>
+
+    </div>
+
+    <div class="stat-card">
+
+        <div class="stat-icon green">
+            <i class="fa-solid fa-download"></i>
+        </div>
+
+        <div class="stat-info">
+            <div class="stat-value" id="download">
+                -
+            </div>
+            <div class="stat-title">
+                Download
+            </div>
+        </div>
+
+    </div>
+
+    <div class="stat-card">
+
+        <div class="stat-icon orange">
+            <i class="fa-solid fa-upload"></i>
+        </div>
+
+        <div class="stat-info">
+            <div class="stat-value" id="upload">
+                -
+            </div>
+            <div class="stat-title">
+                Upload
+            </div>
+        </div>
+
+    </div>
+
+    <div class="stat-card">
+
+        <div class="stat-icon purple">
+            <i class="fa-solid fa-clock"></i>
+        </div>
+
+        <div class="stat-info">
+            <div class="stat-value" id="online-time">
+                -
+            </div>
+            <div class="stat-title">
+                Online Time
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+
+<div class="dashboard-box">
+
+    <div class="box-header">
+        <h3>Traffic Details</h3>
+    </div>
+
+    <div class="box-content">
+
+        <table>
+
+            <tbody>
+
+            <tr>
+                <td>Total Traffic</td>
+                <td id="t-total">{{ user.traffic }} GB</td>
+            </tr>
+
+            <tr>
+                <td>Download</td>
+                <td id="t-download">-</td>
+            </tr>
+
+            <tr>
+                <td>Upload</td>
+                <td id="t-upload">-</td>
+            </tr>
+
+            <tr>
+                <td>Online Time</td>
+                <td id="t-online">-</td>
+            </tr>
+
+            <tr>
+                <td>Last Connection</td>
+                <td id="t-last">-</td>
+            </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+<script>
+
+fetch("/users/{{ user.username }}/sessions")
+.then(r=>r.json())
+.then(data=>{
+
+if(data.length){
+
+let s=data[0];
+
+document.getElementById("download").innerText=s.Download || "-";
+document.getElementById("upload").innerText=s.Upload || "-";
+document.getElementById("online-time").innerText=s.Duration || "-";
+
+document.getElementById("t-download").innerText=s.Download || "-";
+document.getElementById("t-upload").innerText=s.Upload || "-";
+document.getElementById("t-online").innerText=s.Duration || "-";
+document.getElementById("t-last").innerText=s["Connected at"] || "-";
+
+}
+
+});
+
+</script>
+
+{% endblock %}
