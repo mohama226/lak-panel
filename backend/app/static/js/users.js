@@ -1,118 +1,138 @@
-async function postAction(url, message){
+// ---------- Dropdown ----------
 
-    const r = await fetch(url,{
-        method:"POST"
+document.addEventListener("click", function (e) {
+
+    const btn = e.target.closest(".menu-btn");
+
+    if (btn) {
+
+        e.stopPropagation();
+
+        const menu = btn.closest(".actions-menu").querySelector(".dropdown");
+
+        document.querySelectorAll(".dropdown").forEach(d => {
+            if (d !== menu)
+                d.classList.remove("show");
+        });
+
+        menu.classList.toggle("show");
+
+        return;
+    }
+
+    document.querySelectorAll(".dropdown").forEach(d => d.classList.remove("show"));
+
+});
+
+// ---------- helper ----------
+
+async function post(url) {
+
+    const r = await fetch(url, {
+        method: "POST"
     });
 
     const j = await r.json();
 
-    alert(j.detail || message);
+    alert(j.detail);
 
     location.reload();
 
 }
 
-document.addEventListener("click",function(e){
+// ---------- Delete ----------
 
-    document.querySelectorAll(".dropdown").forEach(d=>{
+document.querySelectorAll(".delete-user").forEach(btn => {
 
-        if(!d.parentElement.contains(e.target))
-            d.classList.remove("show");
+    btn.onclick = async () => {
 
-    });
+        if (!confirm("Delete user?"))
+            return;
 
-    const btn=e.target.closest(".menu-btn");
-
-    if(btn){
-
-        e.stopPropagation();
-
-        const menu=btn.parentElement.querySelector(".dropdown");
-
-        document.querySelectorAll(".dropdown").forEach(d=>{
-
-            if(d!==menu)
-                d.classList.remove("show");
-
+        const r = await fetch("/users/" + btn.dataset.user, {
+            method: "DELETE"
         });
 
-        menu.classList.toggle("show");
-
-    }
-
-});
-
-
-document.addEventListener("click",async function(e){
-
-    const a=e.target.closest("a");
-
-    if(!a) return;
-
-
-    if(a.classList.contains("enable-user")){
-
-        e.preventDefault();
-
-        await postAction("/users/"+a.dataset.user+"/enable");
-
-    }
-
-
-    if(a.classList.contains("disable-user")){
-
-        e.preventDefault();
-
-        await postAction("/users/"+a.dataset.user+"/disable");
-
-    }
-
-
-    if(a.classList.contains("block-user")){
-
-        e.preventDefault();
-
-        await postAction("/users/"+a.dataset.user+"/block");
-
-    }
-
-
-    if(a.classList.contains("unblock-user")){
-
-        e.preventDefault();
-
-        await postAction("/users/"+a.dataset.user+"/unblock");
-
-    }
-
-
-    if(a.classList.contains("reset-traffic")){
-
-        e.preventDefault();
-
-        if(!confirm("Reset traffic?")) return;
-
-        await postAction("/users/"+a.dataset.user+"/traffic/reset");
-
-    }
-
-
-    if(a.classList.contains("delete-user")){
-
-        e.preventDefault();
-
-        if(!confirm("Delete user?")) return;
-
-        const r=await fetch("/users/"+a.dataset.user,{
-            method:"DELETE"
-        });
-
-        const j=await r.json();
+        const j = await r.json();
 
         alert(j.detail);
 
         location.reload();
 
-    }
+    };
+
+});
+
+// ---------- Enable ----------
+
+document.querySelectorAll(".enable-user").forEach(btn => {
+
+    btn.onclick = () => post("/users/" + btn.dataset.user + "/enable");
+
+});
+
+// ---------- Disable ----------
+
+document.querySelectorAll(".disable-user").forEach(btn => {
+
+    btn.onclick = () => post("/users/" + btn.dataset.user + "/disable");
+
+});
+
+// ---------- Block ----------
+
+document.querySelectorAll(".block-user").forEach(btn => {
+
+    btn.onclick = () => post("/users/" + btn.dataset.user + "/block");
+
+});
+
+// ---------- Unblock ----------
+
+document.querySelectorAll(".unblock-user").forEach(btn => {
+
+    btn.onclick = () => post("/users/" + btn.dataset.user + "/unblock");
+
+});
+
+// ---------- Reset Traffic ----------
+
+document.querySelectorAll(".reset-traffic").forEach(btn => {
+
+    btn.onclick = () => post("/users/" + btn.dataset.user + "/traffic/reset");
+
+});
+
+
+// ---------- Change Password ----------
+
+document.querySelectorAll(".change-password").forEach(btn => {
+
+    btn.onclick = async () => {
+
+        let password = prompt("New Password");
+
+        if (!password)
+            return;
+
+        const r = await fetch("/users/" + btn.dataset.user + "/password", {
+
+            method: "POST",
+
+            headers: {
+                "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify({
+                password: password
+            })
+
+        });
+
+        const j = await r.json();
+
+        alert(j.detail);
+
+    };
 
 });
