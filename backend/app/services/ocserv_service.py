@@ -32,7 +32,6 @@ class OcservService:
         )
 
         if p.returncode != 0:
-
             raise Exception(
                 "Failed to create ocserv user"
             )
@@ -56,7 +55,6 @@ class OcservService:
         )
 
         if result.returncode != 0:
-
             raise Exception(
                 result.stderr.strip()
             )
@@ -88,9 +86,32 @@ class OcservService:
         )
 
         if p.returncode != 0:
-
             raise Exception(
                 "Failed to change password"
+            )
+
+    @classmethod
+    def disconnect_user(
+        cls,
+        username: str,
+    ):
+
+        result = subprocess.run(
+            [
+                "occtl",
+                "disconnect",
+                "user",
+                username,
+            ],
+            capture_output=True,
+            text=True,
+        )
+
+        if result.returncode != 0:
+            raise Exception(
+                result.stderr.strip()
+                or result.stdout.strip()
+                or "Failed to disconnect user"
             )
 
     @classmethod
