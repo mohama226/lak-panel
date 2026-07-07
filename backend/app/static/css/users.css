@@ -1,0 +1,92 @@
+/* ===========================
+   USER PROFILE
+=========================== */
+
+.profile-actions{
+    display:flex;
+    flex-wrap:wrap;
+    gap:12px;
+    margin-top:20px;
+}
+
+.profile-actions .btn{
+    min-width:170px;
+    border:none;
+    border-radius:10px;
+    padding:12px 18px;
+    cursor:pointer;
+    font-size:14px;
+    font-weight:600;
+    transition:.25s;
+}
+
+.profile-actions .btn:hover{
+    transform:translateY(-2px);
+}
+
+.btn-blue{
+    background:#2f6fed;
+    color:#fff;
+}
+
+.btn-blue:hover{
+    background:#2257c7;
+}
+
+.btn-green{
+    background:#18a058;
+    color:#fff;
+}
+
+.btn-green:hover{
+    background:#128347;
+}
+
+.btn-orange{
+    background:#f59e0b;
+    color:#fff;
+}
+
+.btn-orange:hover{
+    background:#d88900;
+}
+
+.btn-red{
+    background:#dc3545;
+    color:#fff;
+}
+
+.btn-red:hover{
+    background:#bb2d3b;
+}
+
+.table th{
+    width:240px;
+}
+
+.badge{
+    display:inline-block;
+    padding:6px 12px;
+    border-radius:30px;
+    font-size:13px;
+    font-weight:600;
+}
+
+.badge.success{
+    background:#174d34;
+    color:#63ffb5;
+}
+
+.badge.danger{
+    background:#571a1a;
+    color:#ff8d8d;
+}
+
+.dashboard-box{
+    margin-bottom:30px;
+}
+
+.dashboard-box .table tr td,
+.dashboard-box .table tr th{
+    padding:16px;
+}
