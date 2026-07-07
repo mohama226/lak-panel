@@ -1,6 +1,6 @@
 import json
 import subprocess
-from typing import Dict, List
+from typing import List, Dict
 
 
 class OcservService:
@@ -160,78 +160,27 @@ class OcservService:
             if isinstance(data, list):
                 return data
 
-            if isinstance(data, dict):
-
-                if "users" in data:
-                    return data["users"]
-
-                if "Users" in data:
-                    return data["Users"]
-
-                return [data]
-
             return []
 
         except Exception:
             return []
 
     # =====================================================
-    # Single User
-    # =====================================================
-
-    @classmethod
-    def user_info(cls, username: str) -> Dict:
-
-        result = subprocess.run(
-            [
-                "occtl",
-                "--json",
-                "show",
-                "user",
-                username,
-            ],
-            capture_output=True,
-            text=True,
-        )
-
-        if result.returncode != 0:
-            return {}
-
-        try:
-
-            data = json.loads(result.stdout)
-
-            if isinstance(data, list):
-                return data[0] if data else {}
-
-            if isinstance(data, dict):
-                return data
-
-            return {}
-
-        except Exception:
-            return {}
-
-    # =====================================================
-    # Active Sessions
+    # Sessions
     # =====================================================
 
     @classmethod
     def sessions(cls, username: str) -> List[Dict]:
 
-        users = cls.online_users()
-
         sessions = []
 
-        for user in users:
+        for user in cls.online_users():
 
             name = (
                 user.get("Username")
                 or user.get("username")
                 or user.get("User")
                 or user.get("user")
-                or user.get("Name")
-                or user.get("name")
             )
 
             if name == username:
@@ -258,36 +207,69 @@ class OcservService:
         )
 
         if result.returncode != 0:
-            raise Exception(
-                result.stderr.strip() or "Failed to disconnect user"
-            )
+            raise Exception(result.stderr.strip())
 
         return True
 
     # =====================================================
-    # Traffic / Live Statistics
+    # Live Traffic
     # =====================================================
 
     @classmethod
-    def traffic(cls, username: str) -> Dict:
+    def traffic(cls, username: str):
 
-        return cls.user_info(username)
+        sessions = cls.sessions(username)
 
-    # =====================================================
-    # Generic Command
-    # =====================================================
+        if not sessions:
 
-    @classmethod
-    def run(cls, *args):
+            return {
+                "status": "Offline",
+                "ip": "-",
+                "device": "-",
+                "connected": "-",
+                "rx": "0 B",
+                "tx": "0 B",
+                "total": "0 B",
+            }
 
-        result = subprocess.run(
-            list(args),
-            capture_output=True,
-            text=True,
+        s = sessions[0]
+
+        rx = (
+            s.get("RX")
+            or s.get("Bytes received")
+            or s.get("Recv")
+            or "0 B"
+        )
+
+        tx = (
+            s.get("TX")
+            or s.get("Bytes sent")
+            or s.get("Sent")
+            or "0 B"
         )
 
         return {
-            "returncode": result.returncode,
-            "stdout": result.stdout,
-            "stderr": result.stderr,
+
+            "status": "Online",
+
+            "ip":
+                s.get("Remote IP")
+                or s.get("IP")
+                or "-",
+
+            "device":
+                s.get("Device")
+                or s.get("User Agent")
+                or "-",
+
+            "connected":
+                s.get("Connected at")
+                or s.get("Connected")
+                or "-",
+
+            "rx": rx,
+
+            "tx": tx,
+
+            "total": f"{rx} / {tx}",
         }
