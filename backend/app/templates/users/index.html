@@ -103,7 +103,17 @@
 
                 </td>
 
-                <td>{{ user.traffic }} GB</td>
+                <td>
+
+    <span
+        id="traffic-{{ user.username }}"
+        class="traffic-value">
+
+        Loading...
+
+    </span>
+
+</td>
 
                 <td>
 
@@ -355,6 +365,80 @@ document.querySelectorAll(".delete-user").forEach(btn=>{
 
 });
 
+    // =====================================================
+// Live Traffic
+// =====================================================
+
+function formatTraffic(bytes){
+
+    bytes=parseInt(bytes||0);
+
+    if(bytes>=1024*1024*1024){
+
+        return (bytes/1024/1024/1024).toFixed(2)+" GB";
+
+    }
+
+    if(bytes>=1024*1024){
+
+        return (bytes/1024/1024).toFixed(1)+" MB";
+
+    }
+
+    if(bytes>=1024){
+
+        return (bytes/1024).toFixed(1)+" KB";
+
+    }
+
+    return bytes+" B";
+
+}
+
+function updateTraffic(username){
+
+    fetch("/api/users/"+username+"/traffic")
+
+    .then(r=>r.json())
+
+    .then(data=>{
+
+        const el=document.getElementById("traffic-"+username);
+
+        if(!el) return;
+
+        if(data.total!==undefined){
+
+            el.innerHTML=formatTraffic(data.total);
+
+        }else{
+
+            el.innerHTML="0 MB";
+
+        }
+
+    })
+
+    .catch(()=>{});
+
+}
+
+function refreshTraffic(){
+
+    document.querySelectorAll(".traffic-value").forEach(el=>{
+
+        const username=el.id.replace("traffic-","");
+
+        updateTraffic(username);
+
+    });
+
+}
+
+refreshTraffic();
+
+setInterval(refreshTraffic,5000);
+    
 </script>
 
 {% endblock %}
