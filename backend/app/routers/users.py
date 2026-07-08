@@ -1,3 +1,4 @@
+from app.core.audit import audit
 from fastapi import APIRouter
 from fastapi import Depends
 from fastapi import HTTPException
@@ -129,12 +130,22 @@ def traffic_page(
 
 @router.post("/users")
 def create_user(
+    request: Request,
     data: UserCreate,
     admin=Depends(require_login),
     db: Session = Depends(get_db),
 ):
 
     get_service(db).create(data)
+
+    audit(
+    db=db,
+    request=request,
+    admin=admin,
+    action="CREATE_USER",
+    target=data.username,
+    details="New VPN user created",
+)
 
     return {
         "detail": "User created successfully"
@@ -292,11 +303,20 @@ def unsuspend_user(
 @router.delete("/users/{username}")
 def delete_user(
     username: str,
+    request: Request,
     admin=Depends(require_login),
     db: Session = Depends(get_db),
 ):
 
     get_service(db).delete(username)
+    audit(
+    db=db,
+    request=request,
+    admin=admin,
+    action="DELETE_USER",
+    target=username,
+    details="VPN user deleted",
+)
 
     return {
         "detail": "User deleted"
