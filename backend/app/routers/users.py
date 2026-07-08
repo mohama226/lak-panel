@@ -87,9 +87,17 @@ def profile(
             detail="User not found",
         )
 
-    audit_repo = AuditRepository(db)
-    audit_logs = audit_repo.latest_for_user(username)
-        return render(
+    from app.db.models import AuditLog
+
+    audit_logs = (
+        db.query(AuditLog)
+        .filter(AuditLog.target_user == username)
+        .order_by(AuditLog.created_at.desc())
+        .limit(50)
+        .all()
+    )
+
+    return render(
         request,
         "users/profile.html",
         {
@@ -98,11 +106,6 @@ def profile(
             "audit_logs": audit_logs,
         },
     )
-
-    from app.db.models import AuditLog
-
-
-
 @router.get("/users/{username}/traffic")
 def traffic_page(
     username: str,
