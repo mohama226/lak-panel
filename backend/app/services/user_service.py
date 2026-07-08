@@ -1,6 +1,6 @@
 from app.db.models import VPNUser
 from app.services.ocserv_service import OcservService
-
+from app.services.audit import log_action
 
 class UserService:
 
@@ -121,6 +121,13 @@ class UserService:
         )
 
         self.repo.create(user)
+        log_action(
+    db=self.repo.db,
+    admin="SYSTEM",
+    target=data.username,
+    action="CREATE USER",
+    details="VPN user created",
+)
 
         self.log_repo.create(
             data.username,
@@ -150,6 +157,13 @@ class UserService:
         )
 
         self.repo.delete(user)
+        log_action(
+    db=self.repo.db,
+    admin="SYSTEM",
+    target=username,
+    action="DELETE USER",
+    details="VPN user deleted",
+)
 
     # =====================================================
     # Enable / Disable
