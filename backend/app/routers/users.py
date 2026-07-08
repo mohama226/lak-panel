@@ -303,6 +303,61 @@ def delete_user(
     }
 
 
+@router.post("/users/bulk")
+async def bulk_users(
+    request: Request,
+    admin=Depends(require_login),
+    db: Session = Depends(get_db),
+):
+
+    data = await request.json()
+
+    users = data.get("users", [])
+    action = data.get("action")
+    days = int(data.get("days", 0))
+
+    service = get_service(db)
+
+    for username in users:
+
+        if action == "enable":
+            service.enable(username)
+
+        elif action == "disable":
+            service.disable(username)
+
+        elif action == "block":
+            service.block(username)
+
+        elif action == "unblock":
+            service.unblock(username)
+
+        elif action == "disconnect":
+            service.disconnect(username)
+
+        elif action == "reset_traffic":
+            service.reset_traffic(username)
+
+        elif action == "delete":
+            service.delete(username)
+
+        elif action == "extend":
+
+            user = service.get(username)
+
+            if user and user.expire:
+
+                from datetime import timedelta
+
+                service.extend(
+                    username,
+                    user.expire + timedelta(days=days)
+                )
+
+    return {
+        "detail":"Bulk operation completed"
+    }
+    
 # ==========================================================
 # Live APIs
 # ==========================================================
