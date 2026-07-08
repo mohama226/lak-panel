@@ -1,3 +1,4 @@
+from app.core.audit import audit
 from app.db.models import VPNUser, AuditLog
 from app.services.ocserv_service import OcservService
 from app.services.audit import log_action
@@ -94,13 +95,13 @@ class UserService:
 
         OcservService.disconnect_user(username)
 
-audit(
-    db=self.repo.db,
-    admin_username="system",
-    action="DISCONNECT",
-    target_user=username,
-    details="Disconnected by admin",
-)
+        audit(
+            db=self.repo.db,
+            admin_username="system",
+            action="DISCONNECT",
+            target_user=username,
+            details="Disconnected by admin",
+        )
 
         return True
 
@@ -139,13 +140,13 @@ audit(
     details="VPN user created",
 )
 
- audit(
-    db=self.repo.db,
-    admin_username="system",
-    action="CREATE_USER",
-    target_user=data.username,
-    details="New VPN user created",
-)
+     audit(
+        db=self.repo.db,
+        admin_username="system",
+        action="CREATE_USER",
+        target_user=data.username,
+        details="New VPN user created",
+    )
 
         return user
 
@@ -162,13 +163,13 @@ audit(
 
         OcservService.delete_user(username)
 
-audit(
-    db=self.repo.db,
-    admin_username="system",
-    action="DELETE_USER",
-    target_user=username,
-    details="VPN user deleted",
-)
+        audit(
+            db=self.repo.db,
+            admin_username="system",
+            action="DELETE_USER",
+            target_user=username,
+            details="VPN user deleted",
+        )
 
         self.repo.delete(user)
         log_action(
@@ -194,13 +195,13 @@ audit(
 
         self.repo.update(user)
 
-audit(
-    db=self.repo.db,
-    admin_username="system",
-    action="ENABLE",
-    target_user=username,
-    details="User enabled",
-)
+        audit(
+            db=self.repo.db,
+            admin_username="system",
+            action="ENABLE",
+            target_user=username,
+            details="User enabled",
+        )
 
         return user
 
@@ -215,13 +216,13 @@ audit(
 
         self.repo.update(user)
 
-audit(
-    db=self.repo.db,
-    admin_username="system",
-    action="DISABLE",
-    target_user=username,
-    details="User disabled",
-)
+        audit(
+            db=self.repo.db,
+            admin_username="system",
+            action="DISABLE",
+            target_user=username,
+            details="User disabled",
+        )
 
         return user
 
@@ -240,13 +241,13 @@ audit(
 
         self.repo.update(user)
 
-audit(
-    db=self.repo.db,
-    admin_username="system",
-    action="SUSPEND",
-    target_user=username,
-    details="User suspended",
-)
+        audit(
+            db=self.repo.db,
+            admin_username="system",
+            action="SUSPEND",
+            target_user=username,
+            details="User suspended",
+        )
 
         return user
 
@@ -261,13 +262,13 @@ audit(
 
         self.repo.update(user)
 
-audit(
-    db=self.repo.db,
-    admin_username="system",
-    action="UNSUSPEND",
-    target_user=username,
-    details="User unsuspended",
-)
+        audit(
+            db=self.repo.db,
+            admin_username="system",
+            action="UNSUSPEND",
+            target_user=username,
+            details="User unsuspended",
+        )
 
         return user
 
@@ -286,13 +287,13 @@ audit(
 
         self.repo.update(user)
 
-audit(
-    db=self.repo.db,
-    admin_username="system",
-    action="BLOCK",
-    target_user=username,
-    details="User blocked",
-)
+        audit(
+            db=self.repo.db,
+            admin_username="system",
+            action="BLOCK",
+            target_user=username,
+            details="User blocked",
+        )
 
         return user
 
@@ -307,13 +308,13 @@ audit(
 
         self.repo.update(user)
 
-audit(
-    db=self.repo.db,
-    admin_username="system",
-    action="UNBLOCK",
-    target_user=username,
-    details="User unblocked",
-)
+        audit(
+            db=self.repo.db,
+            admin_username="system",
+            action="UNBLOCK",
+            target_user=username,
+            details="User unblocked",
+        )
 
         return user
 
@@ -338,13 +339,13 @@ audit(
             "",
         )
 
-audit(
-    db=self.repo.db,
-    admin_username="system",
-    action="PASSWORD_CHANGE",
-    target_user=username,
-    details="Password changed",
-)
+        audit(
+            db=self.repo.db,
+            admin_username="system",
+            action="PASSWORD_CHANGE",
+            target_user=username,
+            details="Password changed",
+        )
 
     # =====================================================
     # Expire
@@ -370,13 +371,13 @@ audit(
             details=str(expire),
         )
 
-audit(
-    db=self.repo.db,
-    admin_username="system",
-    action="EXTEND_USER",
-    target_user=username,
-    details=f"Expire -> {expire}",
-)
+        audit(
+            db=self.repo.db,
+            admin_username="system",
+            action="EXTEND_USER",
+            target_user=username,
+            details=f"Expire -> {expire}",
+        )
 
     # =====================================================
     # Traffic Reset
@@ -394,12 +395,12 @@ audit(
             0,
         )
 
-audit(
-    db=self.repo.db,
-    admin_username="system",
-    action="RESET_TRAFFIC",
-    target_user=username,
-    details="Traffic reset",
-)
+        audit(
+            db=self.repo.db,
+            admin_username="system",
+            action="RESET_TRAFFIC",
+            target_user=username,
+            details="Traffic reset",
+        )
 
         return True
