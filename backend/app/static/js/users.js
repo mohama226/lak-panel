@@ -1,46 +1,60 @@
+let selectedUsers = [];
+
 document.addEventListener("DOMContentLoaded",()=>{
 
     const toolbar=document.getElementById("bulk-toolbar");
-
     const counter=document.getElementById("selected-count");
-
     const selectAll=document.getElementById("select-all-users");
 
-    function refresh(){
+    function refreshSelection(){
 
-        const checked=document.querySelectorAll(".user-check:checked");
+        selectedUsers=[];
 
-        counter.textContent=checked.length;
+        document.querySelectorAll(".user-check:checked").forEach(c=>{
+            selectedUsers.push(c.value);
+        });
+
+        counter.innerText=selectedUsers.length;
 
         toolbar.style.display=
-            checked.length>0
-            ? "flex"
-            : "none";
+            selectedUsers.length ? "flex" : "none";
+
+        if(selectAll){
+
+            const total=document.querySelectorAll(".user-check").length;
+
+            selectAll.checked=
+                total>0 &&
+                selectedUsers.length===total;
+
+        }
 
     }
 
     if(selectAll){
 
-        selectAll.addEventListener("change",()=>{
+        selectAll.onchange=function(){
 
-            document.querySelectorAll(".user-check")
-            .forEach(c=>{
-
-                c.checked=selectAll.checked;
-
+            document.querySelectorAll(".user-check").forEach(c=>{
+                c.checked=this.checked;
             });
 
-            refresh();
+            refreshSelection();
 
-        });
+        };
 
     }
 
-    document.querySelectorAll(".user-check")
-    .forEach(c=>{
+    document.querySelectorAll(".user-check").forEach(c=>{
 
-        c.addEventListener("change",refresh);
+        c.onchange=refreshSelection;
 
     });
 
+    refreshSelection();
+
 });
+
+function getSelectedUsers(){
+    return selectedUsers;
+}
