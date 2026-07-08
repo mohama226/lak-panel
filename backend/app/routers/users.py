@@ -301,11 +301,20 @@ def disable_user(
 @router.post("/users/{username}/block")
 def block_user(
     username: str,
+    request: Request,
     admin=Depends(require_login),
     db: Session = Depends(get_db),
 ):
 
     get_service(db).block(username)
+    audit(
+        db=db,
+        request=request,
+        admin=admin,
+        action="BLOCK",
+        target=username,
+        details="User blocked",
+    )
 
     return {
         "detail": "User blocked"
