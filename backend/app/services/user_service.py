@@ -171,14 +171,14 @@ class UserService:
             details="VPN user deleted",
         )
 
-        self.repo.delete(user)
-        log_action(
-    db=self.repo.db,
-    admin="SYSTEM",
-    target=username,
-    action="DELETE USER",
-    details="VPN user deleted",
-)
+    self.repo.delete(user)
+    log_action(
+        db=self.repo.db,
+        admin="SYSTEM",
+        target=username,
+        action="DELETE USER",
+        details="VPN user deleted",
+    )
 
     # =====================================================
     # Enable / Disable
@@ -363,7 +363,7 @@ class UserService:
         if not user:
             raise Exception("User not found")
 
-            self.repo.set_expire(
+        self.repo.set_expire(
             username,
             expire,
         )
