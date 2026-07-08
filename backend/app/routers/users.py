@@ -136,24 +136,19 @@ def create_user(
     db: Session = Depends(get_db),
 ):
 
-    get_service(db).create(data)
-
-audit(
-    db=db,
-    admin_username=admin["username"],
-    action="CREATE_USER",
-    target_user=data.username,
-    details="New VPN user created",
-)
+        get_service(db).create(data)
 
     audit(
-    db=db,
-    request=request,
-    admin=admin,
-    action="CREATE_USER",
-    target=data.username,
-    details="New VPN user created",
-)
+        db=db,
+        admin_username=admin["username"],
+        action="CREATE_USER",
+        target_user=data.username,
+        details="New VPN user created",
+    )
+
+    return {
+        "detail": "User created successfully"
+    }
 
     return {
         "detail": "User created successfully"
