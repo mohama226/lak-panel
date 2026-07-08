@@ -1,3 +1,4 @@
+from app.repositories.audit_repository import AuditRepository
 from fastapi import APIRouter
 from fastapi import Depends
 from fastapi import HTTPException
