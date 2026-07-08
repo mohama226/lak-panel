@@ -214,6 +214,14 @@ def reset_traffic(
 ):
 
     get_service(db).reset_traffic(username)
+    audit(
+        db=db,
+        request=request,
+        admin=admin,
+        action="RESET_TRAFFIC",
+        target=username,
+        details="Traffic reset",
+    )
 
     return {
         "detail": "Traffic reset"
@@ -228,6 +236,14 @@ def disconnect_user(
 ):
 
     get_service(db).disconnect(username)
+    audit(
+        db=db,
+        request=request,
+        admin=admin,
+        action="DISCONNECT",
+        target=username,
+        details="Disconnected by admin",
+    )
 
     return {
         "detail": "User disconnected"
@@ -242,6 +258,14 @@ def enable_user(
 ):
 
     get_service(db).enable(username)
+    audit(
+        db=db,
+        request=request,
+        admin=admin,
+        action="ENABLE",
+        target=username,
+        details="User enabled",
+    )
 
     return {
         "detail": "User enabled"
@@ -256,6 +280,14 @@ def disable_user(
 ):
 
     get_service(db).disable(username)
+    audit(
+        db=db,
+        request=request,
+        admin=admin,
+        action="DISABLE",
+        target=username,
+        details="User disabled",
+    )
 
     return {
         "detail": "User disabled"
