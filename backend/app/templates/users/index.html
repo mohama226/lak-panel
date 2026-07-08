@@ -16,6 +16,91 @@
     </div>
 </div>
 
+<!-- Bulk Toolbar -->
+
+<div
+    id="bulk-toolbar"
+    class="bulk-toolbar"
+    style="display:none;">
+
+    <div class="bulk-left">
+
+        <strong>
+
+            <span id="selected-count">0</span>
+
+            Users Selected
+
+        </strong>
+
+    </div>
+
+    <div class="bulk-right">
+
+        <button
+            type="button"
+            class="btn-primary"
+            id="bulk-add-days">
+
+            <i class="fa fa-calendar-plus"></i>
+            + Days
+
+        </button>
+
+        <button
+            type="button"
+            class="btn-primary"
+            id="bulk-remove-days">
+
+            <i class="fa fa-calendar-minus"></i>
+            - Days
+
+        </button>
+
+        <button
+            type="button"
+            class="btn-primary"
+            id="bulk-enable">
+
+            <i class="fa fa-circle-check"></i>
+            Enable
+
+        </button>
+
+        <button
+            type="button"
+            class="btn-primary"
+            id="bulk-disable">
+
+            <i class="fa fa-circle-xmark"></i>
+            Disable
+
+        </button>
+
+        <button
+            type="button"
+            class="btn-primary"
+            id="bulk-block">
+
+            <i class="fa fa-ban"></i>
+            Block
+
+        </button>
+
+        <button
+            type="button"
+            class="btn-danger"
+            id="bulk-delete">
+
+            <i class="fa fa-trash"></i>
+            Delete
+
+        </button>
+
+    </div>
+
+</div>
+
 <div class="dashboard-box">
 
     <div class="box-header">
@@ -29,6 +114,15 @@
             <thead>
 
                 <tr>
+
+                    <th style="width:45px;text-align:center;">
+
+                        <input
+                            type="checkbox"
+                            id="select-all-users">
+
+                    </th>
+
                     <th>Username</th>
                     <th class="online-cell">Online</th>
                     <th>Group</th>
@@ -37,6 +131,7 @@
                     <th>Traffic</th>
                     <th>Expire</th>
                     <th style="width:70px;text-align:center;">Actions</th>
+
                 </tr>
 
             </thead>
@@ -46,6 +141,15 @@
             {% for user in users %}
 
                 <tr>
+
+                    <td style="text-align:center;">
+
+                        <input
+                            type="checkbox"
+                            class="user-check"
+                            value="{{ user.username }}">
+
+                    </td>
 
                     <td>
                         <a href="/users/{{ user.username }}">
