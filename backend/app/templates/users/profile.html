@@ -264,6 +264,69 @@ History
 
 </div>
 
+
+
+
+
+<div class="dashboard-box">
+
+    <div class="box-header">
+        <h3>Admin Activity</h3>
+    </div>
+
+    <div class="box-content">
+
+        <table>
+
+            <thead>
+            <tr>
+                <th>Time</th>
+                <th>Admin</th>
+                <th>Action</th>
+                <th>Details</th>
+                <th>IP</th>
+            </tr>
+            </thead>
+
+            <tbody>
+
+            {% for log in audit_logs %}
+
+            <tr>
+
+                <td>{{ log.created_at }}</td>
+
+                <td>{{ log.admin_username }}</td>
+
+                <td>{{ log.action }}</td>
+
+                <td>{{ log.details }}</td>
+
+                <td>{{ log.ip_address }}</td>
+
+            </tr>
+
+            {% else %}
+
+            <tr>
+                <td colspan="5">
+                    No admin activity
+                </td>
+            </tr>
+
+            {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+
+
+
 <script>
 
 function refreshProfile(){
