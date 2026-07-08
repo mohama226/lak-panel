@@ -323,18 +323,18 @@ class UserService:
         if not user:
             raise Exception("User not found")
 
-        self.repo.set_expire(
-    username,
-    expire,
-)
+               self.repo.set_expire(
+            username,
+            expire,
+        )
 
-log_action(
-    db=self.repo.db,
-    admin="SYSTEM",
-    target=username,
-    action="EXTEND USER",
-    details=str(expire),
-)
+        log_action(
+            db=self.repo.db,
+            admin="SYSTEM",
+            target=username,
+            action="EXTEND USER",
+            details=str(expire),
+        )
 
         self.log_repo.create(
             username,
