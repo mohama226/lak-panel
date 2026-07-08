@@ -41,6 +41,9 @@
 .dropdown.show{
     display:block;
 }
+.actions-menu.open .dropdown{
+    display:block;
+}
 
 .dropdown a{
     display:block;
