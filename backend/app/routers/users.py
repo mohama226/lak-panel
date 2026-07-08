@@ -91,14 +91,14 @@ def profile(
     audit_logs = audit_repo.latest_for_user(username)
 
     return render(
-        request,
-        "users/profile.html",
-        {
-            "user": user,
-            "logs": service.logs(username),
-            "audit_logs": audit_logs,
-        },
-    )
+    request,
+    "users/profile.html",
+    {
+        "user": user,
+        "logs": service.logs(username),
+        "audit_logs": service.audit_logs(username),
+    },
+)
 
 
 @router.get("/users/{username}/traffic")
