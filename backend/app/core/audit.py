@@ -1,29 +1,28 @@
-from fastapi import Request
 from sqlalchemy.orm import Session
-
 from app.db.models import AuditLog
 
 
 def audit(
     db: Session,
-    request: Request,
-    admin,
-    action: str,
-    target: str = "",
+    admin_username: str = "system",
+    action: str = "",
+    target_user: str = "",
     details: str = "",
     old_value: str = "",
     new_value: str = "",
+    ip_address: str = "",
+    user_agent: str = "",
     status: str = "SUCCESS",
 ):
     log = AuditLog(
-        admin_username=getattr(admin, "username", "system"),
-        target_user=target,
+        admin_username=admin_username,
+        target_user=target_user,
         action=action,
         details=details,
         old_value=old_value,
         new_value=new_value,
-        ip_address=request.client.host if request.client else "",
-        user_agent=request.headers.get("user-agent", ""),
+        ip_address=ip_address,
+        user_agent=user_agent,
         status=status,
     )
 
