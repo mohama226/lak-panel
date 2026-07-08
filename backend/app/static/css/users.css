@@ -484,3 +484,70 @@ table{
     cursor:pointer;
 
 }
+
+/* ===========================================
+   Custom Checkbox
+=========================================== */
+
+.select-col{
+    width:58px;
+    text-align:center;
+}
+
+.user-check{
+
+    appearance:none;
+    -webkit-appearance:none;
+
+    width:20px;
+    height:20px;
+
+    border-radius:7px;
+
+    border:2px solid #3b82f6;
+
+    background:#1f2937;
+
+    cursor:pointer;
+
+    transition:.18s;
+
+    position:relative;
+}
+
+.user-check:hover{
+
+    border-color:#60a5fa;
+
+    box-shadow:
+        0 0 10px rgba(59,130,246,.35);
+
+}
+
+.user-check:checked{
+
+    background:#3b82f6;
+
+    border-color:#3b82f6;
+
+}
+
+.user-check:checked::after{
+
+    content:"";
+
+    position:absolute;
+
+    left:5px;
+    top:1px;
+
+    width:5px;
+    height:10px;
+
+    border:solid white;
+
+    border-width:0 2px 2px 0;
+
+    transform:rotate(45deg);
+
+}
