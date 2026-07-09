@@ -101,7 +101,7 @@ class UserService:
 
         user = VPNUser(
             username=data.username,
-            password="",  # معمولاً پسورد در دیتابیس خالی ذخیره می‌شود
+            password="",
             expire=data.expire,
             traffic=data.traffic,
             enabled=True,
@@ -111,7 +111,7 @@ class UserService:
             group_id=data.group_id,
         )
 
-        self.repo.create(user)  # قبلاً delete نوشته شده بود! اشتباه بود
+        self.repo.create(user)
 
         audit(
             db=self.repo.db,
@@ -261,17 +261,12 @@ class UserService:
         OcservService.change_password(username, password)
         self.repo.set_password(username, "")
 
+        # فقط در Admin Activity لاگ شود (History حذف شد)
         audit(
             db=self.repo.db,
             admin_username="system",
             action="PASSWORD_CHANGE",
             target_user=username,
-            details="Password changed",
-        )
-
-        self.log_repo.create(
-            username,
-            "PASSWORD",
             details="Password changed",
         )
 
