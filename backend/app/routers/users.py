@@ -143,6 +143,7 @@ def extend_user(
     get_service(db).extend(
         username,
         data.expire,
+        admin["username"],
     )
     audit(
         db=db,
@@ -162,7 +163,10 @@ def reset_traffic(
     admin=Depends(require_login),
     db: Session = Depends(get_db),
 ):
-    get_service(db).reset_traffic(username)
+    get_service(db).reset_traffic(
+        username,
+        admin["username"],
+    )
     audit(
         db=db,
         request=request,
@@ -181,7 +185,10 @@ def disconnect_user(
     admin=Depends(require_login),
     db: Session = Depends(get_db),
 ):
-    get_service(db).disconnect(username)
+    get_service(db).disconnect(
+        username,
+        admin["username"],
+    )
     audit(
         db=db,
         request=request,
@@ -200,7 +207,10 @@ def enable_user(
     admin=Depends(require_login),
     db: Session = Depends(get_db),
 ):
-    get_service(db).enable(username)
+    get_service(db).enable(
+        username,
+        admin["username"],
+    )
     audit(
         db=db,
         request=request,
@@ -377,9 +387,15 @@ async def bulk_users(
                 admin["username"]
             )
         elif action == "disconnect":
-            service.disconnect(username)
+            service.disconnect(
+                username,
+                admin["username"],
+            )
         elif action == "reset_traffic":
-            service.reset_traffic(username)
+            service.reset_traffic(
+                username,
+                admin["username"],
+            )
         elif action == "delete":
             service.delete(
                 username,
@@ -391,7 +407,8 @@ async def bulk_users(
                 from datetime import timedelta
                 service.extend(
                     username,
-                    user.expire + timedelta(days=days)
+                    user.expire + timedelta(days=days),
+                    admin["username"],
                 )
     return {
         "detail": "Bulk operation completed"
