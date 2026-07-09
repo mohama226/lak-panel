@@ -24,10 +24,25 @@ from app.schemas.user import (
 router = APIRouter()
 
 
-def get_service(db: Session):
+def get_service(
+    db: Session,
+    request=None,
+    admin=None,
+):
     repo = UserRepository(db)
     log_repo = UserLogRepository(db)
-    return UserService(repo, log_repo)
+
+    username = "system"
+
+    if admin:
+        username = admin.get("username")
+
+    return UserService(
+        repo,
+        log_repo,
+        request=request,
+        admin_username=username,
+    )
 
 
 # ==========================================================
@@ -41,7 +56,11 @@ def users_page(
     db: Session = Depends(get_db),
 ):
 
-    service = get_service(db)
+    service = get_service(
+        db,
+        request,
+        admin
+    )
 
     users = service.list()
 
@@ -77,7 +96,11 @@ def profile(
     db: Session = Depends(get_db),
 ):
 
-    service = get_service(db)
+    service = get_service(
+        db,
+        request,
+        admin
+    )
 
     user = service.get(username)
 
@@ -114,7 +137,11 @@ def traffic_page(
     db: Session = Depends(get_db),
 ):
 
-    service = get_service(db)
+    service = get_service(
+        db,
+        request,
+        admin
+    )
 
     user = service.get(username)
 
@@ -139,12 +166,17 @@ def traffic_page(
 
 @router.post("/users")
 def create_user(
+    request: Request,
     data: UserCreate,
     admin=Depends(require_login),
     db: Session = Depends(get_db),
 ):
 
-    get_service(db).create(data)
+    get_service(
+        db,
+        request,
+        admin
+    ).create(data)
 
     return {
         "detail": "User created successfully"
@@ -160,7 +192,11 @@ def change_password(
     db: Session = Depends(get_db),
 ):
 
-    get_service(db).change_password(
+    get_service(
+        db,
+        request,
+        admin
+    ).change_password(
         username,
         data.password,
     )
@@ -187,7 +223,11 @@ def extend_user(
     db: Session = Depends(get_db),
 ):
 
-    get_service(db).extend(
+    get_service(
+        db,
+        request,
+        admin
+    ).extend(
         username,
         data.expire,
     )
@@ -214,7 +254,11 @@ def reset_traffic(
     db: Session = Depends(get_db),
 ):
 
-    get_service(db).reset_traffic(username)
+    get_service(
+        db,
+        request,
+        admin
+    ).reset_traffic(username)
     audit(
         db=db,
         request=request,
@@ -237,7 +281,11 @@ def disconnect_user(
     db: Session = Depends(get_db),
 ):
 
-    get_service(db).disconnect(username)
+    get_service(
+        db,
+        request,
+        admin
+    ).disconnect(username)
     audit(
         db=db,
         request=request,
@@ -260,7 +308,11 @@ def enable_user(
     db: Session = Depends(get_db),
 ):
 
-    get_service(db).enable(username)
+    get_service(
+        db,
+        request,
+        admin
+    ).enable(username)
     audit(
         db=db,
         request=request,
@@ -283,7 +335,11 @@ def disable_user(
     db: Session = Depends(get_db),
 ):
 
-    get_service(db).disable(username)
+    get_service(
+        db,
+        request,
+        admin
+    ).disable(username)
     audit(
         db=db,
         request=request,
@@ -301,11 +357,16 @@ def disable_user(
 @router.post("/users/{username}/block")
 def block_user(
     username: str,
+    request: Request,
     admin=Depends(require_login),
     db: Session = Depends(get_db),
 ):
 
-    get_service(db).block(username)
+    get_service(
+        db,
+        request,
+        admin
+    ).block(username)
 
     return {
         "detail": "User blocked"
@@ -315,11 +376,16 @@ def block_user(
 @router.post("/users/{username}/unblock")
 def unblock_user(
     username: str,
+    request: Request,
     admin=Depends(require_login),
     db: Session = Depends(get_db),
 ):
 
-    get_service(db).unblock(username)
+    get_service(
+        db,
+        request,
+        admin
+    ).unblock(username)
 
     return {
         "detail": "User unblocked"
@@ -329,11 +395,16 @@ def unblock_user(
 @router.post("/users/{username}/suspend")
 def suspend_user(
     username: str,
+    request: Request,
     admin=Depends(require_login),
     db: Session = Depends(get_db),
 ):
 
-    get_service(db).suspend(username)
+    get_service(
+        db,
+        request,
+        admin
+    ).suspend(username)
 
     return {
         "detail": "User suspended"
@@ -343,11 +414,16 @@ def suspend_user(
 @router.post("/users/{username}/unsuspend")
 def unsuspend_user(
     username: str,
+    request: Request,
     admin=Depends(require_login),
     db: Session = Depends(get_db),
 ):
 
-    get_service(db).unsuspend(username)
+    get_service(
+        db,
+        request,
+        admin
+    ).unsuspend(username)
 
     return {
         "detail": "User unsuspended"
@@ -357,11 +433,16 @@ def unsuspend_user(
 @router.delete("/users/{username}")
 def delete_user(
     username: str,
+    request: Request,
     admin=Depends(require_login),
     db: Session = Depends(get_db),
 ):
 
-    get_service(db).delete(username)
+    get_service(
+        db,
+        request,
+        admin
+    ).delete(username)
 
     return {
         "detail": "User deleted"
@@ -381,7 +462,11 @@ async def bulk_users(
     action = data.get("action")
     days = int(data.get("days", 0))
 
-    service = get_service(db)
+    service = get_service(
+        db,
+        request,
+        admin
+    )
 
     for username in users:
 
@@ -430,31 +515,46 @@ async def bulk_users(
 @router.get("/users/{username}/sessions")
 def user_sessions(
     username: str,
+    request: Request,
     admin=Depends(require_login),
     db: Session = Depends(get_db),
 ):
 
-    return get_service(db).sessions(username)
+    return get_service(
+        db,
+        request,
+        admin
+    ).sessions(username)
 
 
 @router.get("/users/{username}/traffic/live")
 def user_live_traffic(
     username: str,
+    request: Request,
     admin=Depends(require_login),
     db: Session = Depends(get_db),
 ):
 
-    return get_service(db).traffic(username)
+    return get_service(
+        db,
+        request,
+        admin
+    ).traffic(username)
 
 
 @router.get("/api/users/{username}/traffic")
 def user_traffic_api(
     username: str,
+    request: Request,
     admin=Depends(require_login),
     db: Session = Depends(get_db),
 ):
 
-    service = get_service(db)
+    service = get_service(
+        db,
+        request,
+        admin
+    )
 
     user = service.get(username)
 
