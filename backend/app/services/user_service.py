@@ -2,6 +2,7 @@ from app.core.audit import audit
 from app.db.models import VPNUser, AuditLog
 from app.services.ocserv_service import OcservService
 from app.services.audit import log_action
+from app.repositories.audit_repository import AuditRepository
 
 
 class UserService:
@@ -9,11 +10,13 @@ class UserService:
         self,
         repo,
         log_repo,
+        audit_repo: AuditRepository,   # اضافه شد
         request=None,
         admin_username="system",
     ):
         self.repo = repo
         self.log_repo = log_repo
+        self.audit_repo = audit_repo     # اضافه شد
         self.request = request
         self.admin_username = admin_username
 
@@ -26,11 +29,15 @@ class UserService:
     def get(self, username):
         return self.repo.get(username)
 
+    # =====================================================
+    # Logs (به‌روزرسانی شد)
+    # =====================================================
     def logs(
         self,
-        username,
-        page=1,
-        per_page=10,
+        username: str,
+        page: int = 1,
+        per_page: int = 10,
+        search: str | None = None,
         date_from=None,
         date_to=None,
     ):
@@ -38,17 +45,28 @@ class UserService:
             username=username,
             page=page,
             per_page=per_page,
+            search=search,
             date_from=date_from,
             date_to=date_to,
         )
 
-    def audit_logs(self, username):
-        return (
-            self.repo.db.query(AuditLog)
-            .filter(AuditLog.target_user == username)
-            .order_by(AuditLog.created_at.desc())
-            .limit(100)
-            .all()
+    def admin_activity(
+        self,
+        username: str,
+        page: int = 1,
+        per_page: int = 10,
+        search: str | None = None,
+        date_from=None,
+        date_to=None,
+    ):
+        """فعالیت‌های ادمین روی کاربر (از طریق AuditRepository)"""
+        return self.audit_repo.list_paginated(
+            target_user=username,
+            page=page,
+            per_page=per_page,
+            search=search,
+            date_from=date_from,
+            date_to=date_to,
         )
 
     # =====================================================
