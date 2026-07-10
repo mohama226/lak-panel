@@ -492,6 +492,9 @@ async def bulk_users(
 # Live APIs
 # ==========================================================
 
+from app.services.analytics_service import AnalyticsService
+
+
 @router.get("/users/{username}/sessions")
 def user_sessions(
     username: str,
@@ -567,4 +570,27 @@ def live_sessions(
     return {
         "username": username,
         "sessions": sessions
+    }
+
+
+@router.get("/users/{username}/analytics")
+def user_analytics(
+    username:str,
+    db:Session = Depends(get_db),
+    admin=Depends(require_login),
+):
+
+
+    service = AnalyticsService(db)
+
+
+    return {
+
+        "summary":
+            service.user_summary(username),
+
+
+        "ips":
+            service.ip_history(username)
+
     }
