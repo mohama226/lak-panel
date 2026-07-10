@@ -1,4 +1,5 @@
 import subprocess
+from app.services.network_service import NetworkService
 from typing import List, Dict
 
 from app.core.ocserv_cache import OcservCache
