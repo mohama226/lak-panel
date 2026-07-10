@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from sqlalchemy.orm import Session
+from sqlalchemy import func
 
 from app.db.models import UserLog
 
@@ -48,8 +49,8 @@ class UserLogRepository:
         username: str,
         page: int = 1,
         per_page: int = 10,
-        date_from: str | None = None,
-        date_to: str | None = None,
+        date_from=None,
+        date_to=None,
     ):
 
         query = (
@@ -58,22 +59,12 @@ class UserLogRepository:
         )
 
         if date_from:
-            try:
-                query = query.filter(
-                    UserLog.created_at >= datetime.fromisoformat(date_from)
-                )
-            except Exception:
-                pass
+            query = query.filter(UserLog.created_at >= date_from)
 
         if date_to:
-            try:
-                query = query.filter(
-                    UserLog.created_at <= datetime.fromisoformat(date_to)
-                )
-            except Exception:
-                pass
+            query = query.filter(UserLog.created_at <= date_to)
 
-        total = query.count()
+        total = query.with_entities(func.count()).scalar()
 
         logs = (
             query.order_by(UserLog.created_at.desc())
@@ -84,10 +75,9 @@ class UserLogRepository:
 
         return {
             "logs": logs,
+            "total": total,
             "page": page,
             "per_page": per_page,
-            "total": total,
-            "pages": (total + per_page - 1) // per_page,
         }
 
     def get_user_logs(
