@@ -72,19 +72,28 @@
     </div>
 </div>
 <!-- ======================= Live Sessions ======================== -->
+
 <div class="dashboard-box">
-    <div class="box-header">
-        <h3>
-            🟢 Live Sessions
-        </h3>
-    </div>
-    <div class="box-content">
-        <div id="live-sessions-container" class="live-session-grid">
-            <div class="loading-box">
-                Loading sessions...
-            </div>
-        </div>
-    </div>
+
+<div class="box-header">
+<h3>
+Live Sessions
+<span class="live-badge">
+LIVE
+</span>
+</h3>
+</div>
+
+
+<div id="sessions-cards" class="sessions-grid">
+
+<div class="loading-card">
+Loading sessions...
+</div>
+
+</div>
+
+
 </div>
 <!-- ======================= Analytics ======================== -->
 <div class="dashboard-box">
@@ -231,7 +240,6 @@ id="last-connection">
         {% endfor %}
     </div>
 </div>
-
 <!-- ======================= Security Center ======================== -->
 <div class="dashboard-box">
     <div class="box-header">
@@ -276,7 +284,6 @@ id="last-connection">
         </div>
     </div>
 </div>
-
 <!-- ======================= Admin Activity ======================== -->
 <div class="dashboard-box">
     <div class="box-header">
@@ -352,7 +359,6 @@ id="last-connection">
         </nav>
     </div>
 </div>
-
 <style>
 /* ... استایل‌های قبلی بدون تغییر ... */
 .box-filter { display: flex; gap: 10px; margin-bottom: 20px; padding: 10px; background: #f5f5f5; border-radius: 4px; align-items: flex-end; }
@@ -368,7 +374,6 @@ id="last-connection">
 .btn-nav.active { background: #007bff; color: white; border-color: #007bff; }
 .pagination-pages { display: flex; gap: 5px; }
 .page-ellipsis { padding: 6px 8px; color: #999; }
-
 /* استایل‌های پیشنهادی برای Security Center */
 .security-grid {
     display: grid;
@@ -398,7 +403,6 @@ id="last-connection">
     color: #444;
 }
 </style>
-
 <script>
 let currentPage = 1;
 let totalAuditLogs = {{ audit_total }};
@@ -500,7 +504,7 @@ function filterLogs(){
 document.getElementById("per_page").value="{{logs_per_page}}";
 // ======================= Live Sessions JS =======================
 async function loadLiveSessions(){
-    let box = document.getElementById("live-sessions-container");
+    let box = document.getElementById("sessions-cards");
     try{
         let res = await fetch("/users/{{user.username}}/sessions");
         let data = await res.json();
