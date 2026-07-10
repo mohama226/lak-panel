@@ -788,3 +788,126 @@ table{
     border-color:#2563eb;
 
 }
+
+/* ======================
+ Live Sessions
+====================== */
+
+
+.live-box{
+
+    margin:20px;
+    padding:18px;
+    border-radius:12px;
+    background:#f8fafc;
+    border:1px solid #e5e7eb;
+
+}
+
+
+
+.live-title{
+
+    font-weight:600;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-bottom:15px;
+
+}
+
+
+
+.live-dot{
+
+    width:10px;
+    height:10px;
+    border-radius:50%;
+    background:#22c55e;
+
+}
+
+
+
+#live-count{
+
+    background:#2563eb;
+    color:white;
+    padding:3px 10px;
+    border-radius:20px;
+    font-size:12px;
+
+}
+
+
+
+.live-table{
+
+    width:100%;
+    border-collapse:collapse;
+
+}
+
+
+
+.live-table th{
+
+    text-align:left;
+    padding:12px;
+    font-size:13px;
+    color:#64748b;
+
+}
+
+
+
+.live-table td{
+
+    padding:12px;
+    border-top:1px solid #e5e7eb;
+
+}
+
+
+
+.online-badge{
+
+    background:#dcfce7;
+    color:#15803d;
+    padding:4px 10px;
+    border-radius:20px;
+    font-size:11px;
+    font-weight:bold;
+
+}
+
+
+
+.disconnect-btn{
+
+    background:#ef4444;
+    color:white;
+    border:none;
+    border-radius:8px;
+    padding:6px 12px;
+    cursor:pointer;
+
+}
+
+
+
+.disconnect-btn:hover{
+
+    background:#dc2626;
+
+}
+
+
+
+.live-empty{
+
+    text-align:center;
+    padding:20px;
+    color:#94a3b8;
+
+}
