@@ -13,6 +13,7 @@ from app.db.database import get_db
 
 from app.repositories.user_repository import UserRepository
 from app.repositories.user_log_repository import UserLogRepository
+from app.repositories.audit_repository import AuditRepository
 
 from app.services.user_service import UserService
 
@@ -34,6 +35,7 @@ def get_service(
 ):
     repo = UserRepository(db)
     log_repo = UserLogRepository(db)
+    audit_repo = AuditRepository(db)
 
     username = "system"
 
@@ -43,6 +45,7 @@ def get_service(
     return UserService(
         repo,
         log_repo,
+        audit_repo,
         request=request,
         admin_username=username,
     )
@@ -153,6 +156,8 @@ def profile(
             "audit_total": total_audit,
         },
     )
+
+
 @router.get("/users/{username}/traffic")
 def traffic_page(
     username: str,
