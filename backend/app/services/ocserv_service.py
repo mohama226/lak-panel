@@ -2,6 +2,7 @@ import subprocess
 from typing import List, Dict
 
 from app.core.ocserv_cache import OcservCache
+from app.services.geoip_service import GeoIPService
 
 
 class OcservService:
@@ -143,48 +144,60 @@ class OcservService:
         return OcservCache.users()
 
     @classmethod
-    def sessions(cls, username: str) -> List[Dict]:
+    def sessions(cls, username: str):
 
         user = OcservCache.user(username)
 
         if not user:
             return []
 
+        ip = (
+            user.get("Remote IP")
+            or user.get("IP")
+            or "-"
+        )
+
+        geo = GeoIPService.lookup(ip)
+
         return [
+
             {
-                "username": username,
+            "username":username,
 
-                "status": "Online",
+            "status":"Online",
 
-                "ip": (
-                    user.get("Remote IP")
-                    or user.get("IP")
-                    or "-"
-                ),
+            "ip":ip,
 
-                "device": (
-                    user.get("Device")
-                    or user.get("User Agent")
-                    or "-"
-                ),
+            "device":
+                user.get("Device")
+                or user.get("User Agent")
+                or "-",
 
-                "connected": (
-                    user.get("Connected at")
-                    or user.get("Connected")
-                    or "-"
-                ),
+            "connected":
+                user.get("Connected at")
+                or user.get("Connected")
+                or "-",
 
-                "rx": (
-                    user.get("RX")
-                    or user.get("Bytes received")
-                    or "0 B"
-                ),
+            "rx":
+                user.get("RX")
+                or "0 B",
 
-                "tx": (
-                    user.get("TX")
-                    or user.get("Bytes sent")
-                    or "0 B"
-                ),
+            "tx":
+                user.get("TX")
+                or "0 B",
+
+
+
+            "country":
+                geo["country"],
+
+            "city":
+                geo["city"],
+
+            "isp":
+                geo["isp"],
+
+            "ping":"--"
 
             }
         ]
