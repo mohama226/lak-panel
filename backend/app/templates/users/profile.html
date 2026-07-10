@@ -71,26 +71,24 @@
         </table>
     </div>
 </div> 
-<!-- ======================= Sessions ======================== --> 
+
+<!-- ======================= Live Sessions ======================== -->
 <div class="dashboard-box">
     <div class="box-header">
-        <h3>Active Sessions</h3>
+        <h3>
+            🟢 Live Sessions
+        </h3>
     </div>
+
     <div class="box-content">
-        <table id="sessions-table">
-            <thead>
-            <tr>
-                <th>IP</th>
-                <th>Device</th>
-                <th>Connected</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr><td colspan="3">Loading...</td></tr>
-            </tbody>
-        </table>
+        <div id="live-sessions-container" class="live-session-grid">
+            <div class="loading-box">
+                Loading sessions...
+            </div>
+        </div>
     </div>
-</div> 
+</div>
+
 <!-- ======================= User Logs ======================== -->
 <div class="dashboard-box user-logs-card">
     <div class="box-header logs-header">
@@ -283,6 +281,7 @@
         </nav>
     </div>
 </div> 
+
 <style>
 /* ... استایل‌های قبلی بدون تغییر ... */
 .box-filter { display: flex; gap: 10px; margin-bottom: 20px; padding: 10px; background: #f5f5f5; border-radius: 4px; align-items: flex-end; }
@@ -299,6 +298,7 @@
 .pagination-pages { display: flex; gap: 5px; }
 .page-ellipsis { padding: 6px 8px; color: #999; }
 </style>
+
 <script>
 let currentPage = 1;
 let totalAuditLogs = {{ audit_total }};
@@ -375,7 +375,7 @@ function updatePaginationControls(){
     let html = "";
     for(let i = 1; i <= totalPages; i++){
         html += `
-        <button class="btn-nav $$   {i===currentPage ? 'active' : ''}" onclick="loadAuditLogs(   $${i})">
+        <button class="btn-nav ${i===currentPage ? 'active' : ''}" onclick="loadAuditLogs(${i})">
         ${i}
         </button>`;
     }
@@ -397,30 +397,10 @@ function refreshProfile(){
         document.getElementById("upload-value").innerText=data.tx||"--";
         document.getElementById("total-value").innerText=data.total||"--";
     });
-    fetch("/users/{{ user.username }}/sessions")
-    .then(r=>r.json())
-    .then(list=>{
-        let html="";
-        if(list.length==0){
-            html="<tr><td colspan='3'>No active session</td></tr>";
-        }else{
-            list.forEach(s=>{
-                html+=`
-                <tr>
-                <td>${s["Remote IP"]||"-"}</td>
-                <td>${s["Device"]||"-"}</td>
-                <td>${s["Connected at"]||"-"}</td>
-                </tr>`;
-            });
-        }
-        document.querySelector("#sessions-table tbody").innerHTML=html;
-    });
 }
 
-// Initialize
 document.addEventListener('DOMContentLoaded', function() {
     refreshProfile();
-    // اگر المان pagination-pages وجود دارد، آن را مقداردهی اولیه کنید
     const paginationBox = document.getElementById("pagination-pages");
     if (paginationBox) {
         updatePaginationControls();
@@ -437,91 +417,66 @@ function filterLogs(){
 }
 document.getElementById("per_page").value="{{logs_per_page}}";
 
-// Live Sessions
+// ======================= Live Sessions JS =======================
 async function loadLiveSessions(){
+    let box = document.getElementById("live-sessions-container");
+
     try{
-        let response = await fetch(
-            "/api/users/{{user.username}}/live"
-        );
-        let data = await response.json();
-        let box =
-        document.getElementById(
-            "live-sessions"
-        );
-        let count =
-        document.getElementById(
-            "live-count"
-        );
-        if(!data.sessions || data.sessions.length === 0){
-            count.innerHTML="0";
-            box.innerHTML=
-            `<div class="live-empty">No active connection</div>`;
+        let res = await fetch("/users/{{user.username}}/sessions");
+        let data = await res.json();
+
+        if(!data.length){
+            box.innerHTML = `
+            <div class="offline-card">
+            🔴 User Offline
+            </div>`;
             return;
         }
-        count.innerHTML =
-        data.sessions.length;
-        box.innerHTML = `
-        <table class="live-table">
-        <thead>
-        <tr>
-        <th>Status</th>
-        <th>IP</th>
-        <th>Device</th>
-        <th>Connected</th>
-        <th></th>
-        </tr>
-        </thead>
-        <tbody>
-        ${
-            data.sessions.map(s=>`
-            <tr>
-            <td>
-            <span class="online-badge">
-            ONLINE
-            </span>
-            </td>
-            <td>
-            ${s.ip || "-"}
-            </td>
-            <td>
-            ${s.device || "Unknown"}
-            </td>
-            <td>
-            ${s.connected || "-"}
-            </td>
-            <td>
-            <button
-            onclick="disconnectUser('${s.username}')"
-            class="disconnect-btn">
+
+        box.innerHTML = data.map(session => `
+        <div class="live-session-card">
+            <div class="session-header">
+                <span class="online-dot"></span>
+                Online
+            </div>
+
+            <div class="session-row">
+                🌐 <span>${session.ip || '-'}</span>
+            </div>
+
+            <div class="session-row">
+                📱 <span>${session.device || 'Unknown'}</span>
+            </div>
+
+            <div class="session-row">
+                🕒 <span>${session.connected || '-'}</span>
+            </div>
+
+            <div class="traffic-box">
+                📥 ${session.rx || '0'}
+                <br>
+                📤 ${session.tx || '0'}
+            </div>
+
+            <button class="disconnect-btn" onclick="disconnectUser()">
             Disconnect
             </button>
-            </td>
-            </tr>
-            `).join("")
-        }
-        </tbody>
-        </table>
-        `;
+        </div>
+        `).join("");
     }
     catch(e){
-        console.log(e);
+        box.innerHTML = "Failed loading sessions";
     }
 }
-function disconnectUser(username){
-fetch(
-"/users/"+username+"/disconnect",
-{
-method:"POST"
+
+async function disconnectUser(){
+    if(!confirm("Disconnect user?")) return;
+
+    await fetch("/users/{{user.username}}/disconnect", { method:"POST" });
+    loadLiveSessions();
 }
-)
-.then(()=>{
+
 loadLiveSessions();
-});
-}
-loadLiveSessions();
-setInterval(
-loadLiveSessions,
-5000
-);
+setInterval(loadLiveSessions, 5000);
 </script> 
 {% endblock %}
