@@ -3,72 +3,73 @@
 set -e
 
 
-echo "================================="
-echo " Installing ocserv 1.5"
-echo "================================="
+echo "Installing ocserv..."
 
 
-# Update
 apt update
 
 
-# Dependencies
 apt install -y \
+git \
 wget \
 curl \
-gnutls-bin \
-libgnutls30 \
-libwrap0 \
-libnl-route-3-200 \
-libseccomp2 \
-ocserv
+build-essential \
+pkg-config \
+libgnutls28-dev \
+libev-dev \
+libwrap0-dev \
+libseccomp-dev \
+libnl-route-3-dev \
+liblz4-dev \
+libreadline-dev \
+libpam0g-dev
 
 
-echo "[+] ocserv installed"
+echo "Downloading ocserv 1.5"
 
 
-# Stop old service
-systemctl stop ocserv || true
+cd /usr/local/src
 
 
-# Backup old config
-if [ -f /etc/ocserv/ocserv.conf ]; then
-
-    cp /etc/ocserv/ocserv.conf \
-    /etc/ocserv/ocserv.conf.backup
-
-fi
+rm -rf ocserv-1.5
 
 
-# Create directory
+wget https://www.infradead.org/ocserv/download/ocserv-1.5.0.tar.xz
+
+
+tar xf ocserv-1.5.0.tar.xz
+
+
+cd ocserv-1.5.0
+
+
+./configure
+
+
+make -j$(nproc)
+
+
+make install
+
+
+echo "ocserv installed"
+
 
 mkdir -p /etc/ocserv
 
 
-# Copy lak-panel config
-
-cp "$(dirname "$0")/configs/ocserv.conf" \
+cp /opt/lak-panel/install/configs/ocserv.conf \
 /etc/ocserv/ocserv.conf
 
 
-echo "[+] ocserv.conf installed"
-
-
-
-# Create passwd file
-
 touch /etc/ocserv/ocpasswd
+
 
 chmod 600 /etc/ocserv/ocpasswd
 
 
-echo "[+] ocpasswd ready"
-
-
-
-# Enable service
-
 systemctl daemon-reload
+
 
 systemctl enable ocserv
 
@@ -76,11 +77,4 @@ systemctl enable ocserv
 systemctl restart ocserv
 
 
-
-echo ""
-echo "================================="
-echo " ocserv installed successfully"
-echo "================================="
-
-
-systemctl status ocserv --no-pager
+echo "ocserv is ready"
