@@ -453,6 +453,14 @@ async function loadLiveSessions(){
             </div>
 
             <div class="traffic-box">
+                🌍 ${session.country || '-'}
+                <br>
+                🏙 ${session.city || '-'}
+                <br>
+                🏢 ${session.isp || '-'}
+                <br>
+                📡 Ping: ${session.ping || '-'}
+                <hr>
                 📥 ${session.rx || '0'}
                 <br>
                 📤 ${session.tx || '0'}
