@@ -264,9 +264,9 @@ History
 
 </div>
 
-
-
-
+<!-- =======================
+Admin Activity
+======================== -->
 
 <div class="dashboard-box">
 
@@ -274,9 +274,23 @@ History
         <h3>Admin Activity</h3>
     </div>
 
+    <div class="box-filter">
+        <div class="filter-group">
+            <label>From:</label>
+            <input type="date" id="date-from" />
+        </div>
+        
+        <div class="filter-group">
+            <label>To:</label>
+            <input type="date" id="date-to" />
+        </div>
+        
+        <button class="btn-filter" onclick="loadAuditLogs(1)">Search</button>
+    </div>
+
     <div class="box-content">
 
-        <table>
+        <table id="audit-logs-table">
 
             <thead>
             <tr>
@@ -322,69 +336,291 @@ History
 
     </div>
 
+    <!-- Pagination Info -->
+    <div class="pagination-info">
+        <div class="info-left">
+            Showing <span id="audit-start">1</span>-<span id="audit-end">{{ audit_per_page }}</span> of <span id="audit-total">{{ audit_total }}</span> records
+        </div>
+        
+        <div class="info-right">
+            <label>Show:</label>
+            <select id="per-page-select" onchange="loadAuditLogs(1)">
+                <option value="10" {% if audit_per_page == 10 %}selected{% endif %}>10</option>
+                <option value="25" {% if audit_per_page == 25 %}selected{% endif %}>25</option>
+                <option value="50" {% if audit_per_page == 50 %}selected{% endif %}>50</option>
+                <option value="100" {% if audit_per_page == 100 %}selected{% endif %}>100</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Pagination Controls -->
+    <div class="pagination-controls">
+        <button class="btn-nav" id="btn-first" onclick="loadAuditLogs(1)">◀</button>
+        
+        <div class="pagination-pages" id="pagination-pages"></div>
+        
+        <button class="btn-nav" id="btn-last" onclick="loadAuditLogs(getTotalPages())">▶</button>
+    </div>
+
 </div>
 
+<style>
+.box-filter {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    padding: 10px;
+    background: #f5f5f5;
+    border-radius: 4px;
+    align-items: flex-end;
+}
 
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
 
+.filter-group label {
+    font-weight: bold;
+    font-size: 12px;
+}
+
+.filter-group input {
+    padding: 6px 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.btn-filter {
+    padding: 6px 16px;
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.btn-filter:hover {
+    background: #0056b3;
+}
+
+.pagination-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    border-top: 1px solid #eee;
+    font-size: 14px;
+}
+
+.info-left {
+    color: #666;
+}
+
+.info-right {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.info-right select {
+    padding: 4px 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.pagination-controls {
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+    padding: 15px;
+    border-top: 1px solid #eee;
+    flex-wrap: wrap;
+}
+
+.btn-nav {
+    padding: 6px 12px;
+    border: 1px solid #ccc;
+    background: #f9f9f9;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.btn-nav:hover {
+    background: #f0f0f0;
+}
+
+.btn-nav.active {
+    background: #007bff;
+    color: white;
+    border-color: #007bff;
+}
+
+.pagination-pages {
+    display: flex;
+    gap: 5px;
+}
+
+.page-ellipsis {
+    padding: 6px 8px;
+    color: #999;
+}
+</style>
 
 <script>
 
+let currentPage = 1;
+let totalAuditLogs = {{ audit_total }};
+
+function getTotalPages() {
+    const perPage = parseInt(document.getElementById("per-page-select").value);
+    return Math.ceil(totalAuditLogs / perPage);
+}
+
+function loadAuditLogs(page) {
+    const perPage = document.getElementById("per-page-select").value;
+    const dateFrom = document.getElementById("date-from").value;
+    const dateTo = document.getElementById("date-to").value;
+    
+    currentPage = page;
+    
+    let url = `/users/{{ user.username }}?page=${page}&per_page=${perPage}`;
+    
+    if (dateFrom) {
+        url += `&date_from=${dateFrom}`;
+    }
+    if (dateTo) {
+        url += `&date_to=${dateTo}`;
+    }
+    
+    fetch(url, {
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'Accept': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        updateAuditLogsTable(data);
+        updatePaginationControls(data);
+    })
+    .catch(error => console.error('Error:', error));
+}
+
+function updateAuditLogsTable(data) {
+    const tbody = document.querySelector("#audit-logs-table tbody");
+    const perPage = parseInt(document.getElementById("per-page-select").value);
+    
+    if (data.audit_logs.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5">No admin activity</td></tr>';
+    } else {
+        tbody.innerHTML = data.audit_logs.map(log => `
+            <tr>
+                <td>${new Date(log.created_at).toLocaleString()}</td>
+                <td>${log.admin_username}</td>
+                <td>${log.action}</td>
+                <td>${log.details}</td>
+                <td>${log.ip_address || '-'}</td>
+            </tr>
+        `).join('');
+    }
+    
+    // Update pagination info
+    const start = (currentPage - 1) * perPage + 1;
+    const end = Math.min(currentPage * perPage, data.audit_total);
+    
+    document.getElementById("audit-start").textContent = start;
+    document.getElementById("audit-end").textContent = end;
+    document.getElementById("audit-total").textContent = data.audit_total;
+    
+    totalAuditLogs = data.audit_total;
+}
+
+function updatePaginationControls(data) {
+    const totalPages = getTotalPages();
+    const pagesContainer = document.getElementById("pagination-pages");
+    
+    if (totalPages === 0) return;
+    
+    let pagesHTML = '';
+    
+    // Show page numbers (max 5 visible)
+    let startPage = Math.max(1, currentPage - 2);
+    let endPage = Math.min(totalPages, currentPage + 2);
+    
+    if (startPage > 1) {
+        pagesHTML += '<span class="page-ellipsis">...</span>';
+    }
+    
+    for (let i = startPage; i <= endPage; i++) {
+        const activeClass = i === currentPage ? 'active' : '';
+        pagesHTML += `<button class="btn-nav ${activeClass}" onclick="loadAuditLogs(${i})">${i}</button>`;
+    }
+    
+    if (endPage < totalPages) {
+        pagesHTML += '<span class="page-ellipsis">...</span>';
+    }
+    
+    pagesContainer.innerHTML = pagesHTML;
+    
+    // Disable first/last buttons if at boundaries
+    document.getElementById("btn-first").disabled = currentPage === 1;
+    document.getElementById("btn-last").disabled = currentPage === totalPages;
+}
+
 function refreshProfile(){
 
-fetch("/api/users/{{ user.username }}/traffic")
+    fetch("/api/users/{{ user.username }}/traffic")
+    .then(r=>r.json())
+    .then(data=>{
+        document.getElementById("status-cell").innerText=data.status||"-";
+        document.getElementById("ip-cell").innerText=data.ip||"-";
+        document.getElementById("device-cell").innerText=data.device||"-";
+        document.getElementById("connected-cell").innerText=data.connected||"-";
 
-.then(r=>r.json())
+        document.getElementById("download-value").innerText=data.rx||"--";
+        document.getElementById("upload-value").innerText=data.tx||"--";
+        document.getElementById("total-value").innerText=data.total||"--";
+    });
 
-.then(data=>{
+    fetch("/users/{{ user.username }}/sessions")
+    .then(r=>r.json())
+    .then(list=>{
+        let html="";
 
-document.getElementById("status-cell").innerText=data.status||"-";
-document.getElementById("ip-cell").innerText=data.ip||"-";
-document.getElementById("device-cell").innerText=data.device||"-";
-document.getElementById("connected-cell").innerText=data.connected||"-";
+        if(list.length==0){
+            html="<tr><td colspan='3'>No active session</td></tr>";
+        }else{
+            list.forEach(s=>{
+                html+=`
+                <tr>
+                <td>${s["Remote IP"]||"-"}</td>
+                <td>${s["Device"]||"-"}</td>
+                <td>${s["Connected at"]||"-"}</td>
+                </tr>
+                `;
+            });
+        }
 
-document.getElementById("download-value").innerText=data.rx||"--";
-document.getElementById("upload-value").innerText=data.tx||"--";
-document.getElementById("total-value").innerText=data.total||"--";
-
-});
-
-fetch("/users/{{ user.username }}/sessions")
-
-.then(r=>r.json())
-
-.then(list=>{
-
-let html="";
-
-if(list.length==0){
-
-html="<tr><td colspan='3'>No active session</td></tr>";
-
-}else{
-
-list.forEach(s=>{
-
-html+=`
-<tr>
-<td>${s["Remote IP"]||"-"}</td>
-<td>${s["Device"]||"-"}</td>
-<td>${s["Connected at"]||"-"}</td>
-</tr>
-`;
-
-});
-
+        document.querySelector("#sessions-table tbody").innerHTML=html;
+    });
 }
 
-document.querySelector("#sessions-table tbody").innerHTML=html;
-
+// Initialize
+document.addEventListener('DOMContentLoaded', function() {
+    refreshProfile();
+    updatePaginationControls({
+        audit_total: {{ audit_total }},
+        audit_logs: []
+    });
 });
 
-}
-
-refreshProfile();
-
-setInterval(refreshProfile,3000);
+setInterval(refreshProfile, 3000);
 
 </script>
 
