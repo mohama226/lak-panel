@@ -4,26 +4,21 @@ from fastapi import Depends
 from fastapi import HTTPException
 from fastapi import Request
 from fastapi import Query
-
 from sqlalchemy.orm import Session
-
 from app.core.auth import require_login
 from app.core.template import render
 from app.db.database import get_db
-
 from app.repositories.user_repository import UserRepository
 from app.repositories.user_log_repository import UserLogRepository
 from app.repositories.audit_repository import AuditRepository
-
 from app.services.user_service import UserService
-
 from app.schemas.user import (
     UserCreate,
     UserPassword,
     UserExpire,
 )
-
 from app.db.models import AuditLog
+from app.services.security_service import SecurityService
 
 router = APIRouter()
 
@@ -36,12 +31,9 @@ def get_service(
     repo = UserRepository(db)
     log_repo = UserLogRepository(db)
     audit_repo = AuditRepository(db)
-
     username = "system"
-
     if admin:
         username = admin.get("username")
-
     return UserService(
         repo,
         log_repo,
@@ -54,25 +46,20 @@ def get_service(
 # ==========================================================
 # Pages
 # ==========================================================
-
 @router.get("/users")
 def users_page(
     request: Request,
     admin=Depends(require_login),
     db: Session = Depends(get_db),
 ):
-
     service = get_service(
         db,
         request,
         admin
     )
-
     users = service.list()
-
     for user in users:
         user.online = service.is_online(user.username)
-
     return render(
         request,
         "users/index.html",
@@ -87,7 +74,6 @@ def new_user_page(
     request: Request,
     admin=Depends(require_login),
 ):
-
     return render(
         request,
         "users/create.html",
@@ -105,21 +91,17 @@ def profile(
     date_from: str | None = Query(None),
     date_to: str | None = Query(None),
 ):
-
     service = get_service(
         db,
         request,
         admin
     )
-
     user = service.get(username)
-
     if not user:
         raise HTTPException(
             status_code=404,
             detail="User not found",
         )
-
     logs_data = service.logs(
         username=username,
         page=page,
@@ -127,8 +109,6 @@ def profile(
         date_from=date_from,
         date_to=date_to,
     )
-
-
     audit_data = service.admin_activity(
         username=username,
         page=page,
@@ -136,11 +116,8 @@ def profile(
         date_from=date_from,
         date_to=date_to,
     )
-
-
     audit_logs = audit_data["logs"]
     total_audit = audit_data["total"]
-
     return render(
         request,
         "users/profile.html",
@@ -165,21 +142,17 @@ def traffic_page(
     admin=Depends(require_login),
     db: Session = Depends(get_db),
 ):
-
     service = get_service(
         db,
         request,
         admin
     )
-
     user = service.get(username)
-
     if not user:
         raise HTTPException(
             status_code=404,
             detail="User not found",
         )
-
     return render(
         request,
         "users/traffic.html",
@@ -192,7 +165,6 @@ def traffic_page(
 # ==========================================================
 # API
 # ==========================================================
-
 @router.post("/users")
 def create_user(
     request: Request,
@@ -200,13 +172,11 @@ def create_user(
     admin=Depends(require_login),
     db: Session = Depends(get_db),
 ):
-
     get_service(
         db,
         request,
         admin
     ).create(data)
-
     return {
         "detail": "User created successfully"
     }
@@ -220,7 +190,6 @@ def change_password(
     admin=Depends(require_login),
     db: Session = Depends(get_db),
 ):
-
     get_service(
         db,
         request,
@@ -229,7 +198,6 @@ def change_password(
         username,
         data.password,
     )
-
     return {
         "detail": "Password changed"
     }
@@ -243,7 +211,6 @@ def extend_user(
     admin=Depends(require_login),
     db: Session = Depends(get_db),
 ):
-
     get_service(
         db,
         request,
@@ -252,7 +219,6 @@ def extend_user(
         username,
         data.expire,
     )
-
     return {
         "detail": "Account extended"
     }
@@ -265,13 +231,11 @@ def reset_traffic(
     admin=Depends(require_login),
     db: Session = Depends(get_db),
 ):
-
     get_service(
         db,
         request,
         admin
     ).reset_traffic(username)
-
     return {
         "detail": "Traffic reset"
     }
@@ -284,13 +248,11 @@ def disconnect_user(
     admin=Depends(require_login),
     db: Session = Depends(get_db),
 ):
-
     get_service(
         db,
         request,
         admin
     ).disconnect(username)
-
     return {
         "detail": "User disconnected"
     }
@@ -303,13 +265,11 @@ def enable_user(
     admin=Depends(require_login),
     db: Session = Depends(get_db),
 ):
-
     get_service(
         db,
         request,
         admin
     ).enable(username)
-
     return {
         "detail": "User enabled"
     }
@@ -322,13 +282,11 @@ def disable_user(
     admin=Depends(require_login),
     db: Session = Depends(get_db),
 ):
-
     get_service(
         db,
         request,
         admin
     ).disable(username)
-
     return {
         "detail": "User disabled"
     }
@@ -341,13 +299,11 @@ def block_user(
     admin=Depends(require_login),
     db: Session = Depends(get_db),
 ):
-
     get_service(
         db,
         request,
         admin
     ).block(username)
-
     return {
         "detail": "User blocked"
     }
@@ -360,13 +316,11 @@ def unblock_user(
     admin=Depends(require_login),
     db: Session = Depends(get_db),
 ):
-
     get_service(
         db,
         request,
         admin
     ).unblock(username)
-
     return {
         "detail": "User unblocked"
     }
@@ -379,13 +333,11 @@ def suspend_user(
     admin=Depends(require_login),
     db: Session = Depends(get_db),
 ):
-
     get_service(
         db,
         request,
         admin
     ).suspend(username)
-
     return {
         "detail": "User suspended"
     }
@@ -398,13 +350,11 @@ def unsuspend_user(
     admin=Depends(require_login),
     db: Session = Depends(get_db),
 ):
-
     get_service(
         db,
         request,
         admin
     ).unsuspend(username)
-
     return {
         "detail": "User unsuspended"
     }
@@ -417,13 +367,11 @@ def delete_user(
     admin=Depends(require_login),
     db: Session = Depends(get_db),
 ):
-
     get_service(
         db,
         request,
         admin
     ).delete(username)
-
     return {
         "detail": "User deleted"
     }
@@ -435,63 +383,46 @@ async def bulk_users(
     admin=Depends(require_login),
     db: Session = Depends(get_db),
 ):
-
     data = await request.json()
-
     users = data.get("users", [])
     action = data.get("action")
     days = int(data.get("days", 0))
-
     service = get_service(
         db,
         request,
         admin
     )
-
     for username in users:
-
         if action == "enable":
             service.enable(username)
-
         elif action == "disable":
             service.disable(username)
-
         elif action == "block":
             service.block(username)
-
         elif action == "unblock":
             service.unblock(username)
-
         elif action == "disconnect":
             service.disconnect(username)
-
         elif action == "reset_traffic":
             service.reset_traffic(username)
-
         elif action == "delete":
             service.delete(username)
-
         elif action == "extend":
-
             user = service.get(username)
-
             if user and user.expire:
-
                 from datetime import timedelta
-
                 service.extend(
                     username,
                     user.expire + timedelta(days=days)
                 )
-
     return {
-        "detail":"Bulk operation completed"
+        "detail": "Bulk operation completed"
     }
-    
+
+
 # ==========================================================
 # Live APIs
 # ==========================================================
-
 from app.services.analytics_service import AnalyticsService
 
 
@@ -502,7 +433,6 @@ def user_sessions(
     admin=Depends(require_login),
     db: Session = Depends(get_db),
 ):
-
     return get_service(
         db,
         request,
@@ -517,7 +447,6 @@ def user_live_traffic(
     admin=Depends(require_login),
     db: Session = Depends(get_db),
 ):
-
     return get_service(
         db,
         request,
@@ -532,21 +461,17 @@ def user_traffic_api(
     admin=Depends(require_login),
     db: Session = Depends(get_db),
 ):
-
     service = get_service(
         db,
         request,
         admin
     )
-
     user = service.get(username)
-
     if not user:
         raise HTTPException(
             status_code=404,
             detail="User not found",
         )
-
     return service.traffic(username)
 
 
@@ -556,17 +481,12 @@ def live_sessions(
     admin=Depends(require_login),
     db: Session = Depends(get_db),
 ):
-
     service = get_service(
         db,
         None,
         admin
     )
-
-
     sessions = service.sessions(username)
-
-
     return {
         "username": username,
         "sessions": sessions
@@ -575,22 +495,22 @@ def live_sessions(
 
 @router.get("/users/{username}/analytics")
 def user_analytics(
-    username:str,
-    db:Session = Depends(get_db),
+    username: str,
+    db: Session = Depends(get_db),
     admin=Depends(require_login),
 ):
-
-
     service = AnalyticsService(db)
-
-
     return {
-
-        "summary":
-            service.user_summary(username),
-
-
-        "ips":
-            service.ip_history(username)
-
+        "summary": service.user_summary(username),
+        "ips": service.ip_history(username)
     }
+
+
+@router.get("/users/{username}/security")
+def user_security(
+    username: str,
+    db: Session = Depends(get_db),
+    admin=Depends(require_login),
+):
+    service = SecurityService(db)
+    return service.analyze(username)
