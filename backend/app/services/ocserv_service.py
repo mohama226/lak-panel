@@ -147,10 +147,47 @@ class OcservService:
 
         user = OcservCache.user(username)
 
-        if user:
-            return [user]
+        if not user:
+            return []
 
-        return []
+        return [
+            {
+                "username": username,
+
+                "status": "Online",
+
+                "ip": (
+                    user.get("Remote IP")
+                    or user.get("IP")
+                    or "-"
+                ),
+
+                "device": (
+                    user.get("Device")
+                    or user.get("User Agent")
+                    or "-"
+                ),
+
+                "connected": (
+                    user.get("Connected at")
+                    or user.get("Connected")
+                    or "-"
+                ),
+
+                "rx": (
+                    user.get("RX")
+                    or user.get("Bytes received")
+                    or "0 B"
+                ),
+
+                "tx": (
+                    user.get("TX")
+                    or user.get("Bytes sent")
+                    or "0 B"
+                ),
+
+            }
+        ]
 
     @classmethod
     def disconnect_user(cls, username: str):
