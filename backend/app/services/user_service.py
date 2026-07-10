@@ -26,8 +26,21 @@ class UserService:
     def get(self, username):
         return self.repo.get(username)
 
-    def logs(self, username):
-        return self.log_repo.list(username)
+    def logs(
+        self,
+        username,
+        page=1,
+        per_page=10,
+        date_from=None,
+        date_to=None,
+    ):
+        return self.log_repo.list_paginated(
+            username=username,
+            page=page,
+            per_page=per_page,
+            date_from=date_from,
+            date_to=date_to,
+        )
 
     def audit_logs(self, username):
         return (
