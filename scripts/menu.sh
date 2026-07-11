@@ -28,11 +28,11 @@ do
     case "$option" in
 
         1)
-            if [ -f "$SCRIPT_DIR/install.sh" ]; then
-                bash "$SCRIPT_DIR/install.sh"
+            if [ -f "/opt/lak-panel/install.sh" ]; then
+                bash /opt/lak-panel/install.sh
             else
                 echo
-                echo "Install script not found."
+                echo "Main install script not found."
             fi
             ;;
 
