@@ -57,7 +57,14 @@ fi
 
 echo "Downloading LAK Panel..."
 
-git clone "$REPO" "$DIR"
+if git clone --depth 1 "$REPO" "$DIR"; then
+    echo "Git clone successful"
+else
+    echo "Git failed, downloading ZIP..."
+    wget -q https://github.com/mohama226/lak-panel/archive/refs/heads/main.zip -O /tmp/lak-panel.zip
+    unzip -q /tmp/lak-panel.zip -d /tmp
+    mv /tmp/lak-panel-main "$DIR"
+fi
 
 
 cd "$DIR/backend"
