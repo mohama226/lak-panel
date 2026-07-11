@@ -2,11 +2,13 @@
 Description=LAK Panel
 After=network.target
 
-[Service]
 
+[Service]
 Type=simple
 
 WorkingDirectory=/opt/lak-panel/backend
+
+EnvironmentFile=/opt/lak-panel/backend/.env
 
 ExecStart=/opt/lak-panel/backend/venv/bin/python run.py
 
@@ -15,6 +17,7 @@ RestartSec=3
 
 User=root
 Group=root
+
 
 [Install]
 WantedBy=multi-user.target
