@@ -62,6 +62,7 @@ git clone "$REPO" "$DIR"
 
 cd "$DIR/backend"
 
+chmod +x "$DIR/install/setup_config.sh"
 
 python3 -m venv venv
 
