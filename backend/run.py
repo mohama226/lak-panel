@@ -1,17 +1,19 @@
+import os
 import uvicorn
 
-from app.core.config import settings
-from app.core.ocserv_cache import OcservCache
+from dotenv import load_dotenv
+
+load_dotenv()
+
+
+PORT = int(os.getenv("PORT", "2096"))
 
 
 if __name__ == "__main__":
 
-    # Start ocserv cache worker
-    OcservCache.start()
-
     uvicorn.run(
         "app.main:app",
-        host=settings.APP_HOST,
-        port=settings.APP_PORT,
-        reload=False,
+        host="0.0.0.0",
+        port=PORT,
+        reload=False
     )
