@@ -1,17 +1,19 @@
 import uvicorn
-
-from app.core.config import settings
-from app.core.ocserv_cache import OcservCache
+import sys
 
 
 if __name__ == "__main__":
 
-    # Start ocserv cache worker
-    OcservCache.start()
+    port = 2096
+
+    if "--port" in sys.argv:
+        index = sys.argv.index("--port")
+        port = int(sys.argv[index + 1])
+
 
     uvicorn.run(
         "app.main:app",
-        host=settings.APP_HOST,
-        port=settings.APP_PORT,
-        reload=False,
+        host="0.0.0.0",
+        port=port,
+        reload=False
     )
