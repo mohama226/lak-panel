@@ -10,5 +10,5 @@ pytz
 tzdata
 psutil
 requests
-pydantic
+python-dotenv
 pydantic-settings
