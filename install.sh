@@ -50,7 +50,13 @@ if [ ! -f "$BASE/backend/run.py" ]; then
     exit 1
 fi
 
+if [ ! -f "$BASE/backend/run.py" ]; then
 
+echo "ERROR: backend/run.py not found"
+
+exit 1
+
+fi
 cd $BASE/backend
 
 
