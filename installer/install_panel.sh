@@ -1,65 +1,136 @@
 #!/bin/bash
 
+set -e
 
-BASE="/opt/lak-panel"
+BASE_DIR="/opt/lak-panel"
+BACKEND_DIR="$BASE_DIR/backend"
+VENV_DIR="$BACKEND_DIR/venv"
 
-source $BASE/installer/functions.sh
+echo "========================================="
+echo "       LAK PANEL INSTALL PANEL"
+echo "========================================="
+
+echo ""
+
+echo "Install Path:"
+echo "$BASE_DIR"
+
+echo ""
+
+if [ ! -d "$BACKEND_DIR" ]; then
+    echo "ERROR: backend directory not found"
+    exit 1
+fi
 
 
-title "Installing LAK PANEL"
+echo "[1/6] Installing dependencies..."
+
+apt update
+
+apt install -y \
+python3 \
+python3-pip \
+python3-venv \
+sqlite3
 
 
-mkdir -p $BASE/panel/backend
+echo "[2/6] Creating Virtual Environment..."
+
+if [ ! -d "$VENV_DIR" ]; then
+
+python3 -m venv "$VENV_DIR"
+
+fi
 
 
-cd $BASE/panel/backend
+echo "[3/6] Installing Python Packages..."
 
-
-
-python3 -m venv venv
-
-
-source venv/bin/activate
-
+source "$VENV_DIR/bin/activate"
 
 pip install --upgrade pip
 
+pip install -r "$BACKEND_DIR/requirements.txt"
 
-if [ -f requirements.txt ]
-then
 
-pip install -r requirements.txt
+echo "[4/6] Creating Environment File..."
+
+if [ ! -f "$BACKEND_DIR/.env" ]; then
+
+
+read -p "SuperAdmin Username: " ADMIN_USER
+
+read -s -p "SuperAdmin Password: " ADMIN_PASS
+
+echo ""
+
+
+read -p "Panel Port [2096]: " PANEL_PORT
+
+
+if [ -z "$PANEL_PORT" ]; then
+PANEL_PORT=2096
+fi
+
+
+cat > "$BACKEND_DIR/.env" <<EOF
+
+ADMIN_USERNAME=$ADMIN_USER
+ADMIN_PASSWORD=$ADMIN_PASS
+PORT=$PANEL_PORT
+
+EOF
+
+
+else
+
+source "$BACKEND_DIR/.env"
 
 fi
 
 
 
-mkdir -p $BASE/panel/backend/app/templates
+echo "[5/6] Initializing Database..."
 
-mkdir -p $BASE/panel/backend/app/static
+cd "$BACKEND_DIR"
 
+
+if [ -f init_db.py ]; then
+
+"$VENV_DIR/bin/python3" init_db.py
+
+fi
+
+
+
+echo "[6/6] Creating Systemd Service..."
 
 
 cat > /etc/systemd/system/lak-panel.service <<EOF
 
 [Unit]
+
 Description=LAK Panel
+
 After=network.target
+
 
 
 [Service]
 
-WorkingDirectory=$BASE/panel/backend
+Type=simple
+
+WorkingDirectory=$BACKEND_DIR
 
 Environment=PYTHONUNBUFFERED=1
 
-ExecStart=$BASE/panel/backend/venv/bin/python3 $BASE/panel/backend/run.py
+ExecStart=$VENV_DIR/bin/python3 $BACKEND_DIR/run.py
 
 Restart=always
 
-RestartSec=5
+RestartSec=3
 
 User=root
+
 
 
 [Install]
@@ -74,16 +145,33 @@ systemctl daemon-reload
 
 systemctl enable lak-panel
 
-
-
-cat > /usr/local/bin/lak-panel <<EOF
-#!/bin/bash
-bash $BASE/installer/menu.sh
-EOF
-
-
-chmod +x /usr/local/bin/lak-panel
+systemctl restart lak-panel
 
 
 
-success "Panel service created"
+echo ""
+
+echo "========================================="
+echo " LAK PANEL INSTALLED"
+echo "========================================="
+
+echo ""
+
+echo "Path:"
+echo "$BASE_DIR"
+
+echo ""
+
+echo "Backend:"
+echo "$BACKEND_DIR"
+
+echo ""
+
+echo "Service:"
+echo "/etc/systemd/system/lak-panel.service"
+
+echo ""
+
+echo "Status:"
+
+systemctl status lak-panel --no-pager -l
