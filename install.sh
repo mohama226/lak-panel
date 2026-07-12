@@ -1,111 +1,109 @@
 #!/bin/bash
+
 set -e
 
-REPO="https://github.com/mohama226/lak-panel.git"
-DIR="/opt/lak-panel"
+BASE="/opt/lak-panel"
+
+echo "================================="
+echo "      LAK PANEL INSTALLER"
+echo "================================="
 
 if [ "$EUID" -ne 0 ]; then
-    echo "Please run as root"
+    echo "Run as root"
     exit 1
 fi
 
-echo "================================="
-echo " LAK PANEL INSTALL"
-echo "================================="
 
-read -rp "Panel Port [8000]: " PANEL_PORT
-PANEL_PORT=${PANEL_PORT:-8000}
+echo "[1/8] Installing packages..."
 
-read -rp "Superadmin Username: " ADMIN_USER
+apt update
 
-while true
-do
-    read -rsp "Superadmin Password: " ADMIN_PASS
-    echo
-    read -rsp "Confirm Password: " ADMIN_PASS2
-    echo
-    if [ "$ADMIN_PASS" = "$ADMIN_PASS2" ]; then
-        break
-    fi
-    echo "Passwords do not match"
-done
+apt install -y \
+python3 \
+python3-pip \
+python3-venv \
+git \
+curl \
+nginx
 
-# نصب پکیج‌های مورد نیاز
-apt-get update
-apt-get install -y \
-    git \
-    curl \
-    wget \
-    unzip \
-    python3 \
-    python3-pip \
-    python3-venv
 
-# حذف پوشه قبلی اگر وجود داشت
-if [ -d "$DIR" ]; then
-    rm -rf "$DIR"
+echo "[2/8] Creating directories..."
+
+mkdir -p $BASE/backend
+mkdir -p $BASE/frontend/templates
+mkdir -p $BASE/frontend/static
+mkdir -p $BASE/scripts
+mkdir -p $BASE/systemd
+mkdir -p $BASE/backups
+mkdir -p $BASE/logs
+mkdir -p $BASE/data
+
+
+echo "[3/8] Creating python venv..."
+
+python3 -m venv $BASE/backend/venv
+
+
+echo "[4/8] Installing backend packages..."
+
+$BASE/backend/venv/bin/pip install --upgrade pip
+
+if [ -f "$BASE/backend/requirements.txt" ]; then
+    $BASE/backend/venv/bin/pip install -r $BASE/backend/requirements.txt
 fi
 
-echo "Downloading LAK Panel..."
-cd /opt
-rm -rf "$DIR"
-rm -rf /opt/lak-panel-main
-rm -f /tmp/lak-panel.zip
 
-# دانلود با wget (اولویت)
-if wget -q -O /tmp/lak-panel.zip https://github.com/mohama226/lak-panel/archive/refs/heads/main.zip; then
-    echo "Download successful with wget"
-else
-    echo "wget failed, trying curl..."
-    curl -L -s -o /tmp/lak-panel.zip https://github.com/mohama226/lak-panel/archive/refs/heads/main.zip
-fi
+echo "[5/8] Creating service..."
 
-unzip -q /tmp/lak-panel.zip -d /opt
-mv /opt/lak-panel-main "$DIR"
-rm -f /tmp/lak-panel.zip
+cat > /etc/systemd/system/lak-panel.service <<EOF
+[Unit]
+Description=LAK Panel
+After=network.target
 
-cd "$DIR/backend"
+[Service]
+Type=simple
 
-chmod +x "$DIR/install/setup_config.sh"
+WorkingDirectory=$BASE/backend
 
-python3 -m venv venv
-source venv/bin/activate
-pip install --upgrade pip
-pip install -r requirements.txt
+Environment=PYTHONUNBUFFERED=1
 
-echo "Creating environment..."
-cat > .env <<EOF
-PORT=$PANEL_PORT
-SUPERADMIN_USERNAME=$ADMIN_USER
-SUPERADMIN_PASSWORD=$ADMIN_PASS
+ExecStart=$BASE/backend/venv/bin/python3 $BASE/backend/run.py
+
+Restart=always
+RestartSec=5
+
+User=root
+Group=root
+
+[Install]
+WantedBy=multi-user.target
 EOF
 
-echo "Setting up systemd service..."
 
-# استفاده از فایل سرویس آماده موجود در ریپازیتوری
-cp "$DIR/systemd/lak-panel.service" /etc/systemd/system/lak-panel.service
-
-systemctl daemon-reload
-systemctl enable lak-panel
-systemctl restart lak-panel
-
-chmod +x "$DIR/scripts/menu.sh"
+echo "[6/8] Creating command..."
 
 cat > /usr/local/bin/lak-panel <<EOF
 #!/bin/bash
-bash /opt/lak-panel/scripts/menu.sh
+exec $BASE/scripts/menu.sh
 EOF
 
 chmod +x /usr/local/bin/lak-panel
 
-IP=$(hostname -I | awk '{print $1}')
+
+echo "[7/8] Reload systemd..."
+
+systemctl daemon-reload
+
+
+echo "[8/8] Enable service..."
+
+systemctl enable lak-panel
+
 
 echo
 echo "================================="
-echo " LAK PANEL INSTALLED SUCCESSFULLY"
-echo
-echo "URL: http://$IP:$PANEL_PORT"
-echo "Admin: $ADMIN_USER"
-echo
-echo "You can run 'lak-panel' command for management menu."
+echo " INSTALL FINISHED"
 echo "================================="
+
+echo "Run:"
+echo "lak-panel"
