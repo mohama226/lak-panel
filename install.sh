@@ -5,7 +5,7 @@ set -e
 BASE="/opt/lak-panel"
 
 echo "================================="
-echo "      LAK PANEL INSTALLER"
+echo "       LAK PANEL INSTALLER"
 echo "================================="
 
 if [ "$EUID" -ne 0 ]; then
@@ -20,47 +20,76 @@ apt update
 
 apt install -y \
 python3 \
-python3-pip \
 python3-venv \
+python3-pip \
 git \
+nginx \
 curl \
-nginx
+systemd
 
 
 echo "[2/8] Creating directories..."
 
-mkdir -p $BASE/backend
-mkdir -p $BASE/frontend/templates
-mkdir -p $BASE/frontend/static
-mkdir -p $BASE/scripts
-mkdir -p $BASE/systemd
-mkdir -p $BASE/backups
-mkdir -p $BASE/logs
-mkdir -p $BASE/data
+mkdir -p $BASE
+
+mkdir -p \
+$BASE/backend \
+$BASE/frontend/templates \
+$BASE/frontend/static \
+$BASE/scripts \
+$BASE/backups \
+$BASE/logs \
+$BASE/data
 
 
-echo "[3/8] Creating python venv..."
+echo "[3/8] Creating virtual environment..."
 
-python3 -m venv $BASE/backend/venv
+if [ ! -d "$BASE/backend/venv" ]; then
 
+python3 -m venv \
+$BASE/backend/venv
 
-echo "[4/8] Installing backend packages..."
-
-$BASE/backend/venv/bin/pip install --upgrade pip
-
-if [ -f "$BASE/backend/requirements.txt" ]; then
-    $BASE/backend/venv/bin/pip install -r $BASE/backend/requirements.txt
 fi
 
 
-echo "[5/8] Creating service..."
+echo "[4/8] Installing python packages..."
+
+$BASE/backend/venv/bin/pip install --upgrade pip
+
+
+if [ -f "$BASE/backend/requirements.txt" ]; then
+
+$BASE/backend/venv/bin/pip install \
+-r $BASE/backend/requirements.txt
+
+fi
+
+
+echo "[5/8] Creating environment..."
+
+if [ ! -f "$BASE/backend/.env" ]; then
+
+cat > $BASE/backend/.env <<EOF
+APP_NAME=LAK PANEL
+PORT=2096
+DATABASE=/opt/lak-panel/data/database.db
+EOF
+
+fi
+
+
+echo "[6/8] Installing service..."
+
 
 cat > /etc/systemd/system/lak-panel.service <<EOF
+
 [Unit]
 Description=LAK Panel
 After=network.target
 
+
 [Service]
+
 Type=simple
 
 WorkingDirectory=$BASE/backend
@@ -70,40 +99,52 @@ Environment=PYTHONUNBUFFERED=1
 ExecStart=$BASE/backend/venv/bin/python3 $BASE/backend/run.py
 
 Restart=always
+
 RestartSec=5
 
 User=root
+
 Group=root
 
+
 [Install]
+
 WantedBy=multi-user.target
+
 EOF
 
 
-echo "[6/8] Creating command..."
+
+echo "[7/8] Installing command..."
+
 
 cat > /usr/local/bin/lak-panel <<EOF
+
 #!/bin/bash
+
 exec $BASE/scripts/menu.sh
+
 EOF
+
 
 chmod +x /usr/local/bin/lak-panel
 
 
-echo "[7/8] Reload systemd..."
+
+echo "[8/8] Starting service..."
 
 systemctl daemon-reload
 
-
-echo "[8/8] Enable service..."
-
 systemctl enable lak-panel
 
+systemctl restart lak-panel || true
 
-echo
+
+echo ""
 echo "================================="
-echo " INSTALL FINISHED"
+echo " INSTALL COMPLETE"
 echo "================================="
 
-echo "Run:"
-echo "lak-panel"
+echo ""
+
+systemctl status lak-panel --no-pager || true
