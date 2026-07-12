@@ -1,99 +1,75 @@
 #!/bin/bash
 
-SCRIPT_DIR="/opt/lak-panel/scripts"
 
 while true
 do
-    clear
 
-    echo "========================================="
-    echo "          LAK PANEL MANAGER"
-    echo "               Version 0.0.2"
-    echo "========================================="
-    echo
-    echo " 1) Install Panel"
-    echo " 2) Install ocserv"
-    echo " 3) Update"
-    echo " 4) Restart Service"
-    echo " 5) Stop Service"
-    echo " 6) Start Service"
-    echo " 7) Service Status"
-    echo " 8) View Logs"
-    echo " 9) Uninstall"
-    echo
-    echo " 0) Exit"
-    echo
-    read -rp "Select an option: " option
+clear
 
-    case "$option" in
 
-        1)
-            if [ -f "/opt/lak-panel/install.sh" ]; then
-                bash /opt/lak-panel/install.sh
-            else
-                echo
-                echo "Main install script not found."
-            fi
-            ;;
+echo "================================="
+echo "          LAK PANEL"
+echo "================================="
 
-        2)
-            if [ -f "/opt/lak-panel/install/install_ocserv.sh" ]; then
-        
-                bash /opt/lak-panel/install/install_ocserv.sh
-        
-            else
-        
-                echo
-                echo "ocserv installer not found."
-        
-            fi
-            ;;
 
-        3)
-            if [ -f "$SCRIPT_DIR/update.sh" ]; then
-                bash "$SCRIPT_DIR/update.sh"
-            else
-                echo
-                echo "Update script not found."
-            fi
-            ;;
+echo "1) Status"
+echo "2) Restart"
+echo "3) Stop"
+echo "4) Start"
+echo "5) Logs"
+echo "6) Update"
+echo "0) Exit"
 
-        4)
-            bash "$SCRIPT_DIR/service.sh" stop
-            ;;
 
-        5)
-            bash "$SCRIPT_DIR/service.sh" start
-            ;;
+read -p "Select: " c
 
-        6)
-            bash "$SCRIPT_DIR/service.sh" status
-            ;;
 
-        7)
-            bash "$SCRIPT_DIR/service.sh" logs
-            ;;
+case $c in
 
-        8)
-            if [ -f "$SCRIPT_DIR/uninstall.sh" ]; then
-                bash "$SCRIPT_DIR/uninstall.sh"
-            else
-                echo
-                echo "Uninstall script not found."
-            fi
-            ;;
 
-        0)
-            exit 0
-            ;;
+1)
+systemctl status lak-panel --no-pager
+read
+;;
 
-        *)
-            echo
-            echo "Invalid option!"
-            ;;
 
-    esac
+2)
+systemctl restart lak-panel
+echo "Restarted"
+read
+;;
 
-    echo
-    read -n 1 -s -r -p "Press any key to continue..."
+
+3)
+systemctl stop lak-panel
+read
+;;
+
+
+4)
+systemctl start lak-panel
+read
+;;
+
+
+5)
+journalctl -u lak-panel -n 100 --no-pager
+read
+;;
+
+
+6)
+/opt/lak-panel/scripts/update.sh
+read
+;;
+
+
+0)
+exit
+;;
+
+
+esac
+
+
 done
