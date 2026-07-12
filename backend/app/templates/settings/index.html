@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="page-header">
+
+    <h1>⚙ Panel Settings</h1>
+
+    <p>
+        Configure LAK Panel
+    </p>
+
+</div>
+
+<div class="settings-card">
+
+    <form method="post" action="/settings/dashboard">
+
+        <h2>Dashboard Auto Refresh</h2>
+
+        <div class="setting-row">
+
+            <label>
+
+                <input
+                    type="checkbox"
+                    name="auto_refresh"
+                    {% if dashboard.auto_refresh %}checked{% endif %}
+                >
+
+                Enable Auto Refresh
+
+            </label>
+
+        </div>
+
+        <div class="setting-row">
+
+            <label>
+
+                Refresh Interval (Seconds)
+
+            </label>
+
+            <select name="refresh_interval">
+
+                {% for i in [1,2,3,5,10,15,30,60] %}
+
+                <option
+                    value="{{ i }}"
+                    {% if dashboard.refresh_interval==i %}selected{% endif %}
+                >
+                    {{ i }} Second{% if i>1 %}s{% endif %}
+                </option>
+
+                {% endfor %}
+
+            </select>
+
+        </div>
+
+        <hr>
+
+        <h2>Date & Time</h2>
+
+        <p class="setting-desc">
+
+            بخش تنظیمات ساعت، تاریخ، فرمت نمایش و Timezone
+            در مرحله بعد اضافه می‌شود.
+
+        </p>
+
+        <hr>
+
+        <h2>Appearance</h2>
+
+        <p class="setting-desc">
+
+            Theme / Sidebar / Colors / Fonts
+
+        </p>
+
+        <hr>
+
+        <button type="submit" class="save-btn">
+
+            💾 Save Settings
+
+        </button>
+
+    </form>
+
+</div>
+
+{% endblock %}

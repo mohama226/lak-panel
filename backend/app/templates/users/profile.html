@@ -1,0 +1,395 @@
+{% extends "base.html" %} 
+{% block content %}
+<div class="page-header">    
+    <div>        
+        <h1>{{ user.username }}</h1>        
+        <p>User Profile</p>    
+    </div> 
+</div> 
+
+<!-- ======================= Hero ======================== --> 
+<div class="profile-hero">    
+    <div class="hero-left">        
+        <div class="avatar">            
+            {{ user.username[:1]|upper }}        
+        </div>        
+        <div>            
+            <h2>{{ user.username }}</h2>            
+            <div id="hero-status">                
+                {% if user.online %}                    
+                    <span class="status-dot online"></span>                    
+                    <span class="status-text online">Online</span>                
+                {% else %}                    
+                    <span class="status-dot offline"></span>                    
+                    <span class="status-text offline">Offline</span>                
+                {% endif %}            
+            </div>        
+        </div>    
+    </div>    
+    <div class="hero-right">        
+        <button class="btn-primary"                
+                onclick="location.href='/users/{{ user.username }}/traffic'">            
+            Live Traffic        
+        </button>    
+    </div> 
+</div> 
+
+<!-- ======================= Stats ======================== --> 
+<div class="profile-stats">    
+    <div class="stat-card">        
+        <div class="stat-title">Download</div>        
+        <div class="stat-value" id="download-value">--</div>    
+    </div>    
+    <div class="stat-card">        
+        <div class="stat-title">Upload</div>        
+        <div class="stat-value" id="upload-value">--</div>    
+    </div>    
+    <div class="stat-card">        
+        <div class="stat-title">Total Usage</div>        
+        <div class="stat-value" id="total-value">--</div>    
+    </div>    
+    <div class="stat-card">        
+        <div class="stat-title">Expire</div>        
+        <div class="stat-value">            
+            {% if user.expire %}                
+                {{ user.expire.strftime("%Y-%m-%d") }}            
+            {% else %}                
+                Unlimited            
+            {% endif %}        
+        </div>    
+    </div> 
+</div> 
+
+<!-- ======================= Connection ======================== --> 
+<div class="dashboard-box">    
+    <div class="box-header">        
+        <h3>Connection Information</h3>    
+    </div>    
+    <div class="box-content">        
+        <table>            
+            <tr><td><strong>Status</strong></td><td id="status-cell">Loading...</td></tr>            
+            <tr><td><strong>Public IP</strong></td><td id="ip-cell">-</td></tr>            
+            <tr><td><strong>Device</strong></td><td id="device-cell">-</td></tr>            
+            <tr><td><strong>Connected</strong></td><td id="connected-cell">-</td></tr>        
+        </table>    
+    </div> 
+</div> 
+
+<!-- ======================= Sessions ======================== --> 
+<div class="dashboard-box">    
+    <div class="box-header">        
+        <h3>Active Sessions</h3>    
+    </div>    
+    <div class="box-content">        
+        <table id="sessions-table">            
+            <thead>            
+            <tr>                
+                <th>IP</th>                
+                <th>Device</th>                
+                <th>Connected</th>            
+            </tr>            
+            </thead>            
+            <tbody>            
+            <tr><td colspan="3">Loading...</td></tr>            
+            </tbody>        
+        </table>    
+    </div> 
+</div> 
+
+<!-- ======================= History ======================== --> 
+<div class="dashboard-box">    
+    <div class="box-header">        
+        <h3>History</h3>    
+    </div>    
+    <!-- Toolbar بالای جدول History -->    
+    <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">        
+        <div class="d-flex gap-2">            
+            <input type="date" id="date_from" class="form-control form-control-sm" value="{{ request.query_params.get('date_from','') }}">            
+            <input type="date" id="date_to" class="form-control form-control-sm" value="{{ request.query_params.get('date_to','') }}">            
+            <button class="btn btn-primary btn-sm" onclick="filterLogs()">Filter</button>        
+        </div>        
+        <div>            
+            <select id="per_page" class="form-select form-select-sm" onchange="filterLogs()">                
+                <option value="10">10</option>                
+                <option value="25">25</option>                
+                <option value="50">50</option>                
+                <option value="100">100</option>            
+            </select>        
+        </div>    
+    </div>    
+
+    <div class="box-content">        
+        <table>            
+            <thead>            
+            <tr>                
+                <th>Action</th>                
+                <th>Details</th>                
+                <th>Date</th>            
+            </tr>            
+            </thead>            
+            <tbody>            
+            {% for log in logs %}            
+            <tr>                
+                <td>{{ log.action }}</td>                
+                <td>{{ log.details }}</td>                
+                <td>{{ log.created_at }}</td>            
+            </tr>            
+            {% endfor %}            
+            </tbody>        
+        </table>    
+    </div>    
+
+    <!-- Pagination پایین جدول History -->    
+    <nav class="mt-3">    
+    <ul class="pagination pagination-sm justify-content-end">    
+    {% set pages=((logs_total/logs_per_page)|round(0,'ceil'))|int %}    
+    {% for i in range(1,pages+1) %}    
+    <li class="page-item {% if i==logs_page %}active{% endif %}">    
+    <a class="page-link" href="?page={{i}}&per_page={{logs_per_page}}">{{i}}</a>    
+    </li>    
+    {% endfor %}    
+    </ul>    
+    </nav> 
+</div> 
+
+<!-- ======================= Admin Activity ======================== --> 
+<div class="dashboard-box">    
+    <div class="box-header">        
+        <h3>Admin Activity</h3>    
+    </div>    
+    <!-- Toolbar -->    
+    <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-3" style="background: transparent; border: none; padding: 15px 20px 10px 20px;">        
+        <div class="d-flex align-items-center gap-2">            
+            <label class="text-muted small mb-0">Show</label>            
+            <select id="historyPerPage" class="form-select form-select-sm" style="width:90px">                
+                <option value="10">10</option>                
+                <option value="25">25</option>                
+                <option value="50">50</option>                
+                <option value="100">100</option>            
+            </select>            
+            <label class="text-muted small mb-0">entries</label>        
+        </div>        
+        <div class="d-flex align-items-center gap-2">            
+            <input id="historyFrom" type="date" class="form-control form-control-sm">            
+            <input id="historyTo" type="date" class="form-control form-control-sm">            
+            <button class="btn btn-primary btn-sm" id="historyFilter">Filter</button>        
+        </div>    
+    </div>    
+    <div class="box-content">        
+        <table id="audit-logs-table">            
+            <thead>            
+            <tr>                
+                <th>Time</th>                
+                <th>Admin</th>                
+                <th>Action</th>                
+                <th>Details</th>                
+                <th>IP</th>            
+            </tr>            
+            </thead>            
+            <tbody>            
+            {% for log in audit_logs %}            
+            <tr>                
+                <td>{{ log.created_at }}</td>                
+                <td>{{ log.admin_username }}</td>                
+                <td>{{ log.action }}</td>                
+                <td>{{ log.details }}</td>                
+                <td>{{ log.ip_address }}</td>            
+            </tr>            
+            {% else %}            
+            <tr><td colspan="5">No admin activity</td></tr>            
+            {% endfor %}            
+            </tbody>        
+        </table>    
+    </div>    
+
+    <!-- Pagination -->    
+    <div class="d-flex justify-content-between align-items-center mt-4 px-3 pb-3">        
+        <div class="text-muted small">            
+            Showing {{ audit_logs|length }} of {{ audit_total }}        
+        </div>        
+        <nav>            
+            <ul class="pagination pagination-sm mb-0">                
+                {% if audit_page > 1 %}                
+                <li class="page-item">                    
+                    <a class="page-link" href="?page={{ audit_page-1 }}">Previous</a>                
+                </li>                
+                {% endif %}                
+                {% for p in range(1, ((audit_total-1)//audit_per_page)+2) %}                
+                <li class="page-item {% if p==audit_page %}active{% endif %}">                    
+                    <a class="page-link" href="?page={{p}}">{{p}}</a>                
+                </li>                
+                {% endfor %}                
+                {% if audit_page < ((audit_total-1)//audit_per_page)+1 %}                
+                <li class="page-item">                    
+                    <a class="page-link" href="?page={{ audit_page+1 }}">Next</a>                
+                </li>                
+                {% endif %}            
+            </ul>        
+        </nav>    
+    </div> 
+</div> 
+
+<style>
+/* ... استایل‌های قبلی بدون تغییر ... */
+.box-filter { display: flex; gap: 10px; margin-bottom: 20px; padding: 10px; background: #f5f5f5; border-radius: 4px; align-items: flex-end; }
+.filter-group { display: flex; flex-direction: column; gap: 5px; }
+.filter-group label { font-weight: bold; font-size: 12px; }
+.filter-group input { padding: 6px 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; }
+.btn-filter { padding: 6px 16px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; }
+.btn-filter:hover { background: #0056b3; }
+/* بقیه استایل‌ها ... */
+.pagination-controls { display: flex; justify-content: center; gap: 5px; padding: 15px; border-top: 1px solid #eee; flex-wrap: wrap; }
+.btn-nav { padding: 6px 12px; border: 1px solid #ccc; background: #f9f9f9; border-radius: 4px; cursor: pointer; font-size: 14px; }
+.btn-nav:hover { background: #f0f0f0; }
+.btn-nav.active { background: #007bff; color: white; border-color: #007bff; }
+.pagination-pages { display: flex; gap: 5px; }
+.page-ellipsis { padding: 6px 8px; color: #999; }
+</style>
+
+<script>
+let currentPage = 1;
+let totalAuditLogs = {{ audit_total }};
+
+
+function getAuditPerPage(){
+    return parseInt(
+        document.getElementById("historyPerPage").value
+    );
+}
+
+
+function loadAuditLogs(page = 1){
+    const perPage = getAuditPerPage();
+    const dateFrom = document.getElementById("historyFrom").value;
+    const dateTo = document.getElementById("historyTo").value;
+
+    currentPage = page;
+
+    let url = `/users/{{ user.username }}?page=${page}&per_page=${perPage}`;
+
+    if(dateFrom){
+        url += `&date_from=${dateFrom}`;
+    }
+    if(dateTo){
+        url += `&date_to=${dateTo}`;
+    }
+
+    fetch(url,{
+        headers:{
+            "X-Requested-With":"XMLHttpRequest",
+            "Accept":"application/json"
+        }
+    })
+    .then(r=>r.json())
+    .then(data=>{
+        updateAuditLogsTable(data);
+        updatePaginationControls();
+    })
+    .catch(err=>console.log(err));
+}
+
+
+
+function updateAuditLogsTable(data){
+    const tbody = document.querySelector("#audit-logs-table tbody");
+
+    if(!data.audit_logs || !data.audit_logs.length){
+        tbody.innerHTML = `
+        <tr>
+        <td colspan="5">
+        No admin activity
+        </td>
+        </tr>`;
+        return;
+    }
+
+    tbody.innerHTML = data.audit_logs.map(log=>`
+    <tr>
+    <td>${new Date(log.created_at).toLocaleString()}</td>
+    <td>${log.admin_username || "-"}</td>
+    <td><span class="badge bg-primary">${log.action}</span></td>
+    <td>${log.details || "-"}</td>
+    <td>${log.ip_address || "-"}</td>
+    </tr>
+    `).join("");
+
+    totalAuditLogs = data.audit_total;
+}
+
+
+
+function updatePaginationControls(){
+    const perPage = getAuditPerPage();
+    const totalPages = Math.ceil(totalAuditLogs / perPage);
+
+    const box = document.getElementById("pagination-pages");
+    if(!box) return;
+
+    let html = "";
+    for(let i = 1; i <= totalPages; i++){
+        html += `
+        <button class="btn-nav ${i===currentPage ? 'active' : ''}" onclick="loadAuditLogs(${i})">
+        ${i}
+        </button>`;
+    }
+    box.innerHTML = html;
+}
+
+
+document.getElementById("historyFilter").addEventListener("click", () => loadAuditLogs(1));
+document.getElementById("historyPerPage").addEventListener("change", () => loadAuditLogs(1));
+
+
+function refreshProfile(){ 
+    fetch("/api/users/{{ user.username }}/traffic") 
+    .then(r=>r.json()) 
+    .then(data=>{        
+        document.getElementById("status-cell").innerText=data.status||"-";        
+        document.getElementById("ip-cell").innerText=data.ip||"-";        
+        document.getElementById("device-cell").innerText=data.device||"-";        
+        document.getElementById("connected-cell").innerText=data.connected||"-";        
+        document.getElementById("download-value").innerText=data.rx||"--";        
+        document.getElementById("upload-value").innerText=data.tx||"--";        
+        document.getElementById("total-value").innerText=data.total||"--";    
+    });    
+    fetch("/users/{{ user.username }}/sessions") 
+    .then(r=>r.json()) 
+    .then(list=>{        
+        let html="";        
+        if(list.length==0){            
+            html="<tr><td colspan='3'>No active session</td></tr>";        
+        }else{            
+            list.forEach(s=>{                
+                html+=`                
+                <tr>                
+                <td>${s["Remote IP"]||"-"}</td>                
+                <td>${s["Device"]||"-"}</td>                
+                <td>${s["Connected at"]||"-"}</td>                
+                </tr>`;            
+            });        
+        }        
+        document.querySelector("#sessions-table tbody").innerHTML=html;    
+    }); 
+} 
+
+// Initialize
+document.addEventListener('DOMContentLoaded', function() {    
+    refreshProfile();    
+    // اگر المان pagination-pages وجود دارد، آن را مقداردهی اولیه کنید
+    const paginationBox = document.getElementById("pagination-pages");
+    if (paginationBox) {
+        updatePaginationControls();
+    }
+}); 
+
+setInterval(refreshProfile, 3000); 
+
+function filterLogs(){    
+    let from=document.getElementById("date_from").value;    
+    let to=document.getElementById("date_to").value;    
+    let per=document.getElementById("per_page").value;    
+    window.location = "?page=1&per_page="+per+"&date_from="+from+"&date_to="+to; 
+} 
+document.getElementById("per_page").value="{{logs_per_page}}";
+</script> 
+{% endblock %}

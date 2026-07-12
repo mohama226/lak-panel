@@ -1,0 +1,330 @@
+.dashboard-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(270px,1fr));
+    gap:22px;
+    margin-bottom:22px;
+}
+
+.stat-card,
+.progress-card,
+.info-card{
+
+    background:#182233;
+
+    border:1px solid rgba(255,255,255,.05);
+
+    border-radius:16px;
+
+    padding:22px;
+
+    transition:.25s;
+
+}
+
+.stat-card:hover,
+.progress-card:hover,
+.info-card:hover{
+
+    transform:translateY(-4px);
+
+    border-color:#3b82f6;
+
+    box-shadow:0 10px 30px rgba(0,0,0,.35);
+
+}
+
+.stat-card{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:18px;
+
+}
+
+.stat-icon{
+
+    width:62px;
+
+    height:62px;
+
+    border-radius:16px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    color:#fff;
+
+    font-size:24px;
+
+    flex-shrink:0;
+
+}
+
+.blue{
+    background:#2563eb;
+}
+
+.green{
+    background:#16a34a;
+}
+
+.orange{
+    background:#ea580c;
+}
+
+.purple{
+    background:#7c3aed;
+}
+
+.stat-info{
+
+    flex:1;
+
+}
+
+.stat-value{
+
+    color:#fff;
+
+    font-size:34px;
+
+    font-weight:700;
+
+    line-height:1;
+
+}
+
+.stat-title{
+
+    margin-top:8px;
+
+    color:#94a3b8;
+
+    font-size:14px;
+
+}
+
+.progress-header{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-bottom:14px;
+
+    color:#fff;
+
+    font-weight:600;
+
+}
+
+.progress{
+
+    width:100%;
+
+    height:12px;
+
+    background:#0f172a;
+
+    border-radius:999px;
+
+    overflow:hidden;
+
+}
+
+.progress-bar{
+
+    width:0;
+
+    height:100%;
+
+    border-radius:999px;
+
+    transition:width .5s ease,background .3s ease;
+
+}
+
+.green-bar{
+    background:#22c55e;
+}
+
+.yellow-bar{
+    background:#eab308;
+}
+
+.orange-bar{
+    background:#f97316;
+}
+
+.red-bar{
+    background:#ef4444;
+}
+
+.info-card{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:16px;
+
+}
+
+.info-card i{
+
+    width:56px;
+
+    height:56px;
+
+    border-radius:14px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    background:#2563eb;
+
+    color:#fff;
+
+    font-size:22px;
+
+    flex-shrink:0;
+
+}
+
+.info-card strong{
+
+    display:block;
+
+    color:#fff;
+
+    margin-bottom:4px;
+
+}
+
+.info-card p{
+
+    margin:0;
+
+    color:#94a3b8;
+
+    font-size:15px;
+
+}
+
+@media(max-width:900px){
+
+    .dashboard-grid{
+
+        grid-template-columns:1fr;
+
+    }
+
+}
+
+
+
+/* ===========================
+   Live Dashboard Improvements
+=========================== */
+
+#cpu-text,
+#ram-text,
+#disk-text,
+#load-value,
+#uptime-value,
+#upload-value,
+#download-value,
+#upload-speed,
+#download-speed,
+#users-value,
+#admins-value,
+#servers-value,
+#online-value{
+
+    transition:all .25s ease;
+
+}
+
+.progress{
+
+    overflow:hidden;
+
+    border-radius:999px;
+
+}
+
+.progress-bar{
+
+    position:relative;
+
+}
+
+.progress-bar::after{
+
+    content:"";
+
+    position:absolute;
+
+    inset:0;
+
+    background:linear-gradient(
+        90deg,
+        rgba(255,255,255,.18),
+        rgba(255,255,255,0)
+    );
+
+}
+
+.info-card{
+
+    min-height:92px;
+
+}
+
+.info-card i{
+
+    transition:transform .25s ease;
+
+}
+
+.info-card:hover i{
+
+    transform:scale(1.08);
+
+}
+
+.stat-card:hover .stat-value{
+
+    transform:scale(1.05);
+
+}
+
+@media(max-width:1200px){
+
+    .dashboard-grid{
+
+        grid-template-columns:repeat(2,1fr);
+
+    }
+
+}
+
+@media(max-width:768px){
+
+    .dashboard-grid{
+
+        grid-template-columns:1fr;
+
+    }
+
+}

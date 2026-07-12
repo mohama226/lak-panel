@@ -1,0 +1,128 @@
+<aside class="sidebar">
+
+    <div class="sidebar-header">
+
+        <div class="sidebar-logo">
+
+            <div class="sidebar-logo-icon">
+                🛡
+            </div>
+
+            <div class="sidebar-logo-text">
+                <h2>LAK PANEL</h2>
+                <span>VPN Control Center</span>
+            </div>
+
+        </div>
+
+    </div>
+
+    <nav class="sidebar-nav">
+
+        <div class="menu-title">
+            MAIN
+        </div>
+
+        <ul>
+
+            <li>
+                <a href="/dashboard"
+                   class="{% if request.url.path == '/dashboard' %}active{% endif %}">
+                    <span class="menu-icon">🏠</span>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="/users"
+                   class="{% if request.url.path.startswith('/users') %}active{% endif %}">
+                    <span class="menu-icon">👥</span>
+                    <span>Users</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="/online-users"
+                   class="{% if request.url.path.startswith('/online-users') %}active{% endif %}">
+                    <span class="menu-icon">🟢</span>
+                    <span>Online Users</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="/servers"
+                   class="{% if request.url.path.startswith('/servers') %}active{% endif %}">
+                    <span class="menu-icon">🖥</span>
+                    <span>Servers</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="/groups"
+                   class="{% if request.url.path.startswith('/groups') %}active{% endif %}">
+                    <span class="menu-icon">📂</span>
+                    <span>Groups</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="/admins"
+                   class="{% if request.url.path.startswith('/admins') %}active{% endif %}">
+                    <span class="menu-icon">👑</span>
+                    <span>Administrators</span>
+                </a>
+            </li>
+
+        </ul>
+
+        <div class="menu-title">
+            SYSTEM
+        </div>
+
+        <ul>
+
+            <li>
+                <a href="/logs"
+                   class="{% if request.url.path.startswith('/logs') %}active{% endif %}">
+                    <span class="menu-icon">📄</span>
+                    <span>Logs</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="/backup"
+                   class="{% if request.url.path.startswith('/backup') %}active{% endif %}">
+                    <span class="menu-icon">💾</span>
+                    <span>Backups</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="/restore"
+                   class="{% if request.url.path.startswith('/restore') %}active{% endif %}">
+                    <span class="menu-icon">📦</span>
+                    <span>Restore</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="/settings"
+                   class="{% if request.url.path.startswith('/settings') %}active{% endif %}">
+                    <span class="menu-icon">⚙</span>
+                    <span>Settings</span>
+                </a>
+            </li>
+
+        </ul>
+
+    </nav>
+
+    <div class="sidebar-footer">
+
+        <a href="/logout" class="sidebar-logout">
+            🚪 Logout
+        </a>
+
+    </div>
+
+</aside>

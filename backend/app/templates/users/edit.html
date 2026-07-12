@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="page-header">
+    <div>
+        <h1>Edit User</h1>
+        <p>{{ user.username }}</p>
+    </div>
+
+    <a href="/users" class="btn btn-secondary">
+        ← Back
+    </a>
+</div>
+
+<div class="dashboard-box">
+
+    <div class="box-header">
+        <h3>User Settings</h3>
+    </div>
+
+    <div class="box-content">
+
+        <form id="editUserForm">
+
+            <label>Username</label>
+            <input
+                type="text"
+                value="{{ user.username }}"
+                disabled
+            >
+
+            <label>New Password</label>
+            <input
+                type="password"
+                id="password"
+                placeholder="Leave empty to keep current password"
+            >
+
+            <label>Traffic (GB)</label>
+            <input
+                type="number"
+                id="traffic"
+                value="{{ user.traffic }}"
+            >
+
+            <label>Expire</label>
+            <input
+                type="date"
+                id="expire"
+                value="{% if user.expire %}{{ user.expire.strftime('%Y-%m-%d') }}{% endif %}"
+            >
+
+            <label>
+                <input
+                    type="checkbox"
+                    id="enabled"
+                    {% if user.enabled %}checked{% endif %}
+                >
+                Enabled
+            </label>
+
+            <br><br>
+
+            <button
+                class="btn-primary"
+                type="submit"
+            >
+                Save Changes
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+<script>
+
+document
+.getElementById("editUserForm")
+.addEventListener("submit",async(e)=>{
+
+e.preventDefault();
+
+const body={
+
+traffic:Number(traffic.value),
+
+expire:expire.value||null,
+
+enabled:enabled.checked
+
+};
+
+if(password.value.trim()!=="")
+    body.password=password.value;
+
+const res=await fetch("/users/{{ user.username }}",{
+
+method:"PUT",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify(body)
+
+});
+
+if(res.ok){
+
+alert("Saved");
+
+location="/users";
+
+}else{
+
+const data=await res.json();
+
+alert(data.detail||"Error");
+
+}
+
+});
+
+</script>
+
+{% endblock %}

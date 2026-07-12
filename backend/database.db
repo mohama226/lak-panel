@@ -1,0 +1,25 @@
+CREATE TABLE servers (
+
+id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+name TEXT NOT NULL,
+
+host TEXT NOT NULL,
+
+ssh_port INTEGER DEFAULT 22,
+
+ssh_user TEXT NOT NULL,
+
+auth_type TEXT DEFAULT 'key',
+
+ssh_password TEXT,
+
+ssh_private_key TEXT,
+
+vpn_type TEXT DEFAULT 'ocserv',
+
+status TEXT DEFAULT 'offline',
+
+created_at TEXT
+
+);
