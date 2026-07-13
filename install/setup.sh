@@ -12,7 +12,11 @@ check_os
 
 create_directories
 
+install_packages
+
 bash "$(dirname "$0")/postgres.sh"
+
+bash "$(dirname "$0")/python.sh"
 
 bash "$(dirname "$0")/nginx.sh"
 
