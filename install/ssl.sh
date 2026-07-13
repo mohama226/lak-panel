@@ -1,3 +1,6 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-blue "SSL configuration skipped."
+
+echo "SSL setup skipped."
+
+echo "Use certbot after domain configuration."
