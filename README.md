@@ -1,21 +1,12 @@
-# L-Panel
+# Install from GitHub
 
-Professional Multi Server OCSERV Management Panel
-
-Powered By FastAPI + PostgreSQLنصب آنلاین
-
-
-
-install auto:
+```bash
 bash <(curl -fsSL https://raw.githubusercontent.com/mohama226/l-panel/main/install/install.sh)
+```
 
+# Install from ZIP
 
-
-install by wget
-
-or
-
-Upload ZIP
-
-and:
-bash install/manual-install.sh
+```bash
+cd install
+bash manual-install.sh
+```
