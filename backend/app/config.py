@@ -1,5 +1,12 @@
-PANEL_NAME = "L-Panel"
+import os
 
-VERSION = "1.0.0"
 
-AUTHOR = "L-Panel Team"
+DATABASE_URL = os.getenv(
+    "DATABASE_URL"
+)
+
+
+PORT = os.getenv(
+    "PORT",
+    "8080"
+)
