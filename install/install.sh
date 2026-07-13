@@ -3,29 +3,19 @@
 set -e
 
 INSTALL_DIR="/opt/l-panel"
-REPO_URL="https://github.com/mohama226/l-panel.git"
-BRANCH="main"
 
-echo "========================================"
-echo "        L-PANEL INSTALLER"
-echo "========================================"
-
-if [ "$EUID" -ne 0 ]; then
-    echo "Please run installer as root."
-    exit 1
-fi
+REPO="https://github.com/mohama226/l-panel.git"
 
 apt update
 
 apt install -y git
 
-if [ -d "$INSTALL_DIR" ]; then
-    rm -rf "$INSTALL_DIR"
-fi
+rm -rf "$INSTALL_DIR"
 
-git clone --depth=1 -b "$BRANCH" "$REPO_URL" "$INSTALL_DIR"
+git clone "$REPO" "$INSTALL_DIR"
 
 chmod -R +x "$INSTALL_DIR/install"
+
 chmod -R +x "$INSTALL_DIR/cli"
 
 exec bash "$INSTALL_DIR/install/setup.sh"
