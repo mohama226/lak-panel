@@ -1,10 +1,12 @@
 #!/usr/bin/env bash
 
 
-blue "Creating Systemd Service..."
+source "$(dirname "$0")/variables.sh"
+
 
 
 cat > /etc/systemd/system/l-panel.service <<EOF
+
 
 [Unit]
 
@@ -16,16 +18,13 @@ After=network.target
 
 [Service]
 
-User=root
+WorkingDirectory=${INSTALL_DIR}/backend
 
-WorkingDirectory=/opt/l-panel/backend
+EnvironmentFile=${CONFIG_DIR}/.env
 
-EnvironmentFile=/etc/l-panel/.env
-
-ExecStart=/opt/l-panel/backend/venv/bin/gunicorn app.main:app \
+ExecStart=${INSTALL_DIR}/backend/venv/bin/gunicorn main:app \
 -k uvicorn.workers.UvicornWorker \
 --bind 0.0.0.0:${PANEL_PORT}
-
 
 
 Restart=always
@@ -36,15 +35,19 @@ Restart=always
 
 WantedBy=multi-user.target
 
+
 EOF
 
 
 
 systemctl daemon-reload
 
+
 systemctl enable l-panel
+
 
 systemctl restart l-panel
 
 
-green "Service Started."
+
+echo "L-Panel service created."
