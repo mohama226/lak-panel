@@ -49,20 +49,48 @@ install_packages() {
 }
 
 wait_for_apt() {
+
+    local count=0
+
     blue "Checking apt lock..."
+
     while fuser /var/lib/dpkg/lock-frontend >/dev/null 2>&1
     do
-        yellow "Waiting for apt process to finish..."
-        sleep 5
+
+        count=$((count+1))
+
+        yellow "Waiting for apt lock... ${count}/60"
+
+        if [ $count -ge 60 ]; then
+
+            red "Apt is locked for too long."
+            red "Please finish current apt process manually."
+            exit 1
+        fi
+
+        sleep 10
+
     done
+
+
     while fuser /var/lib/apt/lists/lock >/dev/null 2>&1
     do
+
+        count=$((count+1))
+
         yellow "Waiting for apt lists lock..."
-        sleep 5
+
+        if [ $count -ge 60 ]; then
+
+            red "Apt lists locked too long."
+            exit 1
+        fi
+
+        sleep 10
+
     done
-    while fuser /var/cache/apt/archives/lock >/dev/null 2>&1
-    do
-        yellow "Waiting for apt cache lock..."
-        sleep 5
-    done
+
+
+    green "Apt is ready."
+
 }
