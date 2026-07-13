@@ -1,26 +1,50 @@
 #!/usr/bin/env bash
 
+
+source "$(dirname "$0")/variables.sh"
+
+source "$(dirname "$0")/functions.sh"
+
+
 blue "Installing PostgreSQL..."
 
+
 apt install -y postgresql postgresql-contrib
+
 
 systemctl enable postgresql
 
 systemctl start postgresql
 
 
-blue "Creating Database..."
-
 
 sudo -u postgres psql <<EOF
 
-CREATE USER ${POSTGRES_USER} WITH PASSWORD '${POSTGRES_PASSWORD}';
+DO \$\$
 
-CREATE DATABASE ${POSTGRES_DB};
+BEGIN
 
-GRANT ALL PRIVILEGES ON DATABASE ${POSTGRES_DB} TO ${POSTGRES_USER};
+IF NOT EXISTS (
+SELECT FROM pg_roles WHERE rolname='${POSTGRES_USER}'
+)
+
+THEN
+
+CREATE ROLE ${POSTGRES_USER} LOGIN PASSWORD '${POSTGRES_PASSWORD}';
+
+END IF;
+
+END
+
+\$\$;
+
+
+
+CREATE DATABASE ${POSTGRES_DB}
+OWNER ${POSTGRES_USER};
 
 EOF
 
 
-green "PostgreSQL Ready."
+
+green "PostgreSQL configured."
