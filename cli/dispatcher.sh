@@ -1,70 +1,59 @@
 #!/usr/bin/env bash
 
-INSTALL_PATH="/opt/l-panel"
 
-COMMAND="${1:-menu}"
+case "$1" in
 
-case "$COMMAND" in
 
-    menu)
-        bash "${INSTALL_PATH}/install/menu.sh"
-        ;;
+start)
 
-    update)
-        bash "${INSTALL_PATH}/install/update.sh"
-        ;;
+systemctl start l-panel
 
-    uninstall)
-        bash "${INSTALL_PATH}/install/uninstall.sh"
-        ;;
+;;
 
-    install)
-        bash "${INSTALL_PATH}/install/install.sh"
-        ;;
 
-    status)
-        systemctl status l-panel
-        ;;
+stop)
 
-    start)
-        systemctl start l-panel
-        ;;
+systemctl stop l-panel
 
-    stop)
-        systemctl stop l-panel
-        ;;
+;;
 
-    restart)
-        systemctl restart l-panel
-        ;;
 
-    *)
+restart)
 
-        echo ""
+systemctl restart l-panel
 
-        echo "L-Panel CLI"
+;;
 
-        echo ""
 
-        echo "Usage:"
+status)
 
-        echo "  l-panel"
+systemctl status l-panel
 
-        echo "  l-panel start"
+;;
 
-        echo "  l-panel stop"
 
-        echo "  l-panel restart"
+update)
 
-        echo "  l-panel status"
+bash /opt/l-panel/install/update.sh
 
-        echo "  l-panel update"
+;;
 
-        echo "  l-panel uninstall"
 
-        echo ""
+*)
 
-        exit 1
-        ;;
+echo "Usage:"
+
+echo "l-panel start"
+
+echo "l-panel stop"
+
+echo "l-panel restart"
+
+echo "l-panel status"
+
+echo "l-panel update"
+
+
+;;
 
 esac
