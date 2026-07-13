@@ -1,18 +1,20 @@
 #!/usr/bin/env bash
 
+source "$(dirname "$0")/variables.sh"
 
-mkdir -p /etc/l-panel
+
+mkdir -p "$CONFIG_DIR"
 
 
-cat > /etc/l-panel/.env <<EOF
-
-DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@localhost/${POSTGRES_DB}
-
-PANEL_PORT=${PANEL_PORT}
+cat > "$CONFIG_DIR/.env" <<EOF
 
 APP_NAME=L-Panel
+
+DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@127.0.0.1/${POSTGRES_DB}
+
+PORT=${PANEL_PORT}
 
 EOF
 
 
-green "Environment created."
+echo "Environment created."
