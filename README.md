@@ -1,20 +1,21 @@
-نصب آنلاین
+# L-Panel
 
-کاربر فقط:
+Professional Multi Server OCSERV Management Panel
 
+Powered By FastAPI + PostgreSQLنصب آنلاین
+
+
+
+install auto:
 bash <(curl -fsSL https://raw.githubusercontent.com/mohama226/l-panel/main/install/install.sh)
 
-را اجرا می‌کند.
 
-این اسکریپت Repository را Clone می‌کند و ادامه نصب را انجام می‌دهد.
 
-نصب دستی
-wget
+install by wget
 
-یا
+or
 
 Upload ZIP
 
-سپس:
-
+and:
 bash install/manual-install.sh
