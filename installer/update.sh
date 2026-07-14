@@ -60,6 +60,14 @@ mv "$TMP_DIR/l-panel-main" "$INSTALL_DIR"
 [ -d /tmp/l-panel-save/config ] && cp -a /tmp/l-panel-save/config "$INSTALL_DIR/"
 
 
+echo "Fixing permissions..."
+
+chmod +x /opt/l-panel/installer/*.sh
+chmod +x /opt/l-panel/scripts/*
+
+systemctl daemon-reload
+
+
 echo "Restarting services..."
 
 systemctl daemon-reload || true
