@@ -2,21 +2,19 @@
 
 set -e
 
-
-echo "=============================="
-echo " Installing OCServ 1.5.0"
-echo "=============================="
-
-
 BASE="/opt/l-panel"
-OCVER="1.5.0"
+VERSION="1.5.0"
+
+echo "=============================="
+echo " L-PANEL OCServ Installer"
+echo " OCServ Version $VERSION"
+echo "=============================="
 
 
 apt update
 
+
 apt install -y \
-git \
-wget \
 build-essential \
 pkg-config \
 libgnutls28-dev \
@@ -26,11 +24,12 @@ libseccomp-dev \
 liblz4-dev \
 libprotobuf-c-dev \
 protobuf-c-compiler \
-libpcl1-dev \
-libhttp-parser-dev \
 autoconf \
 automake \
-libtool
+libtool \
+wget \
+tar \
+openssl
 
 
 mkdir -p /usr/local/src
@@ -39,18 +38,28 @@ mkdir -p /usr/local/src
 cd /usr/local/src
 
 
-if [ ! -f ocserv-${OCVER}.tar.xz ]; then
-
-wget \
-https://github.com/openconnect/ocserv/releases/download/${OCVER}/ocserv-${OCVER}.tar.xz
-
+if [ -d "ocserv" ]; then
+    rm -rf ocserv
 fi
 
 
-tar xf ocserv-${OCVER}.tar.xz
+echo "Downloading OCServ source..."
 
 
-cd ocserv-${OCVER}
+wget -O ocserv.tar.xz \
+https://github.com/openconnect/ocserv/releases/download/v1.5.0/ocserv-1.5.0.tar.xz
+
+
+tar xf ocserv.tar.xz
+
+
+mv ocserv-1.5.0 ocserv
+
+
+cd ocserv
+
+
+echo "Configuring..."
 
 
 ./configure \
@@ -58,26 +67,29 @@ cd ocserv-${OCVER}
 --sysconfdir=/etc
 
 
+echo "Building..."
+
+
 make -j$(nproc)
+
+
+echo "Installing..."
+
 
 make install
 
 
+echo "Creating folders..."
+
 
 mkdir -p /etc/ocserv
+mkdir -p /var/lib/ocserv
+mkdir -p /var/log/ocserv
+mkdir -p /var/run/ocserv
 
 
 cp $BASE/installer/files/ocserv/ocserv.conf \
 /etc/ocserv/ocserv.conf
-
-
-
-cp $BASE/installer/files/ocserv/ocserv.conf \
-/etc/ocserv/ocserv.conf.backup
-
-
-
-echo "Creating SSL certificate"
 
 
 openssl req \
@@ -87,22 +99,37 @@ openssl req \
 -out /etc/ocserv/server-cert.pem \
 -days 3650 \
 -nodes \
--subj "/CN=L-PANEL VPN"
+-subj "/CN=L-PANEL"
 
 
 touch /etc/ocserv/ocpasswd
 
 
+echo "Creating systemd service"
+
+
+cat >/etc/systemd/system/ocserv.service <<EOF
+[Unit]
+Description=OpenConnect VPN Server
+After=network.target
+
+[Service]
+ExecStart=/usr/sbin/ocserv -c /etc/ocserv/ocserv.conf
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+
 systemctl daemon-reload
 
-
-echo "OCServ installed"
-
-
-systemctl enable ocserv || true
+systemctl enable ocserv
 
 
-systemctl restart ocserv || true
+echo
+echo "OCServ Installed Successfully"
+echo
 
 
-echo "DONE"
+ocserv -v
