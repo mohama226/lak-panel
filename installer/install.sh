@@ -14,21 +14,23 @@ mkdir -p /opt
 
 cd /tmp
 rm -f l-panel.zip
-
 curl -L "$ZIP_URL" -o l-panel.zip
-
 unzip -oq l-panel.zip
-
 mv l-panel-main "$APP_DIR"
 
 cd "$APP_DIR"
 
 python3 -m venv venv
-
 source venv/bin/activate
-
 pip install --upgrade pip
-
 pip install -r requirements.txt
 
-python3 run.py
+# ===== اضافه شده طبق درخواست شما =====
+cp installer/systemd/l-panel.service /etc/systemd/system/
+
+systemctl daemon-reload
+
+systemctl enable l-panel
+
+systemctl restart l-panel
+# =====================================
