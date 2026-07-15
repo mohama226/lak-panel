@@ -1,26 +1,15 @@
-:root {
+:root{
 
---bg-main:#050b1d;
+--bg:#060b1a;
 
---bg-sidebar:#071329;
+--panel:#0f172a;
 
---bg-card:#0b1734;
-
---border:#1e335c;
-
+--border:#1e293b;
 
 --primary:#2563eb;
 
 --text:#e5e7eb;
 
 --muted:#94a3b8;
-
-
---success:#22c55e;
-
---danger:#ef4444;
-
-
---radius:16px;
 
 }
