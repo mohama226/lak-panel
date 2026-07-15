@@ -1,23 +1,19 @@
 import subprocess
 
 
-
 class OcservService:
 
-
-
     @staticmethod
-    def add_user(username,password):
+    def add_user(username, password):
 
-        cmd=[
+        cmd = [
             "ocpasswd",
             "-c",
             "/etc/ocserv/ocpasswd",
             username
         ]
 
-
-        process=subprocess.Popen(
+        process = subprocess.Popen(
             cmd,
             stdin=subprocess.PIPE,
             stdout=subprocess.PIPE,
@@ -25,20 +21,16 @@ class OcservService:
             text=True
         )
 
-
         process.communicate(
-            password+"\n"+password+"\n"
+            password + "\n" + password + "\n"
         )
 
-
         return process.returncode == 0
-
-
 
     @staticmethod
     def delete_user(username):
 
-        cmd=[
+        cmd = [
             "ocpasswd",
             "-c",
             "/etc/ocserv/ocpasswd",
@@ -46,11 +38,32 @@ class OcservService:
             username
         ]
 
-
-        result=subprocess.run(
+        result = subprocess.run(
             cmd,
             capture_output=True
         )
 
-
         return result.returncode == 0
+
+    # ========================= Change Password =========================
+    @staticmethod
+    def change_password(username, password):
+
+        cmd = [
+            "ocpasswd",
+            "-c",
+            "/etc/ocserv/ocpasswd",
+            username
+        ]
+
+        p = subprocess.Popen(
+            cmd,
+            stdin=subprocess.PIPE,
+            text=True
+        )
+
+        p.communicate(
+            password + "\n" + password + "\n"
+        )
+
+        return True
