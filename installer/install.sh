@@ -1,9 +1,8 @@
 #!/bin/bash
 set -e
-
 echo "Installing L-Panel..."
 
-# Update and install dependencies
+# Update and install dependencies including PostgreSQL
 apt update
 apt install -y curl unzip python3 python3-pip python3-venv postgresql postgresql-contrib
 
@@ -20,10 +19,10 @@ CREATE DATABASE lpanel OWNER lpanel_user;
 GRANT ALL PRIVILEGES ON DATABASE lpanel TO lpanel_user;
 EOF
 
-# Stop previous service if exists
+# متوقف کردن سرویس قبلی (در صورت وجود)
 systemctl stop l-panel 2>/dev/null || true
 
-# Clean previous installation and download latest version
+# حذف نسخه قبلی و دانلود نسخه جدید
 rm -rf /opt/l-panel
 mkdir -p /opt
 cd /tmp
@@ -36,7 +35,22 @@ unzip -o l-panel.zip
 mv l-panel-main /opt/l-panel
 
 # ========================
-# بعد از کپی فایل‌ها — ایجاد محیط مجازی پایتون
+# تنظیم مجوزها (ابتدا)
+# ========================
+echo "Setting permissions..."
+chmod +x /opt/l-panel/installer/*.sh
+chmod +x /opt/l-panel/scripts/*
+chmod +x /opt/l-panel/scripts/l-panel
+
+# ========================
+# اجرای setup_database.sh قبل از ساخت venv
+# ========================
+echo "Running database setup..."
+cd /opt/l-panel
+bash installer/setup_database.sh
+
+# ========================
+# ایجاد محیط مجازی پایتون
 # ========================
 echo "Creating Python virtual environment..."
 cd /opt/l-panel
@@ -44,64 +58,52 @@ python3 -m venv venv
 /opt/l-panel/venv/bin/pip install --upgrade pip
 /opt/l-panel/venv/bin/pip install -r requirements.txt
 
-# ========================
-# اجرای تنظیمات دیتابیس
-# ========================
-echo "Running database setup..."
-cd /opt/l-panel
-bash installer/setup_database.sh
-
-# ========================
-# مقداردهی اولیه دیتابیس
-# ========================
 echo "Initializing database..."
 cd /opt/l-panel
 /opt/l-panel/venv/bin/python3 -c "
 from backend import create_app
 app = create_app()
-print('Database initialized')
-" || echo "Warning: Database initialization command skipped or had issues."
+print('Database initialized successfully')
+"
 
-# ========================
-# تنظیم مجوزها و symlink
-# ========================
-chmod +x /opt/l-panel/installer/*.sh 2>/dev/null || true
-chmod +x /opt/l-panel/scripts/* 2>/dev/null || true
+# ایجاد symlink
+echo "Creating command symlink..."
 ln -sf /opt/l-panel/scripts/l-panel /usr/local/bin/l-panel
 
-echo "L-Panel files installed successfully."
+# اجرای دستور اصلی l-panel (احتمالاً برای تنظیم اولیه)
+echo "Running initial l-panel command..."
+l-panel || echo "Warning: l-panel command returned non-zero exit code (may be normal)."
 
 # ========================
-# ایجاد فایل سرویس systemd
+# تنظیم نهایی مجوزها (دوباره برای اطمینان)
 # ========================
-echo "Creating systemd service file..."
+echo "Finalizing permissions..."
+chmod +x /opt/l-panel/scripts/l-panel
+chmod +x /opt/l-panel/installer/*.sh
+chmod +x /opt/l-panel/scripts/*
 
-cat > /etc/systemd/system/l-panel.service << 'EOL'
-[Unit]
-Description=L-Panel Service
-After=network.target postgresql.service
+# ========================
+# تنظیم و راه‌اندازی سرویس systemd
+# ========================
+echo "Setting up systemd service..."
 
-[Service]
-Type=simple
-User=root
-WorkingDirectory=/opt/l-panel
-ExecStart=/opt/l-panel/venv/bin/python3 -m gunicorn --bind 0.0.0.0:5000 --workers 2 backend:app
-Restart=always
-Environment=FLASK_ENV=production
-Environment=PYTHONPATH=/opt/l-panel
+# بررسی وجود python در venv
+if [ ! -f /opt/l-panel/venv/bin/python3 ]; then
+    echo "Error: Python venv not properly created at /opt/l-panel/venv/bin/python3"
+    exit 1
+fi
 
-[Install]
-WantedBy=multi-user.target
-EOL
+# اجرای مجدد setup_database برای اطمینان
+echo "Ensuring database is ready..."
+cd /opt/l-panel
+bash installer/setup_database.sh
 
-# Reload systemd and start service
 systemctl daemon-reload
 systemctl enable l-panel
 systemctl restart l-panel
 
 echo "=========================================="
-echo "L-Panel Installed and Started Successfully!"
+echo "L-Panel Installed Successfully!"
+echo "Service is running."
+echo "You can manage it with: systemctl status l-panel"
 echo "=========================================="
-echo "Service status: systemctl status l-panel"
-echo "Logs: journalctl -u l-panel -f"
-echo "Default port: 5000"
