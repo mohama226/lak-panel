@@ -1,16 +1,28 @@
 *{
 box-sizing:border-box;
-font-family:
-Tahoma,
-Arial;
 }
 
 
 body{
 
 margin:0;
+
+font-family:
+Inter,
+Arial,
+sans-serif;
+
 background:#f1f5f9;
-color:#1e293b;
+
+color:#111827;
+
+}
+
+
+
+.app{
+
+display:flex;
 
 }
 
@@ -18,37 +30,41 @@ color:#1e293b;
 
 .sidebar{
 
-position:fixed;
-
-right:0;
-
-top:0;
-
 width:260px;
 
 height:100vh;
 
-background:
-linear-gradient(
-180deg,
-#0f172a,
-#1e293b
-);
+background:#0f172a;
 
+color:white;
 
-padding:30px 20px;
+position:fixed;
+
+left:0;
+
+top:0;
 
 }
 
 
 
-.sidebar h2{
+.logo{
 
-color:white;
+font-size:24px;
 
-text-align:center;
+font-weight:700;
 
-margin-bottom:40px;
+padding:25px;
+
+border-bottom:1px solid #334155;
+
+}
+
+
+
+.sidebar nav{
+
+padding:20px;
 
 }
 
@@ -58,17 +74,15 @@ margin-bottom:40px;
 
 display:block;
 
+padding:14px 18px;
+
+margin-bottom:8px;
+
 color:#cbd5e1;
 
 text-decoration:none;
 
-padding:14px;
-
 border-radius:10px;
-
-margin-bottom:10px;
-
-transition:.3s;
 
 }
 
@@ -76,7 +90,7 @@ transition:.3s;
 
 .sidebar a:hover{
 
-background:#334155;
+background:#2563eb;
 
 color:white;
 
@@ -86,13 +100,15 @@ color:white;
 
 .main{
 
-margin-right:260px;
+margin-left:260px;
+
+width:calc(100% - 260px);
 
 }
 
 
 
-header{
+.navbar{
 
 height:70px;
 
@@ -100,20 +116,20 @@ background:white;
 
 display:flex;
 
-justify-content:space-between;
-
 align-items:center;
+
+justify-content:space-between;
 
 padding:0 30px;
 
 box-shadow:
-0 2px 10px #0001;
+0 2px 10px rgba(0,0,0,.05);
 
 }
 
 
 
-.content{
+.page{
 
 padding:30px;
 
@@ -121,20 +137,18 @@ padding:30px;
 
 
 
-
 .card{
 
 background:white;
 
-border-radius:15px;
+border-radius:16px;
 
 padding:25px;
 
 box-shadow:
-0 5px 20px #0001;
+0 10px 25px rgba(0,0,0,.06);
 
 }
-
 
 
 
@@ -142,61 +156,42 @@ table{
 
 width:100%;
 
-background:white;
-
-border-radius:12px;
-
-overflow:hidden;
-
 border-collapse:collapse;
 
 }
 
 
-
 th{
 
-background:#0f172a;
+background:#f8fafc;
 
-color:white;
-
-padding:15px;
+text-align:left;
 
 }
 
 
-
-td{
+td,th{
 
 padding:15px;
 
-border-bottom:1px solid #eee;
+border-bottom:1px solid #e5e7eb;
 
 }
-
 
 
 
 button{
 
+border:0;
+
 background:#2563eb;
 
 color:white;
 
-border:0;
-
-padding:10px 20px;
+padding:10px 18px;
 
 border-radius:8px;
 
 cursor:pointer;
-
-}
-
-
-
-button:hover{
-
-background:#1d4ed8;
 
 }
