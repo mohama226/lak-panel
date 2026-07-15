@@ -10,6 +10,7 @@ users_api = Blueprint(
 )
 
 
+# ========================= List Users =========================
 @users_api.get("")
 def list_users():
 
@@ -23,12 +24,14 @@ def list_users():
             "traffic_limit": u.traffic_limit,
             "used_traffic": u.used_traffic,
             "status": u.status,
-            "server_id": u.server_id
+            "server_id": u.server_id,
+            "created_at": str(u.created_at)
         }
         for u in users
     ])
 
 
+# ========================= Create User =========================
 @users_api.post("")
 def create_user():
 
@@ -45,3 +48,43 @@ def create_user():
         "success": True,
         "id": user.id
     })
+
+
+# ========================= Delete User =========================
+@users_api.delete("/<int:user_id>")
+def delete_user(user_id):
+
+    user = UserService.get_by_id(user_id)
+
+    if not user:
+        return jsonify({"success": False}), 404
+
+    OcservService.delete_user(user.username)
+
+    UserService.delete(user)
+
+    return jsonify({"success": True})
+
+
+# ========================= Change Password =========================
+@users_api.post("/<int:user_id>/password")
+def password(user_id):
+
+    user = UserService.get_by_id(user_id)
+
+    if not user:
+        return jsonify({"success": False}), 404
+
+    data = request.get_json()
+
+    OcservService.change_password(
+        user.username,
+        data["password"]
+    )
+
+    UserService.update_password(
+        user,
+        data["password"]
+    )
+
+    return jsonify({"success": True})
