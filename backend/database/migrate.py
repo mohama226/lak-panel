@@ -11,22 +11,31 @@ def run_migrations():
     print("Running database migrations...")
 
     conn = psycopg2.connect(db_url)
-
     cur = conn.cursor()
 
-    migration_path = os.path.join(
+    # مسیر پوشهٔ migrations
+    migration_dir = os.path.join(
         os.path.dirname(__file__),
-        "migrations",
-        "001_add_user_columns.sql"
+        "migrations"
     )
 
-    with open(migration_path, "r") as file:
-        sql = file.read()
+    # اجرای همه فایل‌های SQL به ترتیب نام
+    for file_name in sorted(os.listdir(migration_dir)):
+        if file_name.endswith(".sql"):
 
-    cur.execute(sql)
+            migration_path = os.path.join(
+                migration_dir,
+                file_name
+            )
+
+            print("Running:", file_name)
+
+            with open(migration_path, "r") as file:
+                sql = file.read()
+
+            cur.execute(sql)
 
     conn.commit()
-
     cur.close()
     conn.close()
 
