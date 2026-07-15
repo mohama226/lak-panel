@@ -1,6 +1,7 @@
 [Unit]
 Description=L-Panel Web Panel
 After=network.target postgresql.service
+Wants=postgresql.service
 Requires=postgresql.service
 
 [Service]
@@ -11,15 +12,18 @@ Group=root
 
 WorkingDirectory=/opt/l-panel
 
-Environment="PATH=/opt/l-panel/venv/bin"
-
+# اجرای مستقیم از محیط مجازی (بهترین روش)
 ExecStart=/opt/l-panel/venv/bin/python3 /opt/l-panel/run.py
 
 Restart=always
 RestartSec=5
 
+# لاگ‌گیری
 StandardOutput=journal
 StandardError=journal
+
+# اختیاری اما توصیه‌شده
+Environment=PYTHONUNBUFFERED=1
 
 [Install]
 WantedBy=multi-user.target
