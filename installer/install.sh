@@ -34,6 +34,16 @@ python3 -m venv venv
 
 /opt/l-panel/venv/bin/pip install --upgrade pip
 /opt/l-panel/venv/bin/pip install -r requirements.txt
+
+echo "Initializing database..."
+
+cd /opt/l-panel
+
+/opt/l-panel/venv/bin/python3 -c "
+from backend import create_app
+app=create_app()
+print('Database initialized')
+"
 # ========================
 
 chmod +x /opt/l-panel/installer/*.sh
