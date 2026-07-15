@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="fa" dir="rtl">
 
 <head>
@@ -6,14 +7,12 @@
 <meta charset="UTF-8">
 
 <title>
-{% block title %}
-L-Panel
-{% endblock %}
+{% block title %}LAK PANEL{% endblock %}
 </title>
 
 
 <link rel="stylesheet"
-href="/static/css/style.css">
+href="/static/css/panel.css">
 
 
 </head>
@@ -24,29 +23,65 @@ href="/static/css/style.css">
 
 <div class="sidebar">
 
-<h2>
-L-Panel
-</h2>
+
+<div class="logo">
+
+🛡 LAK PANEL
+
+</div>
+
+
+
+<div class="menu">
+
+
+<div class="menu-title">
+MAIN
+</div>
 
 
 <a href="/">
-داشبورد
+🏠 Dashboard
 </a>
 
 
-<a href="/users">
-کاربران
+<a href="/users" class="active">
+👥 Users
 </a>
 
 
 <a href="/servers">
-سرورها
+🖥 Servers
 </a>
 
 
-<a href="/sessions">
-سشن ها
+<a>
+📁 Groups
 </a>
+
+
+
+<div class="menu-title">
+SYSTEM
+</div>
+
+
+<a>
+📜 Logs
+</a>
+
+
+<a>
+💾 Backup
+</a>
+
+
+<a>
+⚙ Settings
+</a>
+
+
+</div>
 
 
 </div>
@@ -56,22 +91,38 @@ L-Panel
 <div class="main">
 
 
-<header>
+<div class="topbar">
 
-<div>
-پنل مدیریت Ocserv
+
+<div class="page-title">
+
+<h1>
+{% block header %}
+Users
+{% endblock %}
+</h1>
+
+<span>
+Manage and monitor system
+</span>
+
+
 </div>
 
 
+
 <div>
-Admin
+
+🟢 Online
+
 </div>
 
-</header>
+
+</div>
 
 
 
-<section class="content">
+<div style="padding:35px">
 
 
 {% block content %}
@@ -79,14 +130,11 @@ Admin
 {% endblock %}
 
 
-</section>
-
+</div>
 
 
 </div>
 
-
-<script src="/static/js/app.js"></script>
 
 
 </body>
