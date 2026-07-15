@@ -1,59 +1,21 @@
-<!DOCTYPE html>
-<html lang="fa">
-<head>
-
-<title>L-Panel Users</title>
-
-<style>
-
-body{
-font-family:tahoma;
-direction:rtl;
-padding:30px;
-}
-
-table{
-width:100%;
-border-collapse:collapse;
-}
-
-td,th{
-border:1px solid #ddd;
-padding:10px;
-}
+{% extends "base.html" %}
 
 
-.active{
-color:green;
-}
-
-.disabled{
-color:red;
-}
-
-a{
-margin:5px;
-}
-
-</style>
-
-</head>
+{% block title %}
+Users
+{% endblock %}
 
 
-<body>
+
+{% block content %}
+
+
+<div class="card">
 
 
 <h2>
-مدیریت کاربران
+لیست کاربران
 </h2>
-
-
-<a href="/users/add">
-➕ افزودن کاربر
-</a>
-
-
-<br><br>
 
 
 <table>
@@ -61,15 +23,7 @@ margin:5px;
 <tr>
 
 <th>
-ID
-</th>
-
-<th>
 Username
-</th>
-
-<th>
-Traffic
 </th>
 
 <th>
@@ -77,21 +31,16 @@ Status
 </th>
 
 <th>
-Action
+Expire
 </th>
 
 </tr>
 
 
+
 {% for user in users %}
 
 <tr>
-
-
-<td>
-{{user.id}}
-</td>
-
 
 <td>
 {{user.username}}
@@ -99,40 +48,17 @@ Action
 
 
 <td>
-{{user.traffic_limit}}
-</td>
-
-
-<td>
-
-<span class="{{user.status}}">
 {{user.status}}
-</span>
-
 </td>
 
 
 <td>
-
-<a href="/users/edit/{{user.id}}">
-ویرایش
-</a>
-
-
-<a href="/users/toggle/{{user.id}}">
-تغییر وضعیت
-</a>
-
-
-<a href="/users/delete/{{user.id}}">
-حذف
-</a>
-
-
+{{user.expire_date}}
 </td>
 
 
 </tr>
+
 
 {% endfor %}
 
@@ -140,5 +66,7 @@ Action
 </table>
 
 
-</body>
-</html>
+</div>
+
+
+{% endblock %}
