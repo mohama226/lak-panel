@@ -12,11 +12,12 @@ Inter,
 Arial,
 sans-serif;
 
-background:var(---bg-main);
+background:#0b1220;
 
-color:var(--text);
+color:#e5e7eb;
 
 }
+
 
 
 a{
@@ -24,14 +25,5 @@ a{
 text-decoration:none;
 
 color:inherit;
-
-}
-
-
-button{
-
-font-family:inherit;
-
-cursor:pointer;
 
 }
