@@ -98,3 +98,14 @@ echo "Service: systemctl status l-panel"
 echo "Web Panel should be available shortly (check port in config)"
 
 bash /opt/l-panel/installer/post_install.sh
+
+# ========================
+# systemd + migration
+# ========================
+systemctl daemon-reload
+
+cd /opt/l-panel
+/opt/l-panel/venv/bin/python3 -m backend.database.migrate
+
+systemctl enable l-panel
+systemctl restart l-panel
