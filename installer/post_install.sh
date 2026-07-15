@@ -2,35 +2,20 @@
 
 set -e
 
-echo "==> Fix permissions..."
+source /opt/l-panel/installer/lib.sh
 
-find /opt/l-panel -type f -name "*.sh" -exec chmod +x {} \;
-chmod +x /opt/l-panel/scripts/l-panel
+echo "Running post install..."
 
-echo "==> Create symlink..."
+create_venv
 
-ln -sf /opt/l-panel/scripts/l-panel /usr/local/bin/l-panel
+install_python
 
-echo "==> Create Virtualenv..."
+fix_permissions
 
-if [ ! -d /opt/l-panel/venv ]; then
-    python3 -m venv /opt/l-panel/venv
-fi
+create_symlink
 
-echo "==> Install Python packages..."
+install_systemd
 
-/opt/l-panel/venv/bin/pip install --upgrade pip
-/opt/l-panel/venv/bin/pip install -r /opt/l-panel/requirements.txt
+restart_services
 
-echo "==> Install systemd..."
-
-cp -f /opt/l-panel/systemd/system/l-panel.service /etc/systemd/system/l-panel.service
-
-systemctl daemon-reload
-systemctl enable l-panel
-
-echo "==> Restart L-Panel..."
-
-systemctl restart l-panel
-
-echo "Done."
+echo "Finished."
