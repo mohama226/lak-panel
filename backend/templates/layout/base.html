@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<title>Lak Panel</title>
+
+
+<link rel="stylesheet" href="{{ url_for('static',filename='css/app.css') }}">
+<link rel="stylesheet" href="{{ url_for('static',filename='css/layout.css') }}">
+<link rel="stylesheet" href="{{ url_for('static',filename='css/components.css') }}">
+
+
+{% block css %}{% endblock %}
+
+</head>
+
+
+<body>
+
+
+<div class="panel">
+
+
+{% include 'layout/sidebar.html' %}
+
+
+<div class="main">
+
+
+{% include 'layout/header.html' %}
+
+
+<div class="content">
+
+{% block content %}
+
+{% endblock %}
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+<script src="{{ url_for('static',filename='js/app.js') }}"></script>
+
+{% block js %}{% endblock %}
+
+
+</body>
+
+</html>
