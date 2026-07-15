@@ -1,13 +1,31 @@
 .sidebar{
 
+
+position:fixed;
+
+left:0;
+
+top:0;
+
+bottom:0;
+
+
 width:290px;
-height:100vh;
-background:#071225;
-border-right:1px solid #182742;
 
-padding:28px;
 
-color:#dce7ff;
+background:
+linear-gradient(
+180deg,
+#071329,
+#050b1d
+);
+
+
+border-right:1px solid #172554;
+
+
+padding:25px;
+
 
 }
 
@@ -15,9 +33,15 @@ color:#dce7ff;
 
 .brand{
 
+
 display:flex;
-gap:15px;
+
 align-items:center;
+
+gap:15px;
+
+margin-bottom:45px;
+
 
 }
 
@@ -25,91 +49,124 @@ align-items:center;
 
 .logo{
 
+
 width:45px;
+
 height:45px;
 
-background:#1565ff;
-
-border-radius:14px;
 
 display:flex;
+
 align-items:center;
+
 justify-content:center;
 
-font-size:24px;
+
+background:#2563eb;
+
+
+border-radius:12px;
+
+
+font-size:25px;
+
 font-weight:bold;
+
 
 }
 
 
-
 .brand h2{
 
+
 margin:0;
-font-size:22px;
+
+font-size:20px;
+
 
 }
 
 
 .brand span{
 
+
+color:#94a3b8;
+
 font-size:12px;
-color:#8da2c7;
+
 
 }
 
 
 
-nav{
+.menu-title{
 
-margin-top:45px;
+
+margin:25px 0 12px;
+
+
+font-size:12px;
+
+
+color:#64748b;
+
 
 }
 
 
 
-nav a{
+.sidebar a{
 
-display:block;
 
-padding:14px 18px;
+display:flex;
 
-margin:8px 0;
 
-border-radius:12px;
+align-items:center;
 
-color:#b7c7e8;
 
-text-decoration:none;
+height:45px;
 
-transition:.3s;
+
+padding:0 15px;
+
+
+margin-bottom:8px;
+
+
+border-radius:10px;
+
+
+color:#cbd5e1;
+
+
+transition:.2s;
+
 
 }
 
 
 
-nav a:hover,
-nav a.active{
+.sidebar a:hover{
 
-background:linear-gradient(
-90deg,
-#1559ff,
-#173db8
-);
+
+background:#1d4ed8;
 
 
 color:white;
 
+
 }
 
 
 
-.section{
+.sidebar a.active{
 
-font-size:12px;
-color:#60739b;
 
-margin:25px 0 10px;
+background:#2563eb;
+
+
+color:white;
+
 
 }
 
@@ -117,18 +174,53 @@ margin:25px 0 10px;
 
 .system-box{
 
+
 position:absolute;
 
-bottom:35px;
 
-background:#0c1a33;
+bottom:25px;
 
-padding:20px;
 
-border-radius:15px;
+left:25px;
 
-width:230px;
 
-color:#8fa4ca;
+right:25px;
+
+
+padding:18px;
+
+
+border-radius:14px;
+
+
+background:#0b1734;
+
+
+border:1px solid #1e335c;
+
+
+}
+
+
+
+.system-box h4{
+
+
+margin:0 0 10px;
+
+}
+
+
+
+.system-box p{
+
+
+margin:0;
+
+font-size:13px;
+
+
+color:#22c55e;
+
 
 }
