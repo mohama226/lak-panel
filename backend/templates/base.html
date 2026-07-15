@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+
+<head>
+
+<meta charset="UTF-8">
+
+<title>
+{% block title %}
+L-Panel
+{% endblock %}
+</title>
+
+
+<link rel="stylesheet"
+href="/static/css/style.css">
+
+
+</head>
+
+
+<body>
+
+
+<div class="sidebar">
+
+<h2>
+L-Panel
+</h2>
+
+
+<a href="/">
+داشبورد
+</a>
+
+
+<a href="/users">
+کاربران
+</a>
+
+
+<a href="/servers">
+سرورها
+</a>
+
+
+<a href="/sessions">
+سشن ها
+</a>
+
+
+</div>
+
+
+
+<div class="main">
+
+
+<header>
+
+<div>
+پنل مدیریت Ocserv
+</div>
+
+
+<div>
+Admin
+</div>
+
+</header>
+
+
+
+<section class="content">
+
+
+{% block content %}
+
+{% endblock %}
+
+
+</section>
+
+
+
+</div>
+
+
+<script src="/static/js/app.js"></script>
+
+
+</body>
+
+</html>
