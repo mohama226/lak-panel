@@ -1,14 +1,9 @@
-import os
-
-
 class Config:
-    SECRET_KEY = os.environ.get(
-        "SECRET_KEY",
-        "lpanel-secret-key"
-    )
+
+    SECRET_KEY = "lpanel-secret-key"
 
     SQLALCHEMY_DATABASE_URI = (
-        "postgresql://lpanel_user:PASSWORD@localhost/lpanel"
+        "postgresql://lpanel_user:lpanel_pass@localhost/lpanel"
     )
 
     SQLALCHEMY_TRACK_MODIFICATIONS = False
