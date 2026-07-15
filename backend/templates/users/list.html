@@ -1,59 +1,184 @@
 {% extends "base.html" %}
 
 
-{% block title %}
-Users
-{% endblock %}
-
-
-
 {% block content %}
 
 
-<div class="card">
+<div class="cards">
 
+
+<div class="stat-card">
+
+<div class="icon">
+👥
+</div>
 
 <h2>
-لیست کاربران
+{{users|length}}
 </h2>
+
+Users
+
+</div>
+
+
+
+<div class="stat-card">
+
+<div class="icon">
+🟢
+</div>
+
+<h2>
+0
+</h2>
+
+Online
+
+</div>
+
+
+
+<div class="stat-card">
+
+<div class="icon">
+🖥
+</div>
+
+<h2>
+1
+</h2>
+
+Servers
+
+</div>
+
+
+
+<div class="stat-card">
+
+<div class="icon">
+📅
+</div>
+
+<h2>
+0
+</h2>
+
+Expiring
+
+</div>
+
+
+</div>
+
+
+
+
+
+<div class="table-box">
+
+
+<div class="table-header">
+
+<h2>
+Users List
+</h2>
+
+
+<input class="search"
+placeholder="Search users...">
+
+</div>
+
+
 
 
 <table>
 
+
 <tr>
 
 <th>
-Username
+User
 </th>
+
 
 <th>
 Status
 </th>
 
+
 <th>
 Expire
 </th>
+
+
+<th>
+Traffic
+</th>
+
+
+<th>
+Action
+</th>
+
 
 </tr>
 
 
 
+
 {% for user in users %}
+
 
 <tr>
 
+
 <td>
+
+<span class="avatar">
+{{user.username[0]}}
+</span>
+
+
 {{user.username}}
+
 </td>
 
 
+
 <td>
-{{user.status}}
+
+<span class="badge offline">
+
+Offline
+
+</span>
+
 </td>
 
 
+
 <td>
+
 {{user.expire_date}}
+
+</td>
+
+
+
+<td>
+
+-
+
+</td>
+
+
+<td>
+
+⋮
+
 </td>
 
 
@@ -63,10 +188,12 @@ Expire
 {% endfor %}
 
 
+
 </table>
 
 
 </div>
+
 
 
 {% endblock %}
