@@ -68,6 +68,24 @@ l-panel
 # ========================
 echo "Setting up and starting L-Panel service..."
 
+# بررسی وجود python در venv
+if [ ! -f /opt/l-panel/venv/bin/python3 ]; then
+    echo "Error: Python venv not properly created at /opt/l-panel/venv/bin/python3"
+    exit 1
+fi
+
+# اطمینان از فعال بودن PostgreSQL
+if ! systemctl is-active --quiet postgresql.service; then
+    echo "Starting and enabling PostgreSQL service..."
+    systemctl start postgresql.service
+    systemctl enable postgresql.service
+fi
+
+# اجرای مجدد setup_database برای اطمینان از ساخته شدن دیتابیس
+echo "Ensuring database is ready..."
+cd /opt/l-panel
+bash installer/setup_database.sh
+
 systemctl daemon-reload
 systemctl enable l-panel
 systemctl restart l-panel
