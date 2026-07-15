@@ -2,7 +2,6 @@ from flask import Flask
 from backend.extensions import db
 from backend.config import Config
 
-
 def create_app():
     app = Flask(__name__)
 
@@ -23,37 +22,21 @@ def create_app():
     with app.app_context():
         db.create_all()
 
-    # ======================== Routes ========================
+    # ======================== Blueprints ========================
+    from backend.routes import (
+        dashboard_bp,
+        users_bp,
+        servers_bp,
+        sessions_bp,
+        auth_bp
+    )
 
-    @app.route("/")
-    def index():
-        return """
-        <html>
-        <head>
-            <title>L-Panel</title>
-            <style>
-                body {
-                    font-family: Arial, sans-serif;
-                    text-align: center;
-                    padding: 50px;
-                    background-color: #f4f4f4;
-                }
-                h1 {
-                    color: #2c3e50;
-                }
-                p {
-                    color: #27ae60;
-                    font-size: 1.2em;
-                }
-            </style>
-        </head>
-        <body>
-            <h1>L-Panel</h1>
-            <p>✅ Panel is running successfully</p>
-        </body>
-        </html>
-        """
+    app.register_blueprint(dashboard_bp)
+    app.register_blueprint(users_bp)
+    app.register_blueprint(servers_bp)
+    app.register_blueprint(sessions_bp)
+    app.register_blueprint(auth_bp)
 
-    # TODO: بقیه روت‌ها را اینجا اضافه کنید
+    # از این به بعد مسیر "/" و سایر مسیرها از طریق Blueprint مدیریت می‌شوند
 
     return app
