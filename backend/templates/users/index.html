@@ -1,76 +1,253 @@
-{% extends "base.html" %}
+{% extends "layout/base.html" %}
 
-{% block title %}
-Users
+{% block css %}
+<link rel="stylesheet" href="{{ url_for('static',filename='css/users.css') }}">
 {% endblock %}
+
 
 {% block content %}
 
-<div class="card">
 
-<a href="/users/create">
-    <button>
-        + Create User
-    </button>
-</a>
+<div class="page-title">
+
+<div>
+<h1>Users</h1>
+<p>Manage and monitor all users</p>
+</div>
+
+
+<button class="create-user">
++ Create User
+</button>
+
+
+</div>
+
+
+
+<div class="stats">
+
+
+<div class="stat-card blue">
+
+<h2>{{ users|length }}</h2>
+<span>Total Users</span>
+
+</div>
+
+
+
+<div class="stat-card green">
+
+<h2>0</h2>
+<span>Online Users</span>
+
+</div>
+
+
+
+<div class="stat-card purple">
+
+<h2>1</h2>
+<span>Servers</span>
+
+</div>
+
+
+
+<div class="stat-card orange">
+
+<h2>3</h2>
+<span>Expiring Soon</span>
+
+</div>
+
+
+</div>
+
+
+
+
+
+<div class="users-box">
+
+
+<div class="users-header">
+
+
+<h2>Users List</h2>
+
+
+<div>
+
+<input placeholder="Search users..." class="search">
+
+
+<button class="filter">
+Filter
+</button>
+
+
+</div>
+
+
+</div>
+
+
+
 
 <table>
 
+
+<thead>
+
 <tr>
-    <th>Username</th>
-    <th>Status</th>
-    <th>Expire</th>
-    <th>Traffic</th>
-    <th>Actions</th>
+
+<th>
+#
+</th>
+
+<th>
+Username
+</th>
+
+<th>
+Status
+</th>
+
+
+<th>
+Group
+</th>
+
+
+<th>
+Server
+</th>
+
+
+<th>
+Traffic
+</th>
+
+
+<th>
+Expire
+</th>
+
+
+<th>
+Actions
+</th>
+
+
 </tr>
+
+
+</thead>
+
+
+
+<tbody>
+
 
 {% for user in users %}
+
+
 <tr>
-    <td>{{ user.username }}</td>
 
-    <td>
-        {% if user.status=="active" %}
-            <span class="online">Online</span>
-        {% else %}
-            <span class="badge">Blocked</span>
-        {% endif %}
-    </td>
 
-    <td>{{ user.expire_date or "-" }}</td>
+<td>
+<input type="checkbox">
+</td>
 
-    <td>
-        {{ user.used_traffic }} /
-        {{ user.traffic_limit }}
-    </td>
 
-    <td>
-        <a href="/users/profile/{{user.id}}">
-            Profile
-        </a>
 
-        &nbsp;
+<td>
 
-        <a href="/users/edit/{{user.id}}">
-            Edit
-        </a>
+<div class="username">
 
-        &nbsp;
+<div class="avatar">
+{{user.username[0]|upper}}
+</div>
 
-        <a href="/users/toggle/{{user.id}}">
-            Block
-        </a>
 
-        &nbsp;
+{{user.username}}
 
-        <a href="/users/delete/{{user.id}}">
-            Delete
-        </a>
-    </td>
+</div>
+
+</td>
+
+
+
+
+<td>
+
+<span class="status offline">
+
+● Offline
+
+</span>
+
+</td>
+
+
+
+<td>
+-
+</td>
+
+
+
+<td>
+Local
+</td>
+
+
+<td>
+
+{{user.used_traffic}}
+/
+{{user.traffic_limit}}
+
+</td>
+
+
+
+<td>
+
+{{user.expire_date}}
+
+</td>
+
+
+
+<td>
+
+
+<button class="action">
+⋮
+</button>
+
+
+</td>
+
+
 </tr>
+
+
+
 {% endfor %}
+
+
+</tbody>
+
 
 </table>
 
+
+
 </div>
+
 
 {% endblock %}
