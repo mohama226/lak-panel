@@ -32,7 +32,7 @@ def create_app():
     )
 
     app.register_blueprint(dashboard_bp)
-    app.register_blueprint(users_bp)
+    app.register_blueprint(users_bp)          # فقط همین یک بار
     app.register_blueprint(servers_bp)
     app.register_blueprint(sessions_bp)
     app.register_blueprint(auth_bp)
@@ -48,8 +48,6 @@ def create_app():
     app.register_blueprint(servers_api)
     app.register_blueprint(sessions_api)
 
-    # ======================== Extra Users Blueprint ========================
-    from backend.routes.users import users_bp as users_bp_extra
-    app.register_blueprint(users_bp_extra)
+    # هیچ ثبت اضافه‌ای برای users وجود ندارد
 
     return app
