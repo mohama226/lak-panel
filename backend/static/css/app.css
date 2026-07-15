@@ -1,5 +1,7 @@
 *{
+
 box-sizing:border-box;
+
 }
 
 
@@ -7,21 +9,37 @@ body{
 
 margin:0;
 
+background:#061124;
+
 font-family:
 Inter,
-Arial;
+Arial,
+sans-serif;
 
-background:#050d20;
-
-color:#fff;
+color:white;
 
 }
+
 
 
 .panel{
 
 display:flex;
 
-min-height:100vh;
+}
+
+
+
+.main{
+
+flex:1;
+
+}
+
+
+
+.content{
+
+padding:35px;
 
 }
