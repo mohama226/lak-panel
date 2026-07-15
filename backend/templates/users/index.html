@@ -1,169 +1,287 @@
-<!DOCTYPE html>
-<html>
-
-<head>
-
-<title>Users</title>
-
-<style>
-
-body{
-font-family:Arial;
-background:#f1f5f9;
-margin:0;
-}
+{% extends "layout/base.html" %}
 
 
-.sidebar{
-
-position:fixed;
-width:250px;
-height:100%;
-background:#071329;
-color:white;
-padding:25px;
-
-}
+{% block title %}
+Users - LAK PANEL
+{% endblock %}
 
 
-.content{
 
-margin-left:300px;
-padding:40px;
-
-}
+{% block css %}
+<link rel="stylesheet" href="/static/css/users.css">
+{% endblock %}
 
 
-.box{
 
-background:white;
-padding:30px;
-border-radius:20px;
-
-}
+{% block content %}
 
 
-table{
+<div class="page-head">
 
-width:100%;
-border-collapse:collapse;
-
-}
-
-
-td,th{
-
-padding:15px;
-border-bottom:1px solid #ddd;
-
-}
-
-button{
-
-background:#2563eb;
-color:white;
-border:0;
-padding:10px 20px;
-border-radius:8px;
-
-}
+<div>
+<h1>Users</h1>
+<p>Manage and monitor all users</p>
+</div>
 
 
-</style>
+<div class="create-btn">
++ Create User
+</div>
 
-
-</head>
-
-
-<body>
-
-
-<div class="sidebar">
-
-<h1>LAK PANEL</h1>
-
-<p>Dashboard</p>
-<p>Users</p>
-<p>Servers</p>
-<p>Settings</p>
 
 </div>
 
 
 
-<div class="content">
+<!-- Statistics -->
+
+<div class="stats">
 
 
-<div class="box">
+<div class="stat-card blue">
+
+<div class="icon">
+👥
+</div>
+
+<div>
+<span>Total Users</span>
+<strong>{{ users|length }}</strong>
+<small>All registered users</small>
+</div>
+
+</div>
 
 
-<h2>Users</h2>
 
 
-<a href="/users/create">
+<div class="stat-card green">
+
+<div class="icon">
+🟢
+</div>
+
+<div>
+<span>Online Users</span>
+<strong>0</strong>
+<small>Currently connected</small>
+</div>
+
+</div>
+
+
+
+
+<div class="stat-card purple">
+
+<div class="icon">
+🖥
+</div>
+
+<div>
+<span>Servers</span>
+<strong>1</strong>
+<small>Active servers</small>
+</div>
+
+</div>
+
+
+
+
+<div class="stat-card orange">
+
+<div class="icon">
+📅
+</div>
+
+<div>
+<span>Expiring Soon</span>
+<strong>0</strong>
+<small>Within 7 days</small>
+</div>
+
+</div>
+
+
+</div>
+
+
+
+
+
+<div class="users-box">
+
+
+<div class="box-header">
+
+
+<h2>
+Users List
+</h2>
+
+
+<div class="search">
+
+<input placeholder="Search users...">
 
 <button>
-+ Create User
+Filter
 </button>
 
-</a>
+</div>
+
+
+</div>
+
+
 
 
 
 <table>
 
 
+<thead>
+
 <tr>
 
+<th></th>
+
 <th>Username</th>
+
 <th>Status</th>
-<th>Expire</th>
+
+<th>Group</th>
+
+<th>Server</th>
+
 <th>Traffic</th>
+
+<th>Expire</th>
+
 <th>Actions</th>
 
 </tr>
 
+</thead>
+
+
+
+<tbody>
 
 
 {% for user in users %}
 
-
 <tr>
 
-<td>{{user.username}}</td>
-
-<td>{{user.status}}</td>
-
-<td>{{user.expire_date}}</td>
 
 <td>
-{{user.used_traffic}} / {{user.traffic_limit}}
+<input type="checkbox">
+</td>
+
+
+
+<td>
+
+<div class="username">
+
+<div class="avatar">
+{{ user.username[0]|upper }}
+</div>
+
+
+{{ user.username }}
+
+</div>
+
+</td>
+
+
+
+
+<td>
+
+<span class="status offline">
+● Offline
+</span>
+
+
+</td>
+
+
+
+
+<td>
+-
 </td>
 
 
 <td>
+Local
+</td>
 
-<a href="/users/{{user.id}}">Profile</a>
+
+<td>
+{{ user.used_traffic or 0 }}
+/
+{{ user.traffic_limit or 0 }}
+</td>
+
+
+
+<td>
+
+
+{% if user.expire_date %}
+
+{{ user.expire_date.strftime('%Y-%m-%d') }}
+
+{% else %}
+
+-
+
+{% endif %}
+
+
+</td>
+
+
+
+
+<td>
+
+<button class="action">
+⋮
+</button>
 
 </td>
 
 
 </tr>
+
 
 
 {% endfor %}
 
 
+</tbody>
+
 
 </table>
 
 
-</div>
+
+<div class="footer">
+
+Showing 1 to {{users|length}} users
 
 
 </div>
 
 
-</body>
+</div>
 
-</html>
+
+
+
+{% endblock %}
