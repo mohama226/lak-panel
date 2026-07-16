@@ -10,10 +10,9 @@ BIN_PATH="/usr/local/bin/l-panel"
 
 echo "[l-panel] نصب پیش‌نیازها..."
 
-# AlmaLinux / RHEL / CentOS
-sudo dnf install -y python3 python3-pip python3-virtualenv unzip curl
+sudo dnf install -y python3 python3-pip unzip curl
 
-# اگر virtualenv نبود، بسازیم
+# نصب virtualenv از pip (سازگار با AlmaLinux)
 if ! command -v virtualenv &> /dev/null; then
     echo "[l-panel] virtualenv پیدا نشد، نصب می‌کنیم..."
     sudo pip3 install virtualenv
