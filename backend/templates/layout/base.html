@@ -5,18 +5,18 @@
 
 <meta charset="UTF-8">
 
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>
-{% block title %}
-LAK PANEL
-{% endblock %}
+{% block title %}LAK PANEL{% endblock %}
 </title>
 
 
-<link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
-
-
-{% block css %}
-{% endblock %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/variables.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/core.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/components.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/pages.css') }}">
 
 
 </head>
@@ -25,10 +25,10 @@ LAK PANEL
 <body>
 
 
-<div class="wrapper">
+<div class="app">
 
 
-    {% include "layouts/sidebar.html" %}
+    {% include "layout/sidebar.html" %}
 
 
     <div class="main">
@@ -37,18 +37,20 @@ LAK PANEL
         {% include "layout/header.html" %}
 
 
-        <section class="content">
+        <main class="content">
 
             {% block content %}
+
             {% endblock %}
 
-        </section>
+        </main>
 
 
     </div>
 
 
 </div>
+
 
 
 </body>
