@@ -8,7 +8,6 @@ WorkingDirectory=/opt/l-panel
 ExecStart=/usr/local/bin/uvicorn app.main:app --host 0.0.0.0 --port 2096
 Restart=always
 RestartSec=5
-
 Environment="PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/usr/local/sbin"
 
 [Install]
