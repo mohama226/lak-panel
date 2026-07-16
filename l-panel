@@ -2,8 +2,16 @@
 
 cd /opt/l-panel
 
+# Load last update time
+if [ -f last_update.txt ]; then
+    LAST_UPDATE=$(cat last_update.txt)
+else
+    LAST_UPDATE="No updates yet"
+fi
+
 clear
 echo "===== l-panel ====="
+echo "Last update: $LAST_UPDATE"
 echo "1) Install l-panel"
 echo "2) Update l-panel"
 echo "3) Install ocserv 1.5.0"
@@ -15,6 +23,12 @@ case $opt in
     1) bash install/install.sh ;;
     2) bash install/update.sh ;;
     3) bash install/install_ocserv.sh ;;
-    4) uvicorn app.main:app --host 0.0.0.0 --port 8000 ;;
-    *) echo "Invalid option" ;;
+    4)
+        read -p "Enter panel port (default 2096): " PANELPORT
+        PANELPORT=${PANELPORT:-2096}
+        uvicorn app.main:app --host 0.0.0.0 --port $PANELPORT
+        ;;
+    *)
+        echo "Invalid option"
+        ;;
 esac
