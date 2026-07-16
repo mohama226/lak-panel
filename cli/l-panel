@@ -3,7 +3,9 @@
 set -Eeuo pipefail
 
 
-BASE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SCRIPT_PATH="$(readlink -f "${BASH_SOURCE[0]}")"
+
+BASE_DIR="$(dirname "$SCRIPT_PATH")"
 
 
 source "$BASE_DIR/lib/colors.sh"
