@@ -1,44 +1,107 @@
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
-
 <head>
     <meta charset="UTF-8">
-    <title>{% block title %}{% endblock %} - L-Panel</title>
+    <title>{% block title %}LAK PANEL{% endblock %}</title>
 
-    <!-- Bootstrap 5 -->
-    <link rel="stylesheet" href="/static/adminlte/bootstrap.min.css">
+    <!-- Bootstrap (CDN برای شروع) -->
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
 
     <!-- FontAwesome -->
-    <link rel="stylesheet" href="/static/adminlte/fontawesome.min.css">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
-    <!-- AdminLTE 4 Dark -->
-    <link rel="stylesheet" href="/static/adminlte/adminlte.dark.min.css">
-
-    <!-- Custom -->
-    <link rel="stylesheet" href="/static/css/custom.css">
+    <!-- استایل اختصاصی پنل -->
+    <link rel="stylesheet" href="/static/css/panel.css">
 </head>
+<body class="bg-dark text-light">
 
-<body class="layout-fixed sidebar-mini dark-mode">
+<div class="d-flex" style="min-height: 100vh;">
 
-<div class="wrapper">
+    <!-- Sidebar -->
+    <aside class="lak-sidebar">
+        <div class="lak-sidebar-header">
+            <span class="lak-logo">LAK PANEL</span>
+            <small class="text-muted d-block">Control Center</small>
+        </div>
 
-    {% include "layout/navbar.html" %}
-    {% include "layout/sidebar.html" %}
+        <nav class="lak-menu">
+            <a href="/dashboard" class="lak-menu-item">
+                <i class="fas fa-gauge"></i> داشبورد
+            </a>
+            <a href="/users" class="lak-menu-item">
+                <i class="fas fa-users"></i> کاربران
+            </a>
+            <a href="/online" class="lak-menu-item">
+                <i class="fas fa-signal"></i> کاربران آنلاین
+            </a>
+            <a href="/servers" class="lak-menu-item">
+                <i class="fas fa-server"></i> سرورها
+            </a>
+            <a href="/groups" class="lak-menu-item">
+                <i class="fas fa-layer-group"></i> گروه‌ها
+            </a>
+            <a href="/admins" class="lak-menu-item">
+                <i class="fas fa-user-shield"></i> مدیران
+            </a>
+            <a href="/logs" class="lak-menu-item">
+                <i class="fas fa-file-alt"></i> لاگ‌ها
+            </a>
+            <a href="/backups" class="lak-menu-item">
+                <i class="fas fa-database"></i> بکاپ‌ها
+            </a>
+            <a href="/restore" class="lak-menu-item">
+                <i class="fas fa-undo"></i> بازیابی
+            </a>
+            <a href="/settings" class="lak-menu-item">
+                <i class="fas fa-gear"></i> تنظیمات
+            </a>
+        </nav>
 
-    <div class="content-wrapper p-3">
+        <div class="lak-status-box">
+            <div class="fw-bold mb-1">
+                <i class="fas fa-circle text-success"></i> All systems operational
+            </div>
+            <small class="text-muted">
+                Server Time: {{ server_time }}
+            </small>
+        </div>
+    </aside>
 
-        {% block content %}
-        {% endblock %}
+    <!-- Main content -->
+    <main class="lak-main flex-grow-1">
 
-    </div>
+        <!-- Top bar -->
+        <header class="lak-topbar d-flex justify-content-between align-items-center">
+            <div>
+                <h5 class="mb-0">LAK PANEL Control Center</h5>
+                <small class="text-muted">{% block subtitle %}{% endblock %}</small>
+            </div>
+            <div class="d-flex align-items-center gap-3">
+                <div class="text-end">
+                    <div class="small">
+                        <span class="badge bg-success">Online</span>
+                    </div>
+                    <div class="small text-muted">
+                        {{ server_time }}
+                    </div>
+                </div>
+                <div class="lak-user-avatar">
+                    V
+                </div>
+            </div>
+        </header>
 
-    {% include "layout/footer.html" %}
+        <!-- Page content -->
+        <section class="lak-content">
+            {% block content %}{% endblock %}
+        </section>
+
+    </main>
 
 </div>
 
-<!-- Scripts -->
-<script src="/static/adminlte/bootstrap.bundle.min.js"></script>
-<script src="/static/adminlte/adminlte.min.js"></script>
-
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
