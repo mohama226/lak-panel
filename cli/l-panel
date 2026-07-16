@@ -1,44 +1,69 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-clear
+set -Eeuo pipefail
 
-echo "=============================="
-echo "        L-PANEL"
-echo "=============================="
+BASE_DIR="/opt/l-panel/cli"
 
-echo
+source "$BASE_DIR/lib/colors.sh"
+source "$BASE_DIR/lib/common.sh"
+source "$BASE_DIR/lib/version.sh"
 
-echo "Version 0.0.1"
+while true
+do
 
-echo
+show_header
 
-echo "1) Install Script"
+echo "1) Install L-Panel"
 echo "2) Install Ocserv 1.5.0"
-echo "3) Update Script"
-echo "4) Uninstall Script"
+echo "3) Update L-Panel"
+echo "4) Uninstall L-Panel"
 echo "0) Exit"
 
 echo
 
-read -p "Select: " option
+read -rp "Select: " OPTION
 
-case $option in
+case "$OPTION" in
+
 1)
-    echo "Coming Soon"
-    ;;
+
+    bash "$BASE_DIR/commands/install.sh"
+
+;;
+
 2)
-    echo "Coming Soon"
-    ;;
+
+    bash "$BASE_DIR/commands/ocserv.sh"
+
+;;
+
 3)
-    echo "Coming Soon"
-    ;;
+
+    bash "$BASE_DIR/commands/update.sh"
+
+;;
+
 4)
-    echo "Coming Soon"
-    ;;
+
+    bash "$BASE_DIR/commands/uninstall.sh"
+
+;;
+
 0)
+
+    clear
     exit
-    ;;
+
+;;
+
 *)
-    echo "Invalid Option"
-    ;;
+
+    fail "Invalid Option"
+
+    sleep 2
+
+;;
+
 esac
+
+done
