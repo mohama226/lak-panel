@@ -12,7 +12,7 @@ echo "Extracting..."
 
 unzip -q "$TMP_DIR/l-panel.zip" -d "$TMP_DIR"
 
-cd "$TMP_DIR"/l-panel-main
+cd "$TMP_DIR/l-panel-main"
 
 chmod +x installer/install.sh
 
