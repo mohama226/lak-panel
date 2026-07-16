@@ -1,8 +1,8 @@
 #!/bin/bash
 set -e
 
-PROJECT_DIR=$(dirname "$(readlink -f "$0")")
-cd "$PROJECT_DIR/.."
+PROJECT_DIR=$(cd "$(dirname "$0")/.."; pwd)
+cd "$PROJECT_DIR"
 
 echo "=== Installing l-panel ==="
 
