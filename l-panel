@@ -1,26 +1,27 @@
-read -p "Enter panel port (default 2096): " PANELPORT
-PANELPORT=${PANELPORT:-2096}
+#!/bin/bash
 
-echo "[+] Selected port: $PANELPORT"
+clear
+echo "===== l-panel ====="
+echo "Last update: 2026-07-17"
+echo "1) Install l-panel"
+echo "2) Update l-panel"
+echo "3) Install ocserv 1.5.0"
+echo "4) Run Web Panel"
+echo "-------------------"
+read -p "Choose: " CH
 
-# Stop systemd service if running
-if systemctl is-active --quiet lpanel; then
-    echo "[+] Stopping existing lpanel service..."
-    systemctl stop lpanel
-fi
+case $CH in
+    4)
+        read -p "Enter panel port (default 2096): " PANELPORT
+        PANELPORT=${PANELPORT:-2096}
 
-# Kill any uvicorn already running
-UVIPID=$(ps aux | grep "uvicorn app.main:app" | grep -v grep | awk '{print $2}')
-if [ ! -z "$UVIPID" ]; then
-    echo "[+] Killing existing uvicorn process: $UVIPID"
-    kill -9 $UVIPID
-fi
+        echo "[+] Updating service port..."
+        sed -i "s/--port [0-9]*/--port $PANELPORT/" /etc/systemd/system/lpanel.service
 
-# Check if port is free
-if ss -tulnp | grep ":$PANELPORT " > /dev/null; then
-    echo "[!] Port $PANELPORT is already in use. Cannot start panel."
-    exit 1
-fi
+        systemctl daemon-reload
+        echo "[+] Restarting panel service..."
+        systemctl restart lpanel
 
-echo "[+] Starting panel on port $PANELPORT..."
-uvicorn app.main:app --host 0.0.0.0 --port $PANELPORT
+        systemctl status lpanel --no-pager
+        ;;
+esac
