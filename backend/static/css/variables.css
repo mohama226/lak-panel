@@ -1,15 +1,24 @@
 :root{
 
---bg:#060b1a;
 
---panel:#0f172a;
+--bg:#050b1d;
 
---border:#1e293b;
+--panel:#0b1734;
+
+--panel2:#101d3b;
+
+--border:#1e335c;
+
 
 --primary:#2563eb;
+
 
 --text:#e5e7eb;
 
 --muted:#94a3b8;
+
+
+--success:#22c55e;
+
 
 }
