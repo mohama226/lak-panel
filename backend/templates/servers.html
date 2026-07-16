@@ -1,1 +1,105 @@
-#
+{% extends "base.html" %}
+
+{% block title %}Servers{% endblock %}
+{% block subtitle %}مدیریت سرورها{% endblock %}
+
+{% block content %}
+
+<!-- Cards Row -->
+<div class="lak-cards-row">
+
+    <div class="lak-card">
+        <div class="lak-card-title">Total Servers</div>
+        <div class="lak-card-value">{{ stats.total_servers }}</div>
+    </div>
+
+    <div class="lak-card">
+        <div class="lak-card-title">Active Servers</div>
+        <div class="lak-card-value">{{ stats.active_servers }}</div>
+    </div>
+
+    <div class="lak-card">
+        <div class="lak-card-title">Offline Servers</div>
+        <div class="lak-card-value">{{ stats.offline_servers }}</div>
+    </div>
+
+    <div class="lak-card">
+        <div class="lak-card-title">Load Average</div>
+        <div class="lak-card-value">{{ stats.load_avg }}</div>
+    </div>
+
+</div>
+
+<!-- Table -->
+<div class="lak-table-card">
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h6 class="mb-0">لیست سرورها</h6>
+        <a href="/servers/create" class="btn btn-success">
+            <i class="fas fa-plus"></i> افزودن سرور جدید
+        </a>
+    </div>
+
+    <table class="table lak-table">
+        <thead>
+        <tr>
+            <th>نام سرور</th>
+            <th>آدرس</th>
+            <th>وضعیت</th>
+            <th>کاربران آنلاین</th>
+            <th>بار سرور</th>
+            <th>عملیات</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        {% for server in servers %}
+        <tr>
+
+            <!-- Server Name -->
+            <td>{{ server.name }}</td>
+
+            <!-- IP / Host -->
+            <td>{{ server.host }}</td>
+
+            <!-- Status -->
+            <td>
+                {% if server.status == "online" %}
+                    <span class="badge bg-success">آنلاین</span>
+                {% else %}
+                    <span class="badge bg-danger">آفلاین</span>
+                {% endif %}
+            </td>
+
+            <!-- Online Users -->
+            <td>{{ server.online_users }}</td>
+
+            <!-- Load -->
+            <td>{{ server.load }}</td>
+
+            <!-- Actions -->
+            <td class="lak-actions">
+
+                <a href="/servers/view/{{ server.id }}" class="btn btn-info btn-sm">
+                    <i class="fas fa-eye"></i>
+                </a>
+
+                <a href="/servers/edit/{{ server.id }}" class="btn btn-warning btn-sm">
+                    <i class="fas fa-edit"></i>
+                </a>
+
+                <a href="/servers/delete/{{ server.id }}" class="btn btn-danger btn-sm">
+                    <i class="fas fa-trash"></i>
+                </a>
+
+            </td>
+
+        </tr>
+        {% endfor %}
+        </tbody>
+
+    </table>
+
+</div>
+
+{% endblock %}
