@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>{% block title %}LAK PANEL{% endblock %}</title>
 
-    <!-- Bootstrap (CDN برای شروع) -->
+    <!-- Bootstrap -->
     <link rel="stylesheet"
           href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
 
@@ -12,14 +12,15 @@
     <link rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
-    <!-- استایل اختصاصی پنل -->
+    <!-- Custom Panel Style -->
     <link rel="stylesheet" href="/static/css/panel.css">
 </head>
+
 <body class="bg-dark text-light">
 
-<div class="d-flex" style="min-height: 100vh;">
+<div class="lak-wrapper">
 
-    <!-- Sidebar -->
+    <!-- Sidebar (LEFT) -->
     <aside class="lak-sidebar">
         <div class="lak-sidebar-header">
             <span class="lak-logo">LAK PANEL</span>
@@ -69,31 +70,27 @@
         </div>
     </aside>
 
-    <!-- Main content -->
-    <main class="lak-main flex-grow-1">
+    <!-- Main Content -->
+    <main class="lak-main">
 
-        <!-- Top bar -->
+        <!-- Top Header -->
         <header class="lak-topbar d-flex justify-content-between align-items-center">
             <div>
                 <h5 class="mb-0">LAK PANEL Control Center</h5>
                 <small class="text-muted">{% block subtitle %}{% endblock %}</small>
             </div>
+
             <div class="d-flex align-items-center gap-3">
                 <div class="text-end">
-                    <div class="small">
-                        <span class="badge bg-success">Online</span>
-                    </div>
-                    <div class="small text-muted">
-                        {{ server_time }}
-                    </div>
+                    <span class="badge bg-success">Online</span>
+                    <div class="small text-muted">{{ server_time }}</div>
                 </div>
-                <div class="lak-user-avatar">
-                    V
-                </div>
+
+                <div class="lak-user-avatar">V</div>
             </div>
         </header>
 
-        <!-- Page content -->
+        <!-- Page Content -->
         <section class="lak-content">
             {% block content %}{% endblock %}
         </section>
