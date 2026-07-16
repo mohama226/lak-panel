@@ -1,7 +1,8 @@
 #!/bin/bash
 set -e
 
-cd /opt/l-panel
+PROJECT_DIR=$(dirname "$(readlink -f "$0")")
+cd "$PROJECT_DIR/.."
 
 echo "[+] Updating l-panel..."
 git pull
