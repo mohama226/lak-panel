@@ -44,9 +44,7 @@ require_root() {
 mkdirs() {
 
     mkdir -p "$INSTALL_DIR"
-
     mkdir -p "$CONFIG_DIR"
-
     mkdir -p "$LOG_DIR"
 
 }
@@ -80,13 +78,9 @@ mark_removed() {
 get_version() {
 
     if [[ -f "$VERSION_FILE" ]]; then
-
         cat "$VERSION_FILE"
-
     else
-
         echo "Unknown"
-
     fi
 
 }
@@ -96,21 +90,20 @@ get_version() {
 get_last_update() {
 
     if [[ -f "$LAST_UPDATE_FILE" ]]; then
-
         cat "$LAST_UPDATE_FILE"
-
     else
-
         echo "Never"
-
     fi
 
 }
 
 ########################################
+# NEW save_last_update (updated as requested)
+########################################
 
 save_last_update() {
 
+    mkdir -p "$INSTALL_DIR"
     date "+%Y-%m-%d %H:%M:%S" > "$LAST_UPDATE_FILE"
 
 }
