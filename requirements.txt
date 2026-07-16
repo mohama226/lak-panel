@@ -3,3 +3,4 @@ uvicorn
 sqlalchemy
 psycopg2
 python-dotenv
+pip3 install -r requirements.txt
