@@ -1,6 +1,5 @@
 fastapi
-uvicorn[standard]
-SQLAlchemy
-asyncpg
-jinja2
+uvicorn
+sqlalchemy
+psycopg2
 python-dotenv
