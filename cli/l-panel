@@ -1,0 +1,44 @@
+#!/bin/bash
+
+clear
+
+echo "=============================="
+echo "        L-PANEL"
+echo "=============================="
+
+echo
+
+echo "Version 0.0.1"
+
+echo
+
+echo "1) Install Script"
+echo "2) Install Ocserv 1.5.0"
+echo "3) Update Script"
+echo "4) Uninstall Script"
+echo "0) Exit"
+
+echo
+
+read -p "Select: " option
+
+case $option in
+1)
+    echo "Coming Soon"
+    ;;
+2)
+    echo "Coming Soon"
+    ;;
+3)
+    echo "Coming Soon"
+    ;;
+4)
+    echo "Coming Soon"
+    ;;
+0)
+    exit
+    ;;
+*)
+    echo "Invalid Option"
+    ;;
+esac
