@@ -1,0 +1,18 @@
+#!/bin/bash
+
+clear
+echo "===== l-panel ====="
+echo "1) Install l-panel"
+echo "2) Update l-panel"
+echo "3) Install ocserv 1.5.0"
+echo "4) Run Web Panel"
+echo "-------------------"
+read -p "Choose: " opt
+
+case $opt in
+    1) bash install/install.sh ;;
+    2) bash install/update.sh ;;
+    3) bash install/install_ocserv.sh ;;
+    4) uvicorn app.main:app --host 0.0.0.0 --port 8000 ;;
+    *) echo "Invalid option" ;;
+esac
