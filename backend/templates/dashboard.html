@@ -1,28 +1,90 @@
 {% extends "base.html" %}
 
-
 {% block title %}
 Dashboard
 {% endblock %}
 
-
-
 {% block content %}
 
-
-<div class="card">
-
-<h1>
-داشبورد مدیریت
-</h1>
-
-
-<p>
-L-Panel آماده مدیریت Ocserv می باشد
-</p>
-
-
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1 class="m-0 text-light">داشبورد مدیریت</h1>
+            </div>
+        </div>
+    </div>
 </div>
 
+<section class="content">
+    <div class="container-fluid">
+
+        <!-- Info Boxes -->
+        <div class="row">
+
+            <div class="col-lg-3 col-6">
+                <div class="small-box bg-primary">
+                    <div class="inner">
+                        <h3>Ocserv</h3>
+                        <p>پنل آماده مدیریت است</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-server"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-6">
+                <div class="small-box bg-success">
+                    <div class="inner">
+                        <h3>{{ users_count }}</h3>
+                        <p>کاربران فعال</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-6">
+                <div class="small-box bg-warning">
+                    <div class="inner">
+                        <h3>{{ servers_count }}</h3>
+                        <p>سرورها</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-network-wired"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-6">
+                <div class="small-box bg-danger">
+                    <div class="inner">
+                        <h3>{{ sessions_count }}</h3>
+                        <p>سشن‌های فعال</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-plug"></i>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Description Card -->
+        <div class="card bg-dark text-light">
+            <div class="card-header">
+                <h3 class="card-title">اطلاعات پنل</h3>
+            </div>
+            <div class="card-body">
+                <p>
+                    L-Panel با موفقیت راه‌اندازی شده و آماده مدیریت Ocserv می‌باشد.
+                </p>
+            </div>
+        </div>
+
+    </div>
+</section>
 
 {% endblock %}
