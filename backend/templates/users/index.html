@@ -1,287 +1,102 @@
-{% extends "layout/base.html" %}
-
+{% extends "base.html" %}
 
 {% block title %}
-Users - LAK PANEL
+Users
 {% endblock %}
-
-
-
-{% block css %}
-<link rel="stylesheet" href="/static/css/users.css">
-{% endblock %}
-
-
 
 {% block content %}
 
-
-<div class="page-head">
-
-<div>
-<h1>Users</h1>
-<p>Manage and monitor all users</p>
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1 class="m-0 text-light">مدیریت کاربران</h1>
+            </div>
+            <div class="col-sm-6 text-end">
+                <a href="/users/create" class="btn btn-success">
+                    <i class="fas fa-user-plus"></i>
+                    افزودن کاربر جدید
+                </a>
+            </div>
+        </div>
+    </div>
 </div>
 
-
-<div class="create-btn">
-+ Create User
-</div>
-
-
-</div>
-
-
-
-<!-- Statistics -->
-
-<div class="stats">
-
-
-<div class="stat-card blue">
-
-<div class="icon">
-👥
-</div>
-
-<div>
-<span>Total Users</span>
-<strong>{{ users|length }}</strong>
-<small>All registered users</small>
-</div>
-
-</div>
-
-
-
-
-<div class="stat-card green">
-
-<div class="icon">
-🟢
-</div>
-
-<div>
-<span>Online Users</span>
-<strong>0</strong>
-<small>Currently connected</small>
-</div>
-
-</div>
-
-
-
-
-<div class="stat-card purple">
-
-<div class="icon">
-🖥
-</div>
-
-<div>
-<span>Servers</span>
-<strong>1</strong>
-<small>Active servers</small>
-</div>
-
-</div>
-
-
-
-
-<div class="stat-card orange">
-
-<div class="icon">
-📅
-</div>
-
-<div>
-<span>Expiring Soon</span>
-<strong>0</strong>
-<small>Within 7 days</small>
-</div>
-
-</div>
-
-
-</div>
-
-
-
-
-
-<div class="users-box">
-
-
-<div class="box-header">
-
-
-<h2>
-Users List
-</h2>
-
-
-<div class="search">
-
-<input placeholder="Search users...">
-
-<button>
-Filter
-</button>
-
-</div>
-
-
-</div>
-
-
-
-
-
-<table>
-
-
-<thead>
-
-<tr>
-
-<th></th>
-
-<th>Username</th>
-
-<th>Status</th>
-
-<th>Group</th>
-
-<th>Server</th>
-
-<th>Traffic</th>
-
-<th>Expire</th>
-
-<th>Actions</th>
-
-</tr>
-
-</thead>
-
-
-
-<tbody>
-
-
-{% for user in users %}
-
-<tr>
-
-
-<td>
-<input type="checkbox">
-</td>
-
-
-
-<td>
-
-<div class="username">
-
-<div class="avatar">
-{{ user.username[0]|upper }}
-</div>
-
-
-{{ user.username }}
-
-</div>
-
-</td>
-
-
-
-
-<td>
-
-<span class="status offline">
-● Offline
-</span>
-
-
-</td>
-
-
-
-
-<td>
--
-</td>
-
-
-<td>
-Local
-</td>
-
-
-<td>
-{{ user.used_traffic or 0 }}
-/
-{{ user.traffic_limit or 0 }}
-</td>
-
-
-
-<td>
-
-
-{% if user.expire_date %}
-
-{{ user.expire_date.strftime('%Y-%m-%d') }}
-
-{% else %}
-
--
-
-{% endif %}
-
-
-</td>
-
-
-
-
-<td>
-
-<button class="action">
-⋮
-</button>
-
-</td>
-
-
-</tr>
-
-
-
-{% endfor %}
-
-
-</tbody>
-
-
-</table>
-
-
-
-<div class="footer">
-
-Showing 1 to {{users|length}} users
-
-
-</div>
-
-
-</div>
-
-
-
+<section class="content">
+    <div class="container-fluid">
+
+        <div class="card bg-dark text-light">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="fas fa-users"></i>
+                    لیست کاربران
+                </h3>
+            </div>
+
+            <div class="card-body p-0">
+
+                <table class="table table-dark table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>نام کاربری</th>
+                            <th>وضعیت</th>
+                            <th>انقضا</th>
+                            <th>ترافیک</th>
+                            <th class="text-center">عملیات</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for user in users %}
+                        <tr>
+
+                            <td>{{ user.username }}</td>
+
+                            <td>
+                                {% if user.status == "active" %}
+                                    <span class="badge bg-success">فعال</span>
+                                {% else %}
+                                    <span class="badge bg-danger">مسدود</span>
+                                {% endif %}
+                            </td>
+
+                            <td>{{ user.expire_date or "-" }}</td>
+
+                            <td>
+                                {{ user.used_traffic }} /
+                                {{ user.traffic_limit }}
+                            </td>
+
+                            <td class="text-center">
+
+                                <a href="/users/profile/{{ user.id }}" class="btn btn-sm btn-info">
+                                    <i class="fas fa-id-card"></i>
+                                </a>
+
+                                <a href="/users/edit/{{ user.id }}" class="btn btn-sm btn-warning">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+
+                                <a href="/users/toggle/{{ user.id }}" class="btn btn-sm btn-secondary">
+                                    <i class="fas fa-ban"></i>
+                                </a>
+
+                                <a href="/users/delete/{{ user.id }}" class="btn btn-sm btn-danger">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+
+                            </td>
+
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+
+                </table>
+
+            </div>
+        </div>
+
+    </div>
+</section>
 
 {% endblock %}
