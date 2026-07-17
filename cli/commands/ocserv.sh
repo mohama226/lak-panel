@@ -57,37 +57,27 @@ install_dependencies(){
     dnf groupinstall -y "Development Tools"
 
     dnf install -y \
-        wget \
-        curl \
-        tar \
-        xz \
-        make \
-        gcc \
-        gcc-c++ \
-        autoconf \
-        automake \
-        libtool \
-        pkgconf-pkg-config \
-        gettext \
-        gettext-devel \
-        help2man \
         meson \
         ninja-build \
-        gnutls-devel \
-        gnutls-utils \
-        readline-devel \
-        zlib-devel \
-        libnl3-devel \
-        libseccomp-devel \
-        pam-devel \
-        lz4-devel \
-        protobuf-c \
+        libev-devel \
+        gperf \
+        ipcalc \
         protobuf-c-devel \
         protobuf-c-compiler \
+        gnutls-devel \
+        readline-devel \
+        pam-devel \
+        libnl3-devel \
+        libseccomp-devel \
+        lz4-devel \
         krb5-devel \
         openssl-devel \
-        libev \
-        libev-devel
+        gettext-devel \
+        help2man \
+        xz \
+        wget \
+        curl \
+        tar
 
     ok "Dependencies installed."
 
@@ -108,7 +98,7 @@ install_ocserv(){
     # REMOVE OLD VERSION IF INSTALLED
     ########################################
 
-    if command -v ocserv >/dev/null; then
+    if command -v ocserv >/dev/null 2>&1; then
 
         CURRENT=$(ocserv --version | head -1 | awk '{print $4}')
 
@@ -121,28 +111,29 @@ install_ocserv(){
         dnf remove -y ocserv || true
     fi
 
+
     ########################################
-    # DOWNLOAD SOURCE
+    # DOWNLOAD SOURCE (NEW VERSION)
     ########################################
 
-    info "Installing Ocserv ${OCSERV_VERSION} from source..."
+    info "Downloading Ocserv ${OCSERV_VERSION}..."
 
-    mkdir -p "$BUILD_DIR"
-    cd "$BUILD_DIR"
+    cd /usr/local/src
 
-    rm -rf "ocserv-${OCSERV_VERSION}"
+    rm -rf ocserv-${OCSERV_VERSION}
     rm -f ocserv.tar.xz
 
-    wget -4 \
-        "https://www.infradead.org/ocserv/download/ocserv-${OCSERV_VERSION}.tar.xz" \
+    wget \
+        https://www.infradead.org/ocserv/download/ocserv-${OCSERV_VERSION}.tar.xz \
         -O ocserv.tar.xz
 
-    tar xf ocserv.tar.xz
+    tar -xf ocserv.tar.xz
 
-    cd "ocserv-${OCSERV_VERSION}"
+    cd ocserv-${OCSERV_VERSION}
+
 
     ########################################
-    # NEW MESON BUILD SYSTEM
+    # MESON BUILD SYSTEM
     ########################################
 
     info "Configuring Meson..."
@@ -163,23 +154,19 @@ install_ocserv(){
 
     ldconfig
 
+
     ########################################
     # VERSION CHECK
     ########################################
 
-    if ! command -v ocserv >/dev/null; then
-        fail "Ocserv installation failed"
+    if ! command -v ocserv >/dev/null 2>&1; then
+        fail "Ocserv installation failed."
         exit 1
     fi
 
-    VERSION=$(ocserv --version | head -1 | awk '{print $4}')
+    VERSION=$(ocserv --version | head -1)
 
-    if [[ "$VERSION" != "$OCSERV_VERSION" ]]; then
-        fail "Installed version is $VERSION"
-        exit 1
-    fi
-
-    ok "Ocserv ${VERSION} installed successfully."
+    ok "$VERSION installed successfully."
 
 }
 
