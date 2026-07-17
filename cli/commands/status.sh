@@ -1,14 +1,36 @@
 #!/usr/bin/env bash
 
-SCRIPT_PATH="$(readlink -f "${BASH_SOURCE[0]}")"
-SCRIPT_DIR="$(dirname "$SCRIPT_PATH")"
-CLI_DIR="$(dirname "$SCRIPT_DIR")"
+source "$(dirname "$0")/../lib/colors.sh"
+source "$(dirname "$0")/../lib/common.sh"
 
-source "$CLI_DIR/lib/colors.sh"
-source "$CLI_DIR/lib/common.sh"
+header "SYSTEM STATUS"
 
-title
+printf "%-20s %s\n" "L-Panel" "$(panel_status)"
+printf "%-20s %s\n" "Version" "$(get_version)"
+printf "%-20s %s\n" "Last Update" "$(get_last_update)"
 
-warn "Coming Soon..."
+echo
+
+if command_exists ocserv
+then
+    OCVERSION=$(ocserv -v | head -1)
+
+    printf "%-20s %s\n" "Ocserv" "Installed"
+    printf "%-20s %s\n" "Version" "$OCVERSION"
+    printf "%-20s %s\n" "Service" "$(service_status ocserv)"
+
+else
+
+    printf "%-20s %s\n" "Ocserv" "Not Installed"
+
+fi
+
+echo
+
+printf "%-20s %s\n" "Firewalld" "$(service_status firewalld)"
+printf "%-20s %s\n" "Fail2Ban" "$(service_status fail2ban)"
+printf "%-20s %s\n" "PostgreSQL" "$(service_status postgresql)"
+
+echo
 
 pause
