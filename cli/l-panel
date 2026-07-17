@@ -1,13 +1,42 @@
 #!/usr/bin/env bash
 
-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+set -Eeuo pipefail
+
+########################################
+# Resolve real script path
+########################################
+
+SCRIPT_PATH="$(readlink -f "${BASH_SOURCE[0]}")"
+SCRIPT_DIR="$(dirname "$SCRIPT_PATH")"
+
+########################################
+# Check installation
+########################################
+
+if [[ ! -d "$SCRIPT_DIR/lib" ]]; then
+    echo
+    echo "L-Panel installation is corrupted."
+    echo "Expected directory:"
+    echo "  $SCRIPT_DIR/lib"
+    echo
+    exit 1
+fi
+
+########################################
+# Load libraries
+########################################
 
 source "$SCRIPT_DIR/lib/colors.sh"
 source "$SCRIPT_DIR/lib/common.sh"
 source "$SCRIPT_DIR/commands/menu.sh"
 
+########################################
+# Main Loop
+########################################
+
 while true
 do
+
     show_menu
 
     read -rp "Select option: " OPTION
@@ -31,10 +60,12 @@ do
         ;;
 
         0)
+            clear
             exit 0
         ;;
 
         *)
+            echo
             echo "Invalid option."
             sleep 1
         ;;
