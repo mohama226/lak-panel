@@ -183,6 +183,7 @@ create_directories(){
     mkdir -p /var/lib/ocserv
     mkdir -p /var/log/ocserv
     mkdir -p /var/run/ocserv
+    mkdir -p /run
 
     ok "Directories created."
 
@@ -264,6 +265,15 @@ udp-port = $PORT
 server-cert = $CONFIG_DIR/server-cert.pem
 server-key = $CONFIG_DIR/server-key.pem
 
+socket-file = /run/ocserv-socket
+
+run-as-user = nobody
+run-as-group = nobody
+
+device = vpns
+
+pid-file = /run/ocserv.pid
+
 isolate-workers = true
 
 max-clients = 500
@@ -328,9 +338,14 @@ After=network.target
 
 [Service]
 Type=simple
-ExecStart=/usr/sbin/ocserv -c $CONFIG_FILE
+ExecStart=/usr/sbin/ocserv \
+    -c /etc/ocserv/ocserv.conf \
+    --foreground
 Restart=always
 RestartSec=5
+
+RuntimeDirectory=ocserv
+RuntimeDirectoryMode=755
 
 [Install]
 WantedBy=multi-user.target
