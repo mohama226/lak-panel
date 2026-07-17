@@ -2,131 +2,306 @@
 
 set -Eeuo pipefail
 
-# ================================
-# New path resolver (as requested)
-# ================================
-
-SCRIPT_PATH="$(readlink -f "${BASH_SOURCE[0]}")"
-SCRIPT_DIR="$(dirname "$SCRIPT_PATH")"
-CLI_DIR="$(dirname "$SCRIPT_DIR")"
-
-source "$CLI_DIR/lib/colors.sh"
-source "$CLI_DIR/lib/common.sh"
-
-# ================================
-
-require_root
 
 #############################################
-# Confirm
+# L-PANEL Uninstall Manager
 #############################################
 
-confirm_remove(){
+
+INSTALL_DIR="/opt/l-panel"
+
+BACKUP_DIR="/opt/l-panel-backups"
+
+BIN_FILE="/usr/local/bin/l-panel"
+
+CONFIG_DIR="/etc/l-panel"
+
+
+
+#############################################
+# Load Libraries
+#############################################
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+BASE_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
+
+
+source "$BASE_DIR/cli/lib/colors.sh"
+source "$BASE_DIR/cli/lib/common.sh"
+
+
+
+#############################################
+# Header
+#############################################
+
+
+clear
+
+title
+
+
+echo
+
+echo "=============================================="
+
+echo "          L-PANEL UNINSTALL"
+
+echo "=============================================="
+
+echo
+
+
+
+#############################################
+# Check
+#############################################
+
+
+if [[ ! -d "$INSTALL_DIR" ]]; then
 
     echo
-    warn "This will remove L-Panel files."
+
+    fail "L-Panel installation not found."
+
+    pause
+
+    exit 1
+
+fi
+
+
+
+#############################################
+# Information
+#############################################
+
+
+echo "Installation directory:"
+
+echo "$INSTALL_DIR"
+
+
+echo
+
+echo "Binary command:"
+
+echo "$BIN_FILE"
+
+
+echo
+
+echo "Configuration directory:"
+
+echo "$CONFIG_DIR"
+
+
+
+echo
+
+echo "Files will be removed:"
+
+echo "--------------------------------"
+
+
+du -sh "$INSTALL_DIR"
+
+echo "$INSTALL_DIR"
+
+echo "$BIN_FILE"
+
+
+
+#############################################
+# Backup
+#############################################
+
+
+echo
+
+read -rp "Create backup before uninstall? (y/n): " BACKUP
+
+
+
+if [[ "$BACKUP" == "y" ]]; then
+
+
+    mkdir -p "$BACKUP_DIR"
+
+
+    BACKUP_FILE="$BACKUP_DIR/l-panel-uninstall-$(date +%Y%m%d-%H%M%S).tar.gz"
+
+
     echo
 
-    read -rp "Continue? (yes/no): " ANSWER
+    echo "[+] Creating backup..."
 
-    if [[ "$ANSWER" != "yes" ]]; then
-        info "Cancelled."
-        exit 0
-    fi
-}
+
+    tar -czf "$BACKUP_FILE" \
+        -C /opt \
+        l-panel
+
+
+    echo
+
+    ok "Backup created"
+
+    echo "$BACKUP_FILE"
+
+
+fi
+
+
+
+#############################################
+# Ocserv Config
+#############################################
+
+
+echo
+
+read -rp "Keep Ocserv configuration? (y/n): " KEEP_OCSERV
+
+
+
+if [[ "$KEEP_OCSERV" == "y" ]]; then
+
+
+    echo
+
+    echo "Ocserv configuration kept."
+
+else
+
+
+    echo
+
+    echo "Ocserv configuration will be removed."
+
+fi
+
+
+
+#############################################
+# Confirmation
+#############################################
+
+
+echo
+
+echo "WARNING!"
+
+echo "This action cannot be undone."
+
+echo
+
+
+read -rp "Type REMOVE to continue: " CONFIRM
+
+
+
+if [[ "$CONFIRM" != "REMOVE" ]]; then
+
+
+    echo
+
+    echo "Cancelled."
+
+    exit 0
+
+fi
+
+
 
 #############################################
 # Stop Services
 #############################################
 
-stop_services(){
 
-    info "Stopping services..."
+echo
 
-    if systemctl list-unit-files | grep -q l-panel.service; then
-        systemctl stop l-panel || true
-        systemctl disable l-panel || true
-    fi
+echo "[+] Stopping services..."
 
-    if systemctl list-unit-files | grep -q ocserv.service; then
-        systemctl stop ocserv || true
-        systemctl disable ocserv || true
-    fi
 
-    ok "Services stopped."
-}
+
+if systemctl list-unit-files | grep -q ocserv.service; then
+
+    systemctl stop ocserv || true
+
+fi
+
+
 
 #############################################
-# Remove System Files
+# Remove Command
 #############################################
 
-remove_files(){
 
-    info "Removing files..."
+echo
 
-    rm -rf /opt/l-panel
-    rm -rf /etc/l-panel
-    rm -rf /var/log/l-panel
-    rm -f /usr/local/bin/l-panel
+echo "[+] Removing command..."
 
-    ok "Files removed."
-}
+rm -f "$BIN_FILE"
+
+
 
 #############################################
-# Remove Systemd Files
+# Remove Application
 #############################################
 
-remove_systemd(){
 
-    info "Removing systemd files..."
+echo
 
-    rm -f /etc/systemd/system/l-panel.service
-    rm -f /etc/systemd/system/ocserv.service
+echo "[+] Removing L-Panel files..."
 
-    systemctl daemon-reload
+rm -rf "$INSTALL_DIR"
 
-    ok "Systemd cleaned."
-}
+
 
 #############################################
-# Remove Ocserv
+# Remove Config
 #############################################
 
-remove_ocserv(){
+
+if [[ "$KEEP_OCSERV" != "y" ]]; then
+
 
     echo
-    read -rp "Remove Ocserv configuration too? (yes/no): " OCSERV_REMOVE
 
-    if [[ "$OCSERV_REMOVE" == "yes" ]]; then
+    echo "[+] Removing configuration..."
 
-        rm -rf /etc/ocserv
-        rm -rf /var/lib/ocserv
-        rm -rf /var/log/ocserv
 
-        ok "Ocserv removed."
+    rm -rf "$CONFIG_DIR"
 
-    else
-        info "Ocserv files kept."
-    fi
-}
+
+fi
+
+
 
 #############################################
-# Main
+# Finish
 #############################################
 
-main(){
 
-    title
+echo
 
-    confirm_remove
-    stop_services
-    remove_systemd
-    remove_files
-    remove_ocserv
+echo "=============================================="
 
-    echo
-    ok "L-Panel uninstall completed."
-    echo
-}
+echo " L-PANEL REMOVED"
 
-main
+echo "=============================================="
+
+
+echo
+
+
+echo "Backup directory:"
+
+echo "$BACKUP_DIR"
+
+
+echo
+
+
+exit 0
