@@ -2,62 +2,146 @@
 
 set -Eeuo pipefail
 
-########################################
-# Resolve real script path
-########################################
-
-SCRIPT_PATH="$(readlink -f "${BASH_SOURCE[0]}")"
-SCRIPT_DIR="$(dirname "$SCRIPT_PATH")"
-
-########################################
-# Check installation
-########################################
-
-if [[ ! -d "$SCRIPT_DIR/lib" ]]; then
-    echo
-    echo "L-Panel installation is corrupted."
-    echo "Expected directory:"
-    echo "  $SCRIPT_DIR/lib"
-    echo
-    exit 1
-fi
-
-########################################
-# Load libraries
-########################################
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 source "$SCRIPT_DIR/lib/colors.sh"
 source "$SCRIPT_DIR/lib/common.sh"
+source "$SCRIPT_DIR/lib/version.sh"
 source "$SCRIPT_DIR/commands/menu.sh"
-
-########################################
-# Main Loop
-########################################
 
 while true
 do
-
     show_menu
 
     read -rp "Select option: " OPTION
 
     case "$OPTION" in
 
+        ########################
+        # SYSTEM
+        ########################
+
         1)
             bash "$SCRIPT_DIR/commands/install.sh"
         ;;
 
         2)
-            bash "$SCRIPT_DIR/commands/ocserv.sh"
-        ;;
-
-        3)
             bash "$SCRIPT_DIR/commands/update.sh"
         ;;
 
-        4)
+        3)
             bash "$SCRIPT_DIR/commands/uninstall.sh"
         ;;
+
+        ########################
+        # VPN
+        ########################
+
+        4)
+            bash "$SCRIPT_DIR/commands/ocserv.sh"
+        ;;
+
+        5)
+            bash "$SCRIPT_DIR/commands/status.sh"
+        ;;
+
+        6)
+            systemctl restart ocserv
+            pause
+        ;;
+
+        7)
+            systemctl stop ocserv
+            pause
+        ;;
+
+        8)
+            systemctl start ocserv
+            pause
+        ;;
+
+        ########################
+        # USERS
+        ########################
+
+        9)
+            echo "Coming Soon"
+            pause
+        ;;
+
+        10)
+            echo "Coming Soon"
+            pause
+        ;;
+
+        11)
+            echo "Coming Soon"
+            pause
+        ;;
+
+        12)
+            echo "Coming Soon"
+            pause
+        ;;
+
+        ########################
+        # SECURITY
+        ########################
+
+        13)
+            echo "Coming Soon"
+            pause
+        ;;
+
+        14)
+            echo "Coming Soon"
+            pause
+        ;;
+
+        15)
+            echo "Coming Soon"
+            pause
+        ;;
+
+        ########################
+        # BACKUP
+        ########################
+
+        16)
+            echo "Coming Soon"
+            pause
+        ;;
+
+        17)
+            echo "Coming Soon"
+            pause
+        ;;
+
+        ########################
+        # MONITORING
+        ########################
+
+        18)
+            bash "$SCRIPT_DIR/commands/dashboard.sh"
+        ;;
+
+        19)
+            bash "$SCRIPT_DIR/commands/system.sh"
+        ;;
+
+        20)
+            bash "$SCRIPT_DIR/commands/services.sh"
+        ;;
+
+        21)
+            bash "$SCRIPT_DIR/commands/logs.sh"
+        ;;
+
+        22)
+            bash "$SCRIPT_DIR/commands/version.sh"
+        ;;
+
+        ########################
 
         0)
             clear
@@ -67,7 +151,7 @@ do
         *)
             echo
             echo "Invalid option."
-            sleep 1
+            pause
         ;;
 
     esac
