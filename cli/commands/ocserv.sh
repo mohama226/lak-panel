@@ -77,6 +77,8 @@ install_dependencies(){
         gettext-devel \
         gettext \
         help2man \
+        meson \
+        ninja-build \
         gnutls-utils
 
     ok "Dependencies installed."
@@ -85,7 +87,7 @@ install_dependencies(){
 
 
 ########################################
-# Install Ocserv Binary (UPDATED)
+# Install Ocserv Binary (MESON VERSION)
 ########################################
 
 install_ocserv(){
@@ -126,40 +128,33 @@ install_ocserv(){
     cd "ocserv-${OCSERV_VERSION}"
 
     ########################################
-    # autoreconf SECTION
+    # NEW MESON BUILD SYSTEM
     ########################################
 
-    if [[ ! -f configure ]]; then
+    info "Configuring Meson..."
 
-        info "Generating configure script..."
-
-        autoreconf -fi
-
-    fi
-
-    if [[ ! -f configure ]]; then
-        fail "Configure generation failed"
-        exit 1
-    fi
-
-    ########################################
-
-    ./configure \
+    meson setup build \
         --prefix=/usr \
-        --sysconfdir=/etc/ocserv \
-        --enable-seccomp
+        --sysconfdir=/etc/ocserv
 
-    make -j"$(nproc)"
-    make install
+    info "Compiling..."
+
+    meson compile -C build
+
+    info "Installing..."
+
+    meson install -C build
 
     ldconfig
+
+    ########################################
 
     if ! command -v ocserv >/dev/null 2>&1; then
         fail "Ocserv installation failed"
         exit 1
     fi
 
-    INSTALLED=$(ocserv --version | awk '{print $2}')
+    INSTALLED=$(ocserv --version | head -1 | grep -oE '[0-9]+\.[0-9]+\.[0-9]+')
 
     if [[ "$INSTALLED" != "$OCSERV_VERSION" ]]; then
         fail "Wrong version installed: $INSTALLED"
