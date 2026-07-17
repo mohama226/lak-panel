@@ -42,7 +42,7 @@ ask_port(){
 
 
 ########################################
-# Dependencies
+# Dependencies (NEW VERSION)
 ########################################
 
 install_dependencies(){
@@ -50,35 +50,14 @@ install_dependencies(){
     info "Installing dependencies..."
 
     dnf install -y epel-release
-    dnf install -y dnf-plugins-core
-    dnf config-manager --set-enabled crb || true
-
-    dnf groupinstall -y "Development Tools"
 
     dnf install -y \
-        wget \
+        ocserv \
+        gnutls-utils \
+        firewalld \
+        iptables \
         curl \
-        tar \
-        gzip \
-        make \
-        gcc \
-        gcc-c++ \
-        autoconf \
-        automake \
-        libtool \
-        pkgconf-pkg-config \
-        gnutls-devel \
-        readline-devel \
-        zlib-devel \
-        libnl3-devel \
-        libseccomp-devel \
-        pam-devel \
-        lz4-devel \
-        protobuf-c \
-        protobuf-c-compiler \
-        krb5-devel \
-        openssl-devel \
-        gettext-devel
+        wget
 
     ok "Dependencies installed."
 
@@ -86,64 +65,28 @@ install_dependencies(){
 
 
 ########################################
-# Install Ocserv Binary
+# Install Ocserv Binary (NEW VERSION)
 ########################################
 
 install_ocserv(){
 
     if command -v ocserv >/dev/null 2>&1; then
-        CURRENT=$(ocserv --version | head -1)
-        info "Ocserv already installed: $CURRENT"
+        ok "Ocserv already installed."
         return
     fi
 
-    info "Building Ocserv ${OCSERV_VERSION}..."
+    info "Installing Ocserv package..."
 
-    mkdir -p "$BUILD_DIR"
-    cd "$BUILD_DIR"
-
-    rm -rf "ocserv-${OCSERV_VERSION}"
-
-    wget -q \
-        "https://www.infradead.org/ocserv/download/ocserv-${OCSERV_VERSION}.tar.xz" \
-        -O ocserv.tar.xz
-
-    tar xf ocserv.tar.xz
-
-    cd "ocserv-${OCSERV_VERSION}"
-
-    ########################################
-    # NEW SECTION (your requested change)
-    ########################################
-
-    if [[ ! -f configure ]]; then
-        info "Generating configure script..."
-        ./autogen.sh
-    fi
-
-    if [[ ! -f configure ]]; then
-        fail "Configure script was not generated"
-        exit 1
-    fi
-
-    ./configure \
-        --prefix=/usr \
-        --sysconfdir=/etc/ocserv \
-        --enable-seccomp
-
-    ########################################
-
-    make -j"$(nproc)"
-    make install
-
-    ldconfig
+    dnf install -y ocserv
 
     if ! command -v ocserv >/dev/null 2>&1; then
         fail "Ocserv installation failed."
         exit 1
     fi
 
-    ok "Ocserv ${OCSERV_VERSION} installed."
+    VERSION=$(ocserv --version | head -1)
+
+    ok "Installed: $VERSION"
 
 }
 
