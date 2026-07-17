@@ -6,23 +6,12 @@ set -Eeuo pipefail
 INSTALL_DIR="/opt/l-panel"
 BACKUP_DIR="/opt/l-panel-backups"
 
-REPO="mohama226/l-panel"
-BRANCH="main"
+REPO="https://github.com/mohama226/l-panel/archive/refs/heads/main.zip"
 
 TMP_DIR="/tmp/l-panel-update"
 
-ZIP_URL="https://github.com/${REPO}/archive/refs/heads/${BRANCH}.zip"
+DATE=$(date +"%Y%m%d-%H%M%S")
 
-
-pause(){
-
-    echo
-    read -rp "Press ENTER to continue..."
-
-}
-
-
-title(){
 
 clear
 
@@ -32,20 +21,16 @@ echo "          L-PANEL UPDATE"
 echo "==============================================="
 echo
 
-}
 
+if [[ -f "$INSTALL_DIR/.last_update" ]]; then
+    echo "Last Update:"
+    cat "$INSTALL_DIR/.last_update"
+else
+    echo "Last Update: Never"
+fi
 
-
-title
-
-
-echo "Last Update:"
-
-cat "$INSTALL_DIR/.last_update" 2>/dev/null || echo "Never"
 
 echo
-
-
 read -rp "Continue update? (y/n): " CONFIRM
 
 
@@ -55,36 +40,31 @@ fi
 
 
 
-###################################
+####################################
 # Backup
-###################################
-
-
-mkdir -p "$BACKUP_DIR"
-
-
-BACKUP_FILE="$BACKUP_DIR/l-panel-$(date +%Y%m%d-%H%M%S).tar.gz"
-
+####################################
 
 echo
 echo "[+] Creating backup..."
 
 
-tar -czf "$BACKUP_FILE" \
--C /opt \
-l-panel
+mkdir -p "$BACKUP_DIR"
 
+
+tar -czf \
+"$BACKUP_DIR/l-panel-$DATE.tar.gz" \
+-C /opt l-panel
 
 
 echo
 echo "Backup created:"
-echo "$BACKUP_FILE"
+echo "$BACKUP_DIR/l-panel-$DATE.tar.gz"
 
 
 
-###################################
+####################################
 # Download
-###################################
+####################################
 
 
 echo
@@ -96,43 +76,35 @@ rm -rf "$TMP_DIR"
 mkdir -p "$TMP_DIR"
 
 
-curl -L \
-"$ZIP_URL" \
+curl -L "$REPO" \
 -o "$TMP_DIR/update.zip"
 
 
-
-unzip -q \
-"$TMP_DIR/update.zip" \
+unzip -q "$TMP_DIR/update.zip" \
 -d "$TMP_DIR"
 
 
 
-###################################
+####################################
 # Detect source
-###################################
+####################################
 
 
 SOURCE=""
 
 
-if [[ -f "$TMP_DIR/cli/l-panel" ]]; then
-
-    SOURCE="$TMP_DIR"
-
-
-elif [[ -f "$TMP_DIR/l-panel-main/cli/l-panel" ]]; then
+if [[ -f "$TMP_DIR/l-panel-main/cli/l-panel" ]]; then
 
     SOURCE="$TMP_DIR/l-panel-main"
 
+elif [[ -f "$TMP_DIR/cli/l-panel" ]]; then
+
+    SOURCE="$TMP_DIR"
 
 else
 
     echo
     echo "ERROR: Invalid L-Panel source"
-
-    find "$TMP_DIR" -maxdepth 3 -type f | head -30
-
     exit 1
 
 fi
@@ -145,9 +117,9 @@ echo "$SOURCE"
 
 
 
-###################################
+####################################
 # Compare
-###################################
+####################################
 
 
 echo
@@ -155,20 +127,25 @@ echo "Changed files:"
 echo "--------------------------------"
 
 
+EXCLUDES="
+--exclude=.installed
+--exclude=.last_update
+--exclude=.admin_user
+--exclude=.panel_port
+"
+
+
+
 CHANGED=$(
 
 rsync \
--avnc \
---delete \
---exclude ".installed" \
---exclude ".last_update" \
---exclude ".admin_user" \
---exclude ".panel_port" \
+--dry-run \
+-r \
+--itemize-changes \
+$EXCLUDES \
 "$SOURCE/" \
-"$INSTALL_DIR/" \
-| grep -vE \
-'^(sending|sent|received|total|deleting|$|created directory)' \
-|| true
+"$INSTALL_DIR/" | \
+awk '{print $2}'
 
 )
 
@@ -195,6 +172,7 @@ echo "Total changed files: $COUNT"
 
 
 
+echo
 read -rp "Apply update? (y/n): " APPLY
 
 
@@ -208,63 +186,30 @@ fi
 
 
 
-###################################
+####################################
 # Apply update
-###################################
+####################################
 
 
 echo
 echo "[+] Updating files..."
 
 
-
 rsync \
--av \
+-r \
 --delete \
---exclude ".installed" \
---exclude ".last_update" \
---exclude ".admin_user" \
---exclude ".panel_port" \
+$EXCLUDES \
 "$SOURCE/" \
 "$INSTALL_DIR/"
 
 
 
-###################################
-# Restore required files
-###################################
+####################################
+# Restore state
+####################################
 
 
-echo
-echo "[+] Fix permissions..."
-
-
-
-chmod +x "$INSTALL_DIR/cli/l-panel"
-
-
-
-if compgen -G "$INSTALL_DIR/cli/commands/*.sh" > /dev/null
-then
-
-chmod +x "$INSTALL_DIR/cli/commands/"*.sh
-
-fi
-
-
-
-if compgen -G "$INSTALL_DIR/cli/lib/*.sh" > /dev/null
-then
-
-chmod +x "$INSTALL_DIR/cli/lib/"*.sh
-
-fi
-
-
-
-###################################
-# Update timestamp
-###################################
+touch "$INSTALL_DIR/.installed"
 
 
 date "+%Y-%m-%d %H:%M:%S" \
@@ -272,19 +217,41 @@ date "+%Y-%m-%d %H:%M:%S" \
 
 
 
-###################################
-# Finish
-###################################
+####################################
+# Permissions
+####################################
 
 
 echo
+echo "[+] Fix permissions..."
 
-echo "==============================================="
 
+chmod +x "$INSTALL_DIR/cli/l-panel"
+
+chmod +x "$INSTALL_DIR/cli/commands/"*.sh 2>/dev/null || true
+
+chmod +x "$INSTALL_DIR/cli/lib/"*.sh 2>/dev/null || true
+
+
+
+####################################
+# Ensure command
+####################################
+
+
+ln -sf \
+"$INSTALL_DIR/cli/l-panel" \
+/usr/local/bin/l-panel
+
+
+
+####################################
+
+
+echo
+echo "=============================================="
 echo " L-PANEL UPDATED SUCCESSFULLY"
-
-echo "==============================================="
-
+echo "=============================================="
 
 echo
 
@@ -293,9 +260,9 @@ echo "Updated files: $COUNT"
 echo
 
 echo "Time:"
-
 date
 
 
+echo
 
-pause
+read -rp "Press ENTER to continue..."
