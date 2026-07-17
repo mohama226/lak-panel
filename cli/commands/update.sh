@@ -3,27 +3,28 @@
 set -Eeuo pipefail
 
 
-#############################################
-# L-PANEL UPDATE SYSTEM
-#############################################
-
 INSTALL_DIR="/opt/l-panel"
-
 BACKUP_DIR="/opt/l-panel-backups"
 
 REPO="mohama226/l-panel"
-
 BRANCH="main"
 
-WORK_DIR="/tmp/l-panel-update"
+TMP_DIR="/tmp/l-panel-update"
 
-DATE=$(date +"%Y%m%d-%H%M%S")
+ZIP_URL="https://github.com/${REPO}/archive/refs/heads/${BRANCH}.zip"
 
 
+#####################################
 
-#############################################
-# Header
-#############################################
+pause(){
+    echo
+    read -rp "Press ENTER to continue..."
+}
+
+
+#####################################
+
+title(){
 
 clear
 
@@ -33,20 +34,20 @@ echo "          L-PANEL UPDATE"
 echo "==============================================="
 echo
 
+}
 
-if [[ -f "$INSTALL_DIR/.last_update" ]]; then
 
-    echo "Last Update:"
-    cat "$INSTALL_DIR/.last_update"
+#####################################
 
-else
+title
 
-    echo "Last Update: Never"
 
-fi
+echo "Last Update:"
 
+cat "$INSTALL_DIR/.last_update" 2>/dev/null || echo "Never"
 
 echo
+
 
 read -rp "Continue update? (y/n): " CONFIRM
 
@@ -57,74 +58,84 @@ fi
 
 
 
-#############################################
+#####################################
 # Backup
-#############################################
+#####################################
 
-echo
-
-echo "[+] Creating backup..."
 
 mkdir -p "$BACKUP_DIR"
 
 
-tar -czf \
-"$BACKUP_DIR/l-panel-$DATE.tar.gz" \
--C /opt l-panel
+BACKUP_FILE="$BACKUP_DIR/l-panel-$(date +%Y%m%d-%H%M%S).tar.gz"
+
+
+echo
+echo "[+] Creating backup..."
+
+tar -czf "$BACKUP_FILE" \
+-C /opt \
+l-panel
 
 
 
 echo
 
 echo "Backup created:"
-echo "$BACKUP_DIR/l-panel-$DATE.tar.gz"
+echo "$BACKUP_FILE"
 
 
 
-#############################################
+#####################################
 # Download
-#############################################
+#####################################
+
 
 echo
 
 echo "[+] Downloading latest version..."
 
 
-rm -rf "$WORK_DIR"
+rm -rf "$TMP_DIR"
 
-mkdir -p "$WORK_DIR"
-
-
-
-wget -q \
-"https://github.com/$REPO/archive/refs/heads/$BRANCH.tar.gz" \
--O "$WORK_DIR/source.tar.gz"
+mkdir -p "$TMP_DIR"
 
 
-
-tar -xzf \
-"$WORK_DIR/source.tar.gz" \
--C "$WORK_DIR"
+curl -L \
+"$ZIP_URL" \
+-o "$TMP_DIR/update.zip"
 
 
 
-#############################################
+unzip -q \
+"$TMP_DIR/update.zip" \
+-d "$TMP_DIR"
+
+
+
+#####################################
 # Detect Source
-#############################################
-
-SOURCE=$(find "$WORK_DIR" \
--maxdepth 1 \
--type d \
--name "l-panel-*" \
-| head -n 1)
+#####################################
 
 
+SOURCE=""
 
-if [[ -z "$SOURCE" ]]; then
+
+if [[ -f "$TMP_DIR/cli/l-panel" ]]; then
+
+    SOURCE="$TMP_DIR"
+
+
+elif [[ -f "$TMP_DIR/l-panel-main/cli/l-panel" ]]; then
+
+    SOURCE="$TMP_DIR/l-panel-main"
+
+
+else
 
     echo
+    echo "ERROR: Invalid L-Panel source"
 
-    echo "ERROR: Source directory not found"
+    find "$TMP_DIR" -maxdepth 3 -type f | head -20
 
     exit 1
 
@@ -139,35 +150,10 @@ echo "$SOURCE"
 
 
 
-#############################################
-# Validate Source
-#############################################
-
-if [[ ! -f "$SOURCE/cli/l-panel" ]]; then
-
-
-    echo
-
-    echo "ERROR: Invalid L-Panel source"
-
-    echo "$SOURCE/cli/l-panel missing"
-
-    exit 1
-
-
-fi
-
-
-
-echo
-
-echo "Source validation OK."
-
-
-
-#############################################
+#####################################
 # Compare Files
-#############################################
+#####################################
+
 
 echo
 
@@ -175,36 +161,26 @@ echo "Changed files:"
 echo "--------------------------------"
 
 
-
-mapfile -t CHANGED < <(
-
-rsync \
--rcn \
---exclude=".git" \
---exclude="source.tar.gz" \
---out-format="%n" \
+CHANGED=$(rsync \
+-avnc \
+--delete \
 "$SOURCE/" \
-"$INSTALL_DIR/"
-
-
-)
+"$INSTALL_DIR/" \
+| grep -v '/$' || true)
 
 
 
-if [[ ${#CHANGED[@]} -eq 0 ]]; then
+if [[ -z "$CHANGED" ]]; then
 
     echo "No changes detected."
 
+    COUNT=0
+
 else
 
+    echo "$CHANGED"
 
-    for FILE in "${CHANGED[@]}"
-    do
-
-        echo "$FILE"
-
-    done
-
+    COUNT=$(echo "$CHANGED" | wc -l)
 
 fi
 
@@ -212,13 +188,11 @@ fi
 
 echo
 
-echo "Total changed files: ${#CHANGED[@]}"
+echo "Total changed files: $COUNT"
 
 
-echo
 
 read -rp "Apply update? (y/n): " APPLY
-
 
 
 if [[ "$APPLY" != "y" ]]; then
@@ -231,9 +205,10 @@ fi
 
 
 
-#############################################
-# Apply Update
-#############################################
+#####################################
+# Update
+#####################################
+
 
 echo
 
@@ -242,66 +217,57 @@ echo "[+] Updating files..."
 
 
 rsync \
--r \
---exclude=".git" \
---exclude="source.tar.gz" \
+-av \
+--delete \
+--exclude ".admin_user" \
+--exclude ".panel_port" \
+--exclude ".installed" \
+--exclude ".last_update" \
 "$SOURCE/" \
 "$INSTALL_DIR/"
 
 
 
-#############################################
+#####################################
 # Permissions
-#############################################
+#####################################
+
 
 echo
 
 echo "[+] Fix permissions..."
 
 
-
 chmod +x "$INSTALL_DIR/cli/l-panel"
 
+chmod +x "$INSTALL_DIR/cli/commands/"*.sh
 
-
-find "$INSTALL_DIR/cli" \
--name "*.sh" \
--exec chmod +x {} \;
-
-
-
-#############################################
-# Cleanup
-#############################################
-
-rm -rf "$WORK_DIR"
+chmod +x "$INSTALL_DIR/cli/lib/"*.sh
 
 
 
-#############################################
-# Save Update Time
-#############################################
+#####################################
+# Update Time
+#####################################
+
 
 date "+%Y-%m-%d %H:%M:%S" \
 > "$INSTALL_DIR/.last_update"
 
 
 
-#############################################
-# Finish
-#############################################
-
 echo
 
-echo "=============================================="
+echo "==============================================="
 
 echo " L-PANEL UPDATED SUCCESSFULLY"
 
-echo "=============================================="
+echo "==============================================="
+
 
 echo
 
-echo "Updated files: ${#CHANGED[@]}"
+echo "Updated files: $COUNT"
 
 echo
 
@@ -311,6 +277,4 @@ date
 
 
 
-echo
-
-read -rp "Press ENTER to continue..."
+pause
