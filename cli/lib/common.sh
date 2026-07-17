@@ -174,7 +174,7 @@ service_enabled() {
 
 ok() {
 
-    echo -e "${GREEN}[ OK ]${NC} $1"
+    echo -e "${GREEN}[ OK ]${RESET} $1"
 
 }
 
@@ -184,7 +184,7 @@ ok() {
 
 info() {
 
-    echo -e "${BLUE}[ INFO ]${NC} $1"
+    echo -e "${BLUE}[ INFO ]${RESET} $1"
 
 }
 
@@ -194,7 +194,7 @@ info() {
 
 warn() {
 
-    echo -e "${YELLOW}[ WARN ]${NC} $1"
+    echo -e "${YELLOW}[ WARN ]${RESET} $1"
 
 }
 
@@ -204,7 +204,7 @@ warn() {
 
 fail() {
 
-    echo -e "${RED}[ FAIL ]${NC} $1"
+    echo -e "${RED}[ FAIL ]${RESET} $1"
 
 }
 
