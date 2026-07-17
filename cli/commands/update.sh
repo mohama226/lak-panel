@@ -42,6 +42,31 @@ echo
 
 
 #############################################
+# Dependencies
+#############################################
+
+install_dependency(){
+
+    if ! command -v "$1" >/dev/null 2>&1; then
+
+        echo "[+] Installing dependency: $2"
+
+        if command -v dnf >/dev/null 2>&1; then
+            dnf install -y "$2"
+        elif command -v yum >/dev/null 2>&1; then
+            yum install -y "$2"
+        fi
+
+    fi
+
+}
+
+install_dependency rsync rsync
+install_dependency curl curl
+install_dependency tar tar
+
+
+#############################################
 # Previous Update
 #############################################
 
@@ -165,7 +190,8 @@ rsync -av \
 --exclude=".admin_user" \
 --exclude=".panel_port" \
 "$NEW_DIR/" \
-"$INSTALL_DIR/"
+"$INSTALL_DIR/" \
+| tee "$TMP_DIR/rsync.log"
 
 
 #############################################
