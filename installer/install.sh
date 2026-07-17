@@ -37,21 +37,14 @@ fi
 
 install_files(){
 
-
     echo
-
     echo "Installing L-Panel files..."
-
 
     mkdir -p "$INSTALL_DIR"
 
-
-    cp -rf "$CURRENT_DIR"/* "$INSTALL_DIR"/
-
-
+    cp -a "$CURRENT_DIR"/. "$INSTALL_DIR"/
 
     echo "Files copied."
-
 }
 
 
@@ -62,21 +55,12 @@ install_files(){
 
 set_permissions(){
 
-
     echo
-
     echo "Setting permissions..."
 
-
     chmod +x "$INSTALL_DIR/cli/l-panel"
-
-
     chmod +x "$INSTALL_DIR/cli/commands/"*.sh
-
-
     chmod +x "$INSTALL_DIR/cli/lib/"*.sh
-
-
 
 }
 
@@ -88,15 +72,11 @@ set_permissions(){
 
 create_command(){
 
-
     echo
-
     echo "Creating l-panel command..."
 
-
-    ln -sf "$INSTALL_DIR/cli/l-panel" "$BIN_PATH"
-
-
+    rm -f "$BIN_PATH"
+    ln -s "$INSTALL_DIR/cli/l-panel" "$BIN_PATH"
 
 }
 
@@ -108,26 +88,16 @@ create_command(){
 
 create_state(){
 
-
     mkdir -p "$INSTALL_DIR"
 
-
     if [[ ! -f "$INSTALL_DIR/VERSION" ]]; then
-
         echo "0.0.1" > "$INSTALL_DIR/VERSION"
-
     fi
-
-
 
     touch "$INSTALL_DIR/.installed"
 
-
-
     date "+%Y-%m-%d %H:%M:%S" \
     > "$INSTALL_DIR/.last_update"
-
-
 
 }
 
@@ -139,25 +109,15 @@ create_state(){
 
 finish(){
 
-
-echo
-
-echo "======================================"
-
-echo " L-Panel Installed Successfully"
-
-echo "======================================"
-
-echo
-
-echo "Run:"
-
-echo
-
-echo "l-panel"
-
-echo
-
+    echo
+    echo "======================================"
+    echo " L-Panel Installed Successfully"
+    echo "======================================"
+    echo
+    echo "Run:"
+    echo
+    echo "l-panel"
+    echo
 
 }
 
@@ -169,25 +129,12 @@ echo
 
 main(){
 
-
-install_files
-
-
-set_permissions
-
-
-create_command
-
-
-create_state
-
-
-finish
-
-
+    install_files
+    set_permissions
+    create_command
+    create_state
+    finish
 
 }
-
-
 
 main
