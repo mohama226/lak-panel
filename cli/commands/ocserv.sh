@@ -42,7 +42,7 @@ ask_port(){
 
 
 ########################################
-# Dependencies (UPDATED)
+# Dependencies (FINAL VERSION)
 ########################################
 
 install_dependencies(){
@@ -50,6 +50,11 @@ install_dependencies(){
     info "Installing dependencies..."
 
     dnf install -y epel-release
+    dnf install -y dnf-plugins-core
+
+    dnf config-manager --set-enabled crb
+
+    dnf groupinstall -y "Development Tools"
 
     dnf install -y \
         wget \
@@ -63,23 +68,24 @@ install_dependencies(){
         automake \
         libtool \
         pkgconf-pkg-config \
+        gettext \
+        gettext-devel \
+        help2man \
+        meson \
+        ninja-build \
         gnutls-devel \
+        gnutls-utils \
         readline-devel \
         zlib-devel \
         libnl3-devel \
         libseccomp-devel \
         pam-devel \
         lz4-devel \
+        protobuf-c \
         protobuf-c-devel \
         protobuf-c-compiler \
         krb5-devel \
         openssl-devel \
-        gettext-devel \
-        gettext \
-        help2man \
-        meson \
-        ninja-build \
-        gnutls-utils \
         libev \
         libev-devel
 
@@ -89,7 +95,7 @@ install_dependencies(){
 
 
 ########################################
-# Install Ocserv Binary (MESON VERSION)
+# Install Ocserv Binary (MESON BUILD)
 ########################################
 
 install_ocserv(){
@@ -99,9 +105,7 @@ install_ocserv(){
     info "Checking Ocserv installation..."
 
     if command -v ocserv >/dev/null 2>&1; then
-
         CURRENT=$(ocserv --version | awk '{print $2}')
-
         if [[ "$CURRENT" == "$OCSERV_VERSION" ]]; then
             ok "Ocserv ${OCSERV_VERSION} already installed."
             return
@@ -109,7 +113,6 @@ install_ocserv(){
 
         warn "Old Ocserv version detected: $CURRENT"
         info "Removing old package..."
-
         dnf remove -y ocserv || true
     fi
 
