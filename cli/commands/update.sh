@@ -41,6 +41,18 @@ fi
 
 
 ####################################
+# Save current version
+####################################
+
+CURRENT_VERSION="0.0.1"
+
+if [[ -f "$INSTALL_DIR/VERSION" ]]; then
+    CURRENT_VERSION=$(cat "$INSTALL_DIR/VERSION")
+fi
+
+
+
+####################################
 # Backup
 ####################################
 
@@ -66,7 +78,6 @@ echo "$BACKUP_DIR/l-panel-$DATE.tar.gz"
 # Download
 ####################################
 
-
 echo
 echo "[+] Downloading latest version..."
 
@@ -80,6 +91,7 @@ curl -L "$REPO" \
 -o "$TMP_DIR/update.zip"
 
 
+
 unzip -q "$TMP_DIR/update.zip" \
 -d "$TMP_DIR"
 
@@ -88,7 +100,6 @@ unzip -q "$TMP_DIR/update.zip" \
 ####################################
 # Detect source
 ####################################
-
 
 SOURCE=""
 
@@ -132,6 +143,7 @@ EXCLUDES="
 --exclude=.last_update
 --exclude=.admin_user
 --exclude=.panel_port
+--exclude=VERSION
 "
 
 
@@ -205,11 +217,17 @@ $EXCLUDES \
 
 
 ####################################
-# Restore state
+# Restore state files
 ####################################
 
 
+echo "$CURRENT_VERSION" \
+> "$INSTALL_DIR/VERSION"
+
+
+
 touch "$INSTALL_DIR/.installed"
+
 
 
 date "+%Y-%m-%d %H:%M:%S" \
@@ -256,6 +274,11 @@ echo "=============================================="
 echo
 
 echo "Updated files: $COUNT"
+
+echo
+
+echo "Version:"
+cat "$INSTALL_DIR/VERSION"
 
 echo
 
