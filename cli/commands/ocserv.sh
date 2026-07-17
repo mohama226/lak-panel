@@ -109,16 +109,29 @@ install_ocserv(){
         -O ocserv.tar.xz
 
     tar xf ocserv.tar.xz
+
     cd "ocserv-${OCSERV_VERSION}"
 
-    if [[ -f autogen.sh ]]; then
+    ########################################
+    # NEW SECTION (your requested change)
+    ########################################
+
+    if [[ ! -f configure ]]; then
+        info "Generating configure script..."
         ./autogen.sh
+    fi
+
+    if [[ ! -f configure ]]; then
+        fail "Configure script was not generated"
+        exit 1
     fi
 
     ./configure \
         --prefix=/usr \
         --sysconfdir=/etc/ocserv \
         --enable-seccomp
+
+    ########################################
 
     make -j"$(nproc)"
     make install
