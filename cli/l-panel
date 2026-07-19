@@ -2,132 +2,168 @@
 
 set -Eeuo pipefail
 
-BASE_DIR="$(cd "$(dirname "$(readlink -f "$0")")" && pwd)"
+SOURCE="${BASH_SOURCE[0]}"
 
-VERSION_FILE="/opt/l-panel/VERSION"
-LAST_UPDATE_FILE="/opt/l-panel/.last_update"
+while [ -L "$SOURCE" ]; do
+    DIR="$(cd -P "$(dirname "$SOURCE")" && pwd)"
+    SOURCE="$(readlink "$SOURCE")"
 
-VERSION="Unknown"
-LAST_UPDATE="Never"
+    [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE"
+done
 
-[[ -f "$VERSION_FILE" ]] && VERSION=$(cat "$VERSION_FILE")
-[[ -f "$LAST_UPDATE_FILE" ]] && LAST_UPDATE=$(cat "$LAST_UPDATE_FILE")
+SCRIPT_DIR="$(cd -P "$(dirname "$SOURCE")" && pwd)"
 
-show_header() {
-
-clear
-
-echo
-echo "==============================================="
-echo "                 L-PANEL"
-echo "==============================================="
-echo
-echo "Version     : $VERSION"
-echo "Last Update : $LAST_UPDATE"
-echo
-echo "==============================================="
-echo
-
-}
+source "$SCRIPT_DIR/lib/colors.sh"
+source "$SCRIPT_DIR/lib/common.sh"
+source "$SCRIPT_DIR/lib/version.sh"
+source "$SCRIPT_DIR/commands/menu.sh"
 
 while true
 do
+    show_menu
 
-show_header
+    read -rp "Select option: " OPTION
 
-echo " 1) Install / Repair"
-echo " 2) Install Ocserv"
-echo " 3) Users"
-echo " 4) Dashboard"
-echo " 5) Status"
-echo " 6) Services"
-echo " 7) Firewall"
-echo " 8) SSL"
-echo " 9) Backup"
-echo "10) Restore"
-echo "11) Fail2Ban"
-echo "12) Logs"
-echo "13) Server Info"
-echo "14) Update L-Panel"
-echo "15) Uninstall L-Panel"
-echo
-echo " 0) Exit"
-echo
+    case "$OPTION" in
 
-read -rp "Select option: " MENU
+        ########################
+        # SYSTEM
+        ########################
 
-case "$MENU" in
+        1)
+            bash "$SCRIPT_DIR/commands/install.sh"
+        ;;
 
-1)
-    bash "$BASE_DIR/commands/install.sh"
-    ;;
+        2)
+            bash "$SCRIPT_DIR/commands/update.sh"
+        ;;
 
-2)
-    bash "$BASE_DIR/commands/ocserv.sh"
-    ;;
+        3)
+            bash "$SCRIPT_DIR/commands/uninstall.sh"
+        ;;
 
-3)
-    bash "$BASE_DIR/commands/users.sh"
-    ;;
+        ########################
+        # VPN
+        ########################
 
-4)
-    bash "$BASE_DIR/commands/dashboard.sh"
-    ;;
+        4)
+            bash "$SCRIPT_DIR/commands/ocserv.sh"
+        ;;
 
-5)
-    bash "$BASE_DIR/commands/status.sh"
-    ;;
+        5)
+            bash "$SCRIPT_DIR/commands/status.sh"
+        ;;
 
-6)
-    bash "$BASE_DIR/commands/services.sh"
-    ;;
+        6)
+            systemctl restart ocserv
+            pause
+        ;;
 
-7)
-    bash "$BASE_DIR/commands/firewall.sh"
-    ;;
+        7)
+            systemctl stop ocserv
+            pause
+        ;;
 
-8)
-    bash "$BASE_DIR/commands/ssl.sh"
-    ;;
+        8)
+            systemctl start ocserv
+            pause
+        ;;
 
-9)
-    bash "$BASE_DIR/commands/backup.sh"
-    ;;
+        ########################
+        # USERS
+        ########################
 
-10)
-    bash "$BASE_DIR/commands/restore.sh"
-    ;;
+        9)
+            echo "Coming Soon"
+            pause
+        ;;
 
-11)
-    bash "$BASE_DIR/commands/fail2ban.sh"
-    ;;
+        10)
+            echo "Coming Soon"
+            pause
+        ;;
 
-12)
-    bash "$BASE_DIR/commands/logs.sh"
-    ;;
+        11)
+            echo "Coming Soon"
+            pause
+        ;;
 
-13)
-    bash "$BASE_DIR/commands/info.sh"
-    ;;
+        12)
+            echo "Coming Soon"
+            pause
+        ;;
 
-14)
-    bash "$BASE_DIR/commands/update.sh"
-    ;;
+        ########################
+        # SECURITY
+        ########################
 
-15)
-    bash "$BASE_DIR/commands/uninstall.sh"
-    ;;
+        13)
+            echo "Coming Soon"
+            pause
+        ;;
 
-0)
-    clear
-    exit 0
-    ;;
+        14)
+            echo "Coming Soon"
+            pause
+        ;;
 
-*)
-    echo "Invalid option."
-    sleep 1
-    ;;
+        15)
+            echo "Coming Soon"
+            pause
+        ;;
 
-esac
+        ########################
+        # BACKUP
+        ########################
+
+        16)
+            echo "Coming Soon"
+            pause
+        ;;
+
+        17)
+            echo "Coming Soon"
+            pause
+        ;;
+
+        ########################
+        # MONITORING
+        ########################
+
+        18)
+            bash "$SCRIPT_DIR/commands/dashboard.sh"
+        ;;
+
+        19)
+            echo "Coming Soon"
+            pause
+        ;;
+
+        20)
+            bash "$SCRIPT_DIR/commands/services.sh"
+        ;;
+
+        21)
+            bash "$SCRIPT_DIR/commands/logs.sh"
+        ;;
+        22)
+            echo "Coming Soon"
+            pause
+        ;;
+
+        ########################
+
+        0)
+            clear
+            exit 0
+        ;;
+
+        *)
+            echo
+            echo "Invalid option."
+            pause
+        ;;
+
+    esac
 
 done
