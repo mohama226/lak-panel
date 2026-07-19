@@ -4,4 +4,130 @@ set -Eeuo pipefail
 
 BASE_DIR="$(cd "$(dirname "$(readlink -f "$0")")" && pwd)"
 
-exec "$BASE_DIR/commands/menu.sh" "$@"
+VERSION_FILE="/opt/l-panel/VERSION"
+LAST_UPDATE_FILE="/opt/l-panel/.last_update"
+
+VERSION="Unknown"
+LAST_UPDATE="Never"
+
+[[ -f "$VERSION_FILE" ]] && VERSION=$(cat "$VERSION_FILE")
+[[ -f "$LAST_UPDATE_FILE" ]] && LAST_UPDATE=$(cat "$LAST_UPDATE_FILE")
+
+show_header() {
+
+clear
+
+echo
+echo "==============================================="
+echo "                 L-PANEL"
+echo "==============================================="
+echo
+echo "Version     : $VERSION"
+echo "Last Update : $LAST_UPDATE"
+echo
+echo "==============================================="
+echo
+
+}
+
+while true
+do
+
+show_header
+
+echo " 1) Install / Repair"
+echo " 2) Install Ocserv"
+echo " 3) Users"
+echo " 4) Dashboard"
+echo " 5) Status"
+echo " 6) Services"
+echo " 7) Firewall"
+echo " 8) SSL"
+echo " 9) Backup"
+echo "10) Restore"
+echo "11) Fail2Ban"
+echo "12) Logs"
+echo "13) Server Info"
+echo "14) Update L-Panel"
+echo "15) Uninstall L-Panel"
+echo
+echo " 0) Exit"
+echo
+
+read -rp "Select option: " MENU
+
+case "$MENU" in
+
+1)
+    bash "$BASE_DIR/commands/install.sh"
+    ;;
+
+2)
+    bash "$BASE_DIR/commands/ocserv.sh"
+    ;;
+
+3)
+    bash "$BASE_DIR/commands/users.sh"
+    ;;
+
+4)
+    bash "$BASE_DIR/commands/dashboard.sh"
+    ;;
+
+5)
+    bash "$BASE_DIR/commands/status.sh"
+    ;;
+
+6)
+    bash "$BASE_DIR/commands/services.sh"
+    ;;
+
+7)
+    bash "$BASE_DIR/commands/firewall.sh"
+    ;;
+
+8)
+    bash "$BASE_DIR/commands/ssl.sh"
+    ;;
+
+9)
+    bash "$BASE_DIR/commands/backup.sh"
+    ;;
+
+10)
+    bash "$BASE_DIR/commands/restore.sh"
+    ;;
+
+11)
+    bash "$BASE_DIR/commands/fail2ban.sh"
+    ;;
+
+12)
+    bash "$BASE_DIR/commands/logs.sh"
+    ;;
+
+13)
+    bash "$BASE_DIR/commands/info.sh"
+    ;;
+
+14)
+    bash "$BASE_DIR/commands/update.sh"
+    ;;
+
+15)
+    bash "$BASE_DIR/commands/uninstall.sh"
+    ;;
+
+0)
+    clear
+    exit 0
+    ;;
+
+*)
+    echo "Invalid option."
+    sleep 1
+    ;;
+
+esac
+
+done
