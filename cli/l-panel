@@ -89,6 +89,11 @@ bash "$BASE_DIR/commands/status.sh"
 ;;
 
 6)
+
+bash "$BASE_DIR/commands/services.sh"
+
+;;
+
 7)
 
 bash "$BASE_DIR/commands/firewall.sh"
