@@ -8,7 +8,7 @@ VERSION_FILE="/opt/l-panel/VERSION"
 LAST_UPDATE_FILE="/opt/l-panel/.last_update"
 INFO_FILE="/etc/l-panel/ocserv.info"
 
-# Colors (mild pastel theme)
+# Mild color theme
 C_HEADER="\e[38;5;45m"
 C_TITLE="\e[38;5;51m"
 C_OK="\e[32m"
