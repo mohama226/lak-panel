@@ -6,160 +6,235 @@ BASE_DIR="$(cd "$(dirname "$(readlink -f "$0")")" && pwd)"
 
 VERSION_FILE="/opt/l-panel/VERSION"
 LAST_UPDATE_FILE="/opt/l-panel/.last_update"
+INFO_FILE="/etc/l-panel/ocserv.info"
 
 VERSION="Unknown"
 LAST_UPDATE="Never"
 
-[[ -f "$VERSION_FILE" ]] && VERSION="$(cat "$VERSION_FILE")"
-[[ -f "$LAST_UPDATE_FILE" ]] && LAST_UPDATE="$(cat "$LAST_UPDATE_FILE")"
+[[ -f "$VERSION_FILE" ]] && VERSION="$(<"$VERSION_FILE")"
+[[ -f "$LAST_UPDATE_FILE" ]] && LAST_UPDATE="$(<"$LAST_UPDATE_FILE")"
 
-show_header() {
+PANEL_STATUS="Installed"
+OCSERV_STATUS="Stopped"
+OCSERV_VERSION="-"
+OCSERV_PORT="-"
+
+if [[ -f "$INFO_FILE" ]]; then
+    source "$INFO_FILE" 2>/dev/null || true
+
+    [[ -n "${VERSION:-}" ]] && OCSERV_VERSION="$VERSION"
+    [[ -n "${PORT:-}" ]] && OCSERV_PORT="$PORT"
+fi
+
+if systemctl is-active --quiet ocserv 2>/dev/null; then
+    OCSERV_STATUS="Running"
+fi
+
+CPU_USAGE=$(top -bn1 | awk -F',' '/Cpu/{
+gsub("%id","",$4)
+gsub(" ","",$4)
+printf "%.0f",100-$4
+}')
+
+read MEM_TOTAL MEM_USED <<<$(free -m | awk '/Mem:/ {print $2,$3}')
+MEM_PERCENT=$((MEM_USED*100/MEM_TOTAL))
+
+ONLINE_USERS=0
+
+if command -v occtl >/dev/null 2>&1; then
+ONLINE_USERS=$(occtl show users 2>/dev/null | tail -n +2 | wc -l)
+fi
+
+TOTAL_USERS=0
+
+if [[ -f /etc/ocserv/ocpasswd ]]; then
+TOTAL_USERS=$(grep -vc '^$' /etc/ocserv/ocpasswd)
+fi
+
+SERVER_IP=$(hostname -I 2>/dev/null | awk '{print $1}')
+UPTIME=$(uptime -p | sed 's/up //')
+
+draw_header(){
+
+clear
+
+echo
+printf "╔%.0s═" {1..70}
+echo "╗"
+
+printf "║ %-68s ║\n" "L-PANEL"
+
+printf "║ %-68s ║\n" "Enterprise VPN Management"
+
+printf "╠%.0s═" {1..70}
+echo "╣"
+
+printf "║ %-30s %-37s║\n" \
+"Panel : $PANEL_STATUS" \
+"Ocserv : $OCSERV_STATUS"
+
+printf "║ %-30s %-37s║\n" \
+"Version : $VERSION" \
+"Ocserv : $OCSERV_VERSION"
+
+printf "║ %-30s %-37s║\n" \
+"CPU : ${CPU_USAGE}%" \
+"Memory : ${MEM_PERCENT}%"
+
+printf "║ %-30s %-37s║\n" \
+"Users : $TOTAL_USERS" \
+"Online : $ONLINE_USERS"
+
+printf "║ %-30s %-37s║\n" \
+"Port : $OCSERV_PORT" \
+"IP : $SERVER_IP"
+
+printf "║ %-68s ║\n" "Uptime : $UPTIME"
+
+printf "║ %-68s ║\n" "Last Update : $LAST_UPDATE"
+
+printf "╚%.0s═" {1..70}
+echo "╝"
+
+echo
+echo "┌──────────────────────────── Main Menu ───────────────────────────┐"
+echo
+echo "  [01] Install / Repair          [09] Backup"
+echo "  [02] Install Ocserv            [10] Restore"
+echo "  [03] Users                     [11] Fail2Ban"
+echo "  [04] Dashboard                 [12] Logs"
+echo "  [05] Status                    [13] Server Information"
+echo "  [06] Services                  [14] Update Panel"
+echo "  [07] Firewall                  [15] Uninstall Panel"
+echo "  [08] SSL"
+echo
+echo "└──────────────────────────────────────────────────────────────────┘"
+echo
+}
+
+run_script(){
+
+local SCRIPT="$1"
+
+if [[ -f "$BASE_DIR/commands/$SCRIPT" ]]; then
+
+    bash "$BASE_DIR/commands/$SCRIPT"
+
+else
 
     clear
 
     echo
-    echo "=========================================================="
-    echo "                      L-PANEL"
-    echo "=========================================================="
+    echo "=============================================================="
     echo
-    echo " Version     : $VERSION"
-    echo " Last Update : $LAST_UPDATE"
+    echo "Command not found:"
     echo
-    echo "=========================================================="
+    echo "$BASE_DIR/commands/$SCRIPT"
+    echo
+    echo "=============================================================="
     echo
 
-}
+    read -rp "Press ENTER..."
 
-run_cmd() {
-
-    local cmd="$1"
-
-    if [[ -x "$BASE_DIR/commands/$cmd" ]]; then
-        bash "$BASE_DIR/commands/$cmd"
-    else
-        echo
-        echo "Command not found : $cmd"
-        echo
-        read -rp "Press ENTER..."
-    fi
+fi
 
 }
 
 while true
 do
 
-show_header
+draw_header
 
-echo " 1) Install / Repair"
-echo " 2) Install Ocserv"
-echo " 3) Users"
-echo " 4) Dashboard"
-echo " 5) Status"
-echo " 6) Services"
-echo " 7) Firewall"
-echo " 8) SSL"
-echo " 9) Backup"
-echo "10) Restore"
-echo "11) Fail2Ban"
-echo "12) Logs"
-echo "13) Server Information"
-echo "14) Update Panel"
-echo "15) Uninstall Panel"
-
-echo
-echo " 0) Exit"
-echo
-
-read -rp "Select option : " MENU
+read -rp "Select Option : " MENU
 
 case "$MENU" in
 
 1)
 
-run_cmd install.sh
+run_script install.sh
 
 ;;
 
 2)
 
-run_cmd ocserv.sh
+run_script ocserv.sh
 
 ;;
 
 3)
 
-run_cmd users.sh
+run_script users.sh
 
 ;;
 
 4)
 
-run_cmd dashboard.sh
+run_script dashboard.sh
 
 ;;
 
 5)
 
-run_cmd status.sh
+run_script status.sh
 
 ;;
 
 6)
 
-run_cmd services.sh
+run_script services.sh
 
 ;;
 
 7)
 
-run_cmd firewall.sh
+run_script firewall.sh
 
 ;;
 
 8)
 
-run_cmd ssl.sh
+run_script ssl.sh
 
 ;;
 
 9)
 
-run_cmd backup.sh
+run_script backup.sh
 
 ;;
 
 10)
 
-run_cmd restore.sh
+run_script restore.sh
 
 ;;
 
 11)
 
-run_cmd fail2ban.sh
+run_script fail2ban.sh
 
 ;;
+
 12)
 
-run_cmd logs.sh
+run_script logs.sh
 
 ;;
-
 13)
 
-run_cmd info.sh
+run_script info.sh
 
 ;;
 
 14)
 
-run_cmd update.sh
+run_script update.sh
 
 ;;
 
 15)
 
-run_cmd uninstall.sh
+run_script uninstall.sh
 
 ;;
 
@@ -168,7 +243,7 @@ run_cmd uninstall.sh
 clear
 
 echo
-echo "Goodbye."
+echo "Bye..."
 echo
 
 exit 0
@@ -178,9 +253,7 @@ exit 0
 *)
 
 echo
-
 echo "Invalid option."
-
 sleep 1
 
 ;;
