@@ -1,0 +1,28 @@
+[Unit]
+Description=L-Panel Scheduler Service
+After=network.target postgresql.service redis.service
+
+
+[Service]
+
+Type=simple
+
+User=root
+
+WorkingDirectory=/opt/l-panel/backend
+
+Environment="PATH=/opt/l-panel/backend/venv/bin"
+
+
+ExecStart=/opt/l-panel/backend/venv/bin/python scheduler.py
+
+
+Restart=always
+
+RestartSec=15
+
+
+
+[Install]
+
+WantedBy=multi-user.target
