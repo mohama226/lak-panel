@@ -1,137 +1,123 @@
 import { useState } from "react";
-import { Eye, EyeOff, ShieldCheck } from "lucide-react";
 
-import AuthLayout from "@layouts/AuthLayout";
+import Card from "@components/ui/Card";
+import Input from "@components/ui/Input";
+import Button from "@components/ui/Button";
+
+import Logo from "@components/layout/Logo";
 
 import "./Login.css";
 
 export default function Login() {
 
-    const [showPassword, setShowPassword] = useState(false);
+    const [username, setUsername] = useState("");
+
+    const [password, setPassword] = useState("");
+
+    const [loading, setLoading] = useState(false);
+
+    async function login(e: React.FormEvent) {
+
+        e.preventDefault();
+
+        setLoading(true);
+
+        // TODO:
+        // Backend Login API
+
+        setTimeout(() => {
+
+            setLoading(false);
+
+        },1000);
+
+    }
 
     return (
 
-        <AuthLayout>
+        <div className="login-page">
 
-            <div className="login-card">
+            <div className="login-background"/>
 
-                <div className="login-header">
+            <Card
+                className="login-container"
+            >
 
-                    <ShieldCheck
-                        size={42}
-                        className="login-icon"
-                    />
+                <div className="login-logo">
 
-                    <h2>L-PANEL</h2>
+                    <Logo/>
+
+                </div>
+
+                <div className="login-title">
+
+                    <h2>
+
+                        Welcome Back
+
+                    </h2>
 
                     <p>
-                        Enterprise VPN Management
+
+                        Login to your L-PANEL account
+
                     </p>
 
                 </div>
 
-                <form>
+                <form
+                    onSubmit={login}
+                >
 
-                    <div className="form-group">
+                    <Input
 
-                        <label>
+                        label="Username"
 
-                            Username
+                        placeholder="Enter username"
 
-                        </label>
+                        value={username}
 
-                        <input
-                            type="text"
-                            placeholder="Enter username"
-                        />
+                        onChange={(e)=>setUsername(e.target.value)}
 
-                    </div>
+                    />
 
-                    <div className="form-group">
+                    <Input
 
-                        <label>
+                        type="password"
 
-                            Password
+                        label="Password"
 
-                        </label>
+                        placeholder="Enter password"
 
-                        <div className="password-box">
+                        value={password}
 
-                            <input
-                                type={
-                                    showPassword
-                                        ? "text"
-                                        : "password"
-                                }
-                                placeholder="Enter password"
-                            />
+                        onChange={(e)=>setPassword(e.target.value)}
 
-                            <button
-                                type="button"
-                                className="eye-button"
-                                onClick={() =>
-                                    setShowPassword(!showPassword)
-                                }
-                            >
+                    />
 
-                                {
+                    <Button
 
-                                    showPassword
-                                        ? <EyeOff size={18}/>
-                                        : <Eye size={18}/>
-
-                                }
-
-                            </button>
-
-                        </div>
-
-                    </div>
-
-                    <div className="remember-row">
-
-                        <label>
-
-                            <input type="checkbox"/>
-
-                            <span>
-
-                                Remember Me
-
-                            </span>
-
-                        </label>
-
-                    </div>
-
-                    <button
-                        className="login-button"
                         type="submit"
+
+                        loading={loading}
+
                     >
 
                         Sign In
 
-                    </button>
+                    </Button>
 
                 </form>
 
-                <div className="server-status">
-
-                    <span className="dot"/>
-
-                    Server Online
-
-                </div>
-
                 <div className="login-footer">
 
-                    Version 1.0.0
+                    L-PANEL Enterprise Edition
 
                 </div>
 
-            </div>
+            </Card>
 
-        </AuthLayout>
+        </div>
 
     );
 
