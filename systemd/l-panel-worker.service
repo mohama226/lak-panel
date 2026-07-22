@@ -1,0 +1,28 @@
+[Unit]
+Description=L-Panel Background Worker
+After=network.target redis.service postgresql.service
+
+
+[Service]
+
+Type=simple
+
+User=root
+
+WorkingDirectory=/opt/l-panel/backend
+
+Environment="PATH=/opt/l-panel/backend/venv/bin"
+
+
+ExecStart=/opt/l-panel/backend/venv/bin/python worker.py
+
+
+Restart=always
+
+RestartSec=10
+
+
+
+[Install]
+
+WantedBy=multi-user.target
