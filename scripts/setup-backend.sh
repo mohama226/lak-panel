@@ -2,17 +2,24 @@
 
 set -e
 
-BASE_DIR="/opt/l-panel"
+BASE="/opt/l-panel"
 
-echo "Installing L-Panel Backend"
+echo "== Installing Backend =="
 
 
-cd "$BASE_DIR/backend"
+cd "$BASE/backend"
+
+
+if ! command -v python3 >/dev/null; then
+
+    echo "Python3 not found"
+
+    exit 1
+
+fi
 
 
 if [ ! -d "venv" ]; then
-
-    echo "Creating Python venv"
 
     python3 -m venv venv
 
@@ -22,18 +29,14 @@ fi
 source venv/bin/activate
 
 
-echo "Installing requirements"
-
 pip install --upgrade pip
 
 pip install -r requirements.txt
 
 
 
-echo "Installing systemd service"
-
-
 cat > /etc/systemd/system/l-panel-backend.service <<EOF
+
 [Unit]
 Description=L-Panel Backend
 After=network.target
@@ -41,23 +44,23 @@ After=network.target
 
 [Service]
 Type=simple
+
 User=root
 
 WorkingDirectory=/opt/l-panel/backend
 
 Environment="PATH=/opt/l-panel/backend/venv/bin"
 
-ExecStart=/opt/l-panel/backend/venv/bin/gunicorn \
-main:app \
---bind 127.0.0.1:8000 \
---workers 3
-
+ExecStart=/opt/l-panel/backend/venv/bin/gunicorn main:app --bind 127.0.0.1:8000 --workers 3
 
 Restart=always
+
+RestartSec=5
 
 
 [Install]
 WantedBy=multi-user.target
+
 EOF
 
 
@@ -69,4 +72,4 @@ systemctl enable l-panel-backend
 systemctl restart l-panel-backend
 
 
-echo "Backend installed successfully"
+echo "Backend Ready"
