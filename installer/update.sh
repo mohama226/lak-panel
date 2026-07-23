@@ -30,3 +30,11 @@ bash /opt/l-panel/scripts/test-backend.sh
 
 # اجرای دوباره backend بعد از تست
 bash /opt/l-panel/scripts/setup-backend.sh
+
+echo "Rebuilding backend service..."
+
+bash /opt/l-panel/scripts/setup-backend.sh
+
+systemctl daemon-reload
+
+systemctl restart l-panel-backend
