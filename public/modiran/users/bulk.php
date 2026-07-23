@@ -2,6 +2,7 @@
 
 
 require "../../../app/auth.php";
+
 checkLogin();
 
 
@@ -52,19 +53,23 @@ PASSWORD_DEFAULT
 
 
 $stmt=$db->prepare(
-"INSERT INTO users
+"
+INSERT INTO users
 (username,password,expire_date,total_gb)
 VALUES
-(?,?,?,?)"
+(?,?,?,?)
+"
 );
 
 
 
 $stmt->execute([
+
 $username,
 $hash,
 $expire,
 $volume
+
 ]);
 
 
@@ -78,22 +83,19 @@ $msg=$count." کاربر ساخته شد";
 }
 
 
+
 include "../../includes/header.php";
 
 include "../../includes/sidebar.php";
+
+
+?>
+
 
 <main class="content">
 
 
 <div class="card form-card">
-  
-?>
-
-
-<div class="main">
-
-
-<div class="form-card">
 
 
 <h2>
@@ -104,7 +106,7 @@ include "../../includes/sidebar.php";
 
 <?php if($msg): ?>
 
-<div class="alert-success">
+<div class="success">
 
 <?=$msg?>
 
@@ -118,69 +120,64 @@ include "../../includes/sidebar.php";
 
 
 
-<div class="form-group">
-
 <label>
 پیشوند کاربران
 </label>
 
 
-<input 
+<input
 class="form-control"
 name="prefix"
-placeholder="مثلا user">
+placeholder="مثلا user"
+required
+>
 
-</div>
 
-
-
-<div class="form-group">
 
 <label>
 تعداد کاربران
 </label>
 
 
-<input 
+<input
 class="form-control"
-name="count">
+type="number"
+name="count"
+placeholder="مثلا 100"
+required
+>
 
-</div>
 
-
-
-<div class="form-group">
 
 <label>
 تاریخ انقضا
 </label>
 
 
-<input 
+<input
 class="form-control"
 type="date"
-name="expire_date">
+name="expire_date"
+required
+>
 
-</div>
 
-
-
-<div class="form-group">
 
 <label>
 حجم GB
 </label>
 
 
-<input 
+<input
 class="form-control"
-name="total_gb">
+name="total_gb"
+placeholder="مثلا 100"
+required
+>
 
-</div>
 
 
-
-<button class="btn-primary">
+<button class="login-btn">
 
 ساخت کاربران
 
@@ -193,16 +190,12 @@ name="total_gb">
 </div>
 
 
-</div>
+</main>
 
 
 
 <?php
 
-</div>
-
-</main>
-  
 include "../../includes/footer.php";
 
 ?>
