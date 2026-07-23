@@ -1,17 +1,18 @@
 <?php
 
+if(session_status() === PHP_SESSION_NONE){
+    session_start();
+}
 
 function checkLogin(){
 
-if(!isset($_SESSION['admin'])){
+    if(!isset($_SESSION['admin'])){
 
-header("Location: login.php");
+        header("Location: login.php");
+        exit;
 
-exit;
+    }
 
 }
-
-}
-
 
 ?>
