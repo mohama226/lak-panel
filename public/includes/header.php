@@ -21,6 +21,9 @@ L-PANEL | مدیریت VPN
 
 <link rel="stylesheet" href="/assets/css/style.css">
 
+<link rel="stylesheet" href="/assets/css/users.css">
+<link rel="stylesheet" href="/assets/css/forms.css">  
+
 <link rel="stylesheet" href="/assets/css/admin.css">
 
 <link rel="stylesheet" href="/assets/css/forms.css">
