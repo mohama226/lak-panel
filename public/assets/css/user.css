@@ -180,3 +180,35 @@ font-size:14px;
 color:#64748b;
 
 }
+.value{
+
+font-size:24px;
+
+font-weight:bold;
+
+color:#2563eb;
+
+direction:ltr;
+
+text-align:center;
+
+}
+
+
+.box{
+
+transition:.3s;
+
+}
+
+
+
+.box:hover{
+
+transform:translateY(-5px);
+
+box-shadow:
+
+0 10px 25px rgba(0,0,0,.08);
+
+}
