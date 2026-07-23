@@ -1,84 +1,11 @@
 {
-  "compilerOptions": {
-    "target": "ES2022",
-
-    "useDefineForClassFields": true,
-
-    "lib": [
-      "DOM",
-      "DOM.Iterable",
-      "ES2022"
-    ],
-
-    "allowJs": false,
-
-    "skipLibCheck": true,
-
-    "esModuleInterop": true,
-
-    "allowSyntheticDefaultImports": true,
-
-    "strict": true,
-
-    "forceConsistentCasingInFileNames": true,
-
-    "module": "ESNext",
-
-    "moduleResolution": "Node",
-
-    "resolveJsonModule": true,
-
-    "isolatedModules": true,
-
-    "noEmit": true,
-
-    "jsx": "react-jsx",
-
-    "baseUrl": ".",
-
-    "paths": {
-      "@/*": [
-        "src/*"
-      ],
-      "@api/*": [
-        "src/api/*"
-      ],
-      "@assets/*": [
-        "src/assets/*"
-      ],
-      "@components/*": [
-        "src/components/*"
-      ],
-      "@layouts/*": [
-        "src/layouts/*"
-      ],
-      "@pages/*": [
-        "src/pages/*"
-      ],
-      "@router/*": [
-        "src/router/*"
-      ],
-      "@styles/*": [
-        "src/styles/*"
-      ],
-      "@utils/*": [
-        "src/utils/*"
-      ],
-      "@hooks/*": [
-        "src/hooks/*"
-      ],
-      "@services/*": [
-        "src/services/*"
-      ],
-      "@types/*": [
-        "src/types/*"
-      ]
+  "files": [],
+  "references": [
+    {
+      "path": "./tsconfig.app.json"
+    },
+    {
+      "path": "./tsconfig.node.json"
     }
-  },
-
-  "include": [
-    "src"
-  ],
-
-  "references": []
+  ]
 }
