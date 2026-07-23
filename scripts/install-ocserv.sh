@@ -29,9 +29,15 @@ if command -v dnf >/dev/null
 then
 
 
+dnf install -y epel-release
+
+
+dnf config-manager --set-enabled crb || true
+
+
 dnf install -y \
-epel-release \
 gcc \
+gcc-c++ \
 make \
 git \
 wget \
@@ -42,12 +48,13 @@ pam-devel \
 readline-devel \
 zlib-devel \
 gnutls-devel \
-protobuf-c-devel \
-protobuf-c-compiler \
-libev-devel \
 autoconf \
 automake \
-libtool
+libtool \
+pkgconf-pkg-config \
+libtasn1-devel \
+lz4-devel \
+cyrus-sasl-devel
 
 
 
