@@ -64,6 +64,15 @@ include "../includes/header.php";
 <b><?=($user['upload'] ?? 0)?> MB</b>
 </p>
 
+<!-- 🔥 لینک‌های جدید -->
+<p>
+<a href="/users/password.php">🔐 تغییر رمز</a>
+</p>
+
+<p>
+<a href="/users/logout.php">🚪 خروج</a>
+</p>
+
 </div>
 
 <!-- 🔥 کارت جدید: اعتبار -->
