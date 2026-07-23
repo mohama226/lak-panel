@@ -1,11 +1,14 @@
 <?php
 
+
 require "../../app/database.php";
+
 
 session_start();
 
 
 $error="";
+
 
 
 if($_POST){
@@ -18,18 +21,30 @@ $password=$_POST['password'];
 
 
 $stmt=$db->prepare(
+
 "SELECT * FROM users WHERE username=?"
+
 );
 
 
+
 $stmt->execute([$username]);
+
 
 
 $user=$stmt->fetch();
 
 
 
-if($user && password_verify($password,$user['password'])){
+if(
+
+$user &&
+
+$user['status']=="active" &&
+
+password_verify($password,$user['password'])
+
+){
 
 
 $_SESSION['vpn_user']=$user['username'];
@@ -37,23 +52,30 @@ $_SESSION['vpn_user']=$user['username'];
 $_SESSION['vpn_id']=$user['id'];
 
 
+
 header("Location: dashboard.php");
 
+
 exit;
+
 
 
 }else{
 
 
-$error="اطلاعات ورود اشتباه است";
+$error="اطلاعات ورود اشتباه است یا حساب مسدود شده";
 
 
 }
 
 
+
 }
+
+
 
 ?>
+
 
 
 <!DOCTYPE html>
@@ -65,8 +87,11 @@ $error="اطلاعات ورود اشتباه است";
 
 <meta charset="UTF-8">
 
+
 <title>
-User Login
+
+VPN User Login
+
 </title>
 
 
@@ -76,7 +101,9 @@ User Login
 </head>
 
 
+
 <body>
+
 
 
 <div class="login-box">
@@ -84,12 +111,18 @@ User Login
 
 <div class="logo">
 
+
 <h1>
+
 L-PANEL
+
 </h1>
 
+
 <span>
+
 VPN User Panel
+
 </span>
 
 
@@ -99,11 +132,13 @@ VPN User Panel
 
 <?php if($error): ?>
 
+
 <div class="error">
 
 <?=$error?>
 
 </div>
+
 
 <?php endif; ?>
 
@@ -112,15 +147,34 @@ VPN User Panel
 <form method="post">
 
 
-<input class="form-control"
+<input
+
+class="form-control"
+
 name="username"
-placeholder="نام کاربری VPN">
+
+placeholder="نام کاربری VPN"
 
 
-<input class="form-control"
+
+>
+
+
+
+<input
+
+class="form-control"
+
 type="password"
+
 name="password"
-placeholder="رمز عبور">
+
+placeholder="رمز عبور"
+
+
+
+>
+
 
 
 <button class="login-btn">
@@ -130,10 +184,13 @@ placeholder="رمز عبور">
 </button>
 
 
+
 </form>
 
 
+
 </div>
+
 
 
 </body>
