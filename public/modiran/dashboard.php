@@ -12,11 +12,9 @@ exit;
 }
 
 
-
 include "../includes/header.php";
 
 include "../includes/sidebar.php";
-
 
 ?>
 
@@ -24,34 +22,40 @@ include "../includes/sidebar.php";
 <div class="container">
 
 
-<div class="topbar">
+<div class="page-title">
 
-<h2>
-داشبورد مدیریت
-</h2>
+داشبورد مدیریت L-PANEL
 
 </div>
 
 
 
-<div class="row">
+<div class="dashboard-grid">
 
 
-<div class="card">
+
+<div class="dashboard-card">
+
 
 <h3>
-کل کاربران
+
+کل کاربران VPN
+
 </h3>
 
 
-<div class="stat">
+<div class="dashboard-number">
+
 0
+
 </div>
 
 
-<p>
+<div class="dashboard-text">
+
 کاربران ثبت شده
-</p>
+
+</div>
 
 
 </div>
@@ -59,48 +63,102 @@ include "../includes/sidebar.php";
 
 
 
-<div class="card">
+
+<div class="dashboard-card">
+
 
 <h3>
+
 کاربران فعال
+
 </h3>
 
 
-<div class="stat">
+<div class="dashboard-number">
+
 0
-</div>
-
-
-<p>
-حساب فعال
-</p>
-
 
 </div>
 
 
+<div class="dashboard-text">
+
+اتصال فعال
+
+</div>
 
 
-<div class="card">
+</div>
+
+
+
+
+
+<div class="dashboard-card">
+
 
 <h3>
-ترافیک مصرفی
+
+مصرف ترافیک
+
 </h3>
 
 
-<div class="stat">
+<div class="dashboard-number">
 
 0 GB
 
 </div>
 
 
-<p>
+<div class="dashboard-text">
+
 دانلود + آپلود
-</p>
+
+</div>
 
 
 </div>
+
+
+
+</div>
+
+
+
+
+
+<div class="status-box">
+
+
+<h3>
+
+وضعیت سیستم
+
+</h3>
+
+
+<p>
+
+وضعیت پنل:
+
+<span class="status-online">
+
+فعال
+
+</span>
+
+</p>
+
+
+
+<p>
+
+مدیر وارد شده:
+
+<?=htmlspecialchars($_SESSION['admin']);?>
+
+</p>
 
 
 
