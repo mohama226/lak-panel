@@ -1,22 +1,59 @@
 <?php
 
-session_start();
-
-if(!isset($_SESSION['admin'])){
-
-header("Location:/modiran");
-
-exit;
-
-}
-
+require "../../../app/auth.php";
+checkLogin();
 
 require "../../../app/database.php";
 
 
-$users=$db->query(
-"SELECT * FROM users ORDER BY id DESC"
-)->fetchAll();
+$search="";
+
+
+if(isset($_GET['search'])){
+
+    $search=trim($_GET['search']);
+
+}
+
+
+
+if($search){
+
+
+$stmt=$db->prepare(
+"
+SELECT * FROM users
+WHERE username LIKE ?
+ORDER BY id DESC
+"
+);
+
+
+$stmt->execute([
+"%".$search."%"
+]);
+
+
+
+}else{
+
+
+$stmt=$db->prepare(
+"
+SELECT * FROM users
+ORDER BY id DESC
+"
+);
+
+
+$stmt->execute();
+
+
+}
+
+
+
+$users=$stmt->fetchAll();
 
 
 
@@ -27,56 +64,123 @@ include "../../includes/sidebar.php";
 ?>
 
 
-<div class="container">
+<div class="content">
 
 
-<div class="page-title">
+<div class="users-box">
 
-مدیریت کاربران VPN
+
+
+<div class="users-header">
+
+
+<h2 class="users-title">
+
+👥 مدیریت کاربران VPN
+
+</h2>
+
+
+<a class="btn btn-primary"
+href="/modiran/users/create.php">
+
+➕ افزودن کاربر
+
+</a>
+
+
+<a class="btn btn-success"
+href="/modiran/users/bulk.php">
+
+👥 افزودن گروهی
+
+</a>
+
 
 </div>
 
 
 
-<div class="panel-card">
+
+<form method="get">
 
 
-<a class="btn" href="/modiran/users/create.php">
+<input
 
-+ افزودن کاربر
+class="search-box"
 
-</a>
+name="search"
 
+value="<?=htmlspecialchars($search)?>"
 
-<a class="btn btn-success" href="/modiran/users/bulk.php">
-
-+ افزودن گروهی
-
-</a>
+placeholder="🔍 جستجو نام کاربر ...">
 
 
-<br><br>
+</form>
 
 
 
-<table class="admin-table">
+
+
+<div class="table-box">
+
+
+<table>
+
+
+<thead>
 
 
 <tr>
 
-<th>ID</th>
+<th>
+ID
+</th>
 
-<th>Username</th>
 
-<th>Expire</th>
+<th>
+نام کاربری
+</th>
 
-<th>Download</th>
 
-<th>Upload</th>
+<th>
+انقضا
+</th>
 
-<th>Action</th>
+
+<th>
+حجم
+</th>
+
+
+<th>
+دانلود
+</th>
+
+
+<th>
+آپلود
+</th>
+
+
+<th>
+وضعیت
+</th>
+
+
+<th>
+عملیات
+</th>
+
 
 </tr>
+
+
+</thead>
+
+
+
+<tbody>
 
 
 
@@ -87,39 +191,120 @@ include "../../includes/sidebar.php";
 
 
 <td>
+
 <?=$u['id']?>
+
 </td>
 
 
+
 <td>
+
 <?=$u['username']?>
+
 </td>
 
 
+
+
 <td>
+
 <?=$u['expire_date']?>
+
 </td>
 
 
+
+
 <td>
-<?=round(($u['download_mb']??0)/1024,2)?>
+
+<?=$u['total_gb'] ?? 0?>
+
  GB
+
 </td>
 
 
-<td>
-<?=round(($u['upload_mb']??0)/1024,2)?>
- GB
-</td>
 
 
 <td>
 
+<?=$u['download'] ?? 0?>
 
-<a class="btn"
-href="edit.php?id=<?=$u['id']?>">
+ MB
 
-ویرایش
+</td>
+
+
+
+<td>
+
+<?=$u['upload'] ?? 0?>
+
+ MB
+
+</td>
+
+
+
+
+<td>
+
+
+<?php if(isset($u['status']) && $u['status']=="blocked"): ?>
+
+
+<span class="status-danger">
+بلاک
+</span>
+
+
+<?php else: ?>
+
+
+<span class="status-success">
+فعال
+</span>
+
+
+<?php endif; ?>
+
+
+</td>
+
+
+
+
+<td>
+
+
+<a class="btn btn-primary"
+
+href="/modiran/users/edit.php?id=<?=$u['id']?>">
+
+✏ ویرایش
+
+</a>
+
+
+
+<a class="btn btn-success"
+
+href="/modiran/users/extend.php?id=<?=$u['id']?>">
+
+⏱ تمدید
+
+</a>
+
+
+
+<a class="btn btn-danger"
+
+href="/modiran/users/delete.php?id=<?=$u['id']?>"
+
+onclick="return confirm('حذف شود؟')">
+
+🗑 حذف
 
 </a>
 
@@ -134,13 +319,26 @@ href="edit.php?id=<?=$u['id']?>">
 <?php endforeach; ?>
 
 
+
+</tbody>
+
+
 </table>
 
 
 </div>
 
 
+
 </div>
 
 
-<?php include "../../includes/footer.php"; ?>
+</div>
+
+
+
+<?php
+
+include "../../includes/footer.php";
+
+?>
