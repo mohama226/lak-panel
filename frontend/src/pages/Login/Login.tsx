@@ -1,9 +1,17 @@
 import { useState } from "react";
 
+import { useNavigate } from "react-router-dom";
+
+import { login } from "../../services/auth";
+
 import "./Login.css";
 
 
 function Login(){
+
+
+    const navigate = useNavigate();
+
 
     const [username,setUsername] = useState("");
 
@@ -11,21 +19,59 @@ function Login(){
 
     const [loading,setLoading] = useState(false);
 
+    const [error,setError] = useState("");
 
-    function handleLogin(e:React.FormEvent){
+
+
+    async function handleLogin(
+        e:React.FormEvent
+    ){
 
         e.preventDefault();
+
+
+        setError("");
 
         setLoading(true);
 
 
-        setTimeout(()=>{
 
-            window.location.href="/dashboard";
+        const result = await login(
 
-        },700);
+            username,
+
+            password
+
+        );
+
+
+
+        setLoading(false);
+
+
+
+        if(result.success){
+
+
+            navigate("/dashboard");
+
+
+        }else{
+
+
+            setError(
+
+                result.message ||
+
+                "Invalid username or password"
+
+            );
+
+
+        }
 
     }
+
 
 
     return (
@@ -37,6 +83,7 @@ function Login(){
 
 
                 <div className="login-header">
+
 
                     <div className="logo">
 
@@ -58,7 +105,9 @@ function Login(){
 
                     </p>
 
+
                 </div>
+
 
 
 
@@ -66,6 +115,7 @@ function Login(){
 
 
                     <div className="field">
+
 
                         <label>
 
@@ -79,14 +129,24 @@ function Login(){
                             value={username}
 
                             onChange={
-                                e=>setUsername(e.target.value)
+
+                                e=>
+
+                                setUsername(
+                                    e.target.value
+                                )
+
                             }
 
                             placeholder="admin"
 
+                            autoComplete="username"
+
                         />
 
+
                     </div>
+
 
 
 
@@ -107,15 +167,39 @@ function Login(){
                             value={password}
 
                             onChange={
-                                e=>setPassword(e.target.value)
+
+                                e=>
+
+                                setPassword(
+                                    e.target.value
+                                )
+
                             }
 
                             placeholder="••••••••"
+
+                            autoComplete="current-password"
 
                         />
 
 
                     </div>
+
+
+
+
+                    {
+
+                        error &&
+
+                        <div className="login-error">
+
+                            {error}
+
+                        </div>
+
+                    }
+
 
 
 
@@ -126,11 +210,17 @@ function Login(){
                     >
 
                         {
+
                             loading
+
                             ?
-                            "Loading..."
+
+                            "Signing in..."
+
                             :
+
                             "Login"
+
                         }
 
 
@@ -146,6 +236,7 @@ function Login(){
         </div>
 
     );
+
 
 }
 
