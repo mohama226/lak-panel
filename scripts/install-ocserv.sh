@@ -81,19 +81,24 @@ git clone https://gitlab.com/openconnect/ocserv.git ocserv
 
 cd ocserv
 
+git fetch --tags
+
 echo "Available versions:"
 git tag | grep 1.5
 
-VERSION=$(git tag | grep "1.5" | sort -V | tail -1)
+VERSION=$(git tag | grep -E "^1\.5\.0$")
 
 if [ -z "$VERSION" ]; then
-    echo "OCServ 1.5.x tag not found"
+    echo "OCServ 1.5.0 tag not found"
     exit 1
 fi
 
 echo "Installing version: $VERSION"
 
-git checkout $VERSION
+git checkout "$VERSION"
+
+chmod +x autogen.sh
+chmod +x configure
 
 ./autogen.sh
 
