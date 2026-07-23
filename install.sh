@@ -7,8 +7,17 @@ echo " L-PANEL PHP INSTALLER"
 echo "=============================="
 
 read -p "Super Admin Username: " ADMIN_USER
-read -s -p "Super Admin Password: " ADMIN_PASS
-echo
+
+# اصلاح بخش گرفتن پسورد (نباید خالی باشد)
+while [ -z "$ADMIN_PASS" ]
+do
+    read -s -p "Super Admin Password: " ADMIN_PASS
+    echo
+
+    if [ -z "$ADMIN_PASS" ]; then
+        echo "Password cannot be empty"
+    fi
+done
 
 read -p "Panel Port [8080]: " PORT
 PORT=${PORT:-8080}
@@ -16,169 +25,125 @@ PORT=${PORT:-8080}
 
 if [ -f /etc/debian_version ]; then
 
-echo "Ubuntu/Debian detected"
+    echo "Ubuntu/Debian detected"
 
-apt update
+    apt update
 
-apt install -y \
-apache2 \
-php \
-php-mysql \
-mariadb-server \
-git \
-curl \
-unzip
+    apt install -y \
+        apache2 \
+        php \
+        php-mysql \
+        mariadb-server \
+        git \
+        curl \
+        unzip
 
-systemctl enable apache2
-systemctl enable mariadb
+    systemctl enable apache2
+    systemctl enable mariadb
 
-systemctl start apache2
-systemctl start mariadb
-
+    systemctl start apache2
+    systemctl start mariadb
 
 elif [ -f /etc/redhat-release ]; then
 
-echo "AlmaLinux detected"
+    echo "AlmaLinux detected"
 
+    dnf install -y \
+        httpd \
+        php \
+        php-mysqlnd \
+        mariadb-server \
+        git \
+        curl \
+        unzip
 
-dnf install -y \
-httpd \
-php \
-php-mysqlnd \
-mariadb-server \
-git \
-curl \
-unzip
+    systemctl enable httpd
+    systemctl enable mariadb
 
-
-systemctl enable httpd
-systemctl enable mariadb
-
-
-systemctl start httpd
-systemctl start mariadb
-
+    systemctl start httpd
+    systemctl start mariadb
 
 fi
 
 
-
 echo "Downloading L-PANEL"
-
 
 rm -rf /var/www/html/l-panel
 
-
 git clone https://github.com/mohama226/l-panel.git /var/www/html/l-panel
-
-
 
 mkdir -p /var/www/html/l-panel/storage
 
 
-
 echo "Creating database"
 
-
+# اصلاح کامل ساخت دیتابیس
 mysql <<EOF
+DROP DATABASE IF EXISTS lpanel;
 
 CREATE DATABASE lpanel;
 
-CREATE USER 'lpanel'@'localhost'
+CREATE USER IF NOT EXISTS 'lpanel'@'localhost'
 IDENTIFIED BY 'lpanel123';
 
 GRANT ALL PRIVILEGES ON lpanel.*
 TO 'lpanel'@'localhost';
 
 FLUSH PRIVILEGES;
-
 EOF
-
-
 
 mysql lpanel < /var/www/html/l-panel/database/schema.sql
 
-
-
+# اصلاح Hash پسورد
 HASH=$(php -r 'echo password_hash($argv[1], PASSWORD_DEFAULT);' "$ADMIN_PASS")
 
+# اصلاح INSERT → حذف قبلی + درج جدید
 mysql lpanel <<EOF
+DELETE FROM admins;
 
 INSERT INTO admins
 (username,password,role)
 VALUES
 ('$ADMIN_USER','$HASH','superadmin');
-
 EOF
-
 
 
 if [ -f /etc/debian_version ]; then
 
-
-cat >/etc/apache2/sites-available/lpanel.conf <<EOF
-
+    cat >/etc/apache2/sites-available/lpanel.conf <<EOF
 Listen $PORT
 
 <VirtualHost *:$PORT>
+    DocumentRoot /var/www/html/l-panel/public
 
-DocumentRoot /var/www/html/l-panel/public
-
-
-<Directory /var/www/html/l-panel/public>
-
-AllowOverride All
-Require all granted
-
-</Directory>
-
-
+    <Directory /var/www/html/l-panel/public>
+        AllowOverride All
+        Require all granted
+    </Directory>
 </VirtualHost>
-
 EOF
 
-
-a2ensite lpanel.conf
-
-systemctl restart apache2
-
-
+    a2ensite lpanel.conf
+    systemctl restart apache2
 
 else
 
-
-
-cat >/etc/httpd/conf.d/lpanel.conf <<EOF
-
-
+    cat >/etc/httpd/conf.d/lpanel.conf <<EOF
 Listen $PORT
 
-
 <VirtualHost *:$PORT>
+    DocumentRoot /var/www/html/l-panel/public
 
-
-DocumentRoot /var/www/html/l-panel/public
-
-
-<Directory /var/www/html/l-panel/public>
-
-AllowOverride All
-Require all granted
-
-</Directory>
-
-
+    <Directory /var/www/html/l-panel/public>
+        AllowOverride All
+        Require all granted
+    </Directory>
 </VirtualHost>
-
-
 EOF
 
-
-systemctl restart httpd
-
+    systemctl restart httpd
 
 fi
-
 
 
 echo ""
