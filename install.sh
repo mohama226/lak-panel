@@ -22,7 +22,6 @@ done
 read -p "Panel Port [8080]: " PORT
 PORT=${PORT:-8080}
 
-
 if [ -f /etc/debian_version ]; then
 
     echo "Ubuntu/Debian detected"
@@ -72,7 +71,6 @@ if [ -f /etc/ocserv/ocpasswd ]; then
     chown apache:apache /etc/ocserv/ocpasswd
 fi
 
-
 echo "Downloading L-PANEL"
 
 rm -rf /var/www/html/l-panel
@@ -80,7 +78,6 @@ rm -rf /var/www/html/l-panel
 git clone https://github.com/mohama226/l-panel.git /var/www/html/l-panel
 
 mkdir -p /var/www/html/l-panel/storage
-
 
 echo "Creating database"
 
@@ -110,7 +107,6 @@ INSERT INTO admins
 VALUES
 ('$ADMIN_USER','$HASH','superadmin');
 EOF
-
 
 if [ -f /etc/debian_version ]; then
 
@@ -149,6 +145,17 @@ EOF
 
 fi
 
+# 🔥 بخش جدید: نصب Agent
+echo "Installing L-PANEL Agent"
+
+cp agent/lpanel-agent.php /usr/local/bin/lpanel-agent.php
+chmod +x /usr/local/bin/lpanel-agent.php
+
+cp systemd/lpanel-agent.service /etc/systemd/system/
+
+systemctl daemon-reload
+systemctl enable lpanel-agent
+systemctl restart lpanel-agent
 
 echo ""
 echo "=============================="
