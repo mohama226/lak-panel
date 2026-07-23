@@ -12,40 +12,8 @@ exit;
 }
 
 
-require "../../app/database.php";
-
-
-$total_users = $db->query(
-"SELECT COUNT(*) FROM users"
-)->fetchColumn();
-
-
-
-$active_users = $db->query(
-"SELECT COUNT(*) FROM users WHERE status='active'"
-)->fetchColumn();
-
-
-
-$total_download = $db->query(
-"SELECT SUM(download_mb) FROM users"
-)->fetchColumn();
-
-
-$total_upload = $db->query(
-"SELECT SUM(upload_mb) FROM users"
-)->fetchColumn();
-
-
-
-$total_traffic =
-
-(($total_download ?? 0)+($total_upload ?? 0))/1024;
-
-
 
 include "../includes/header.php";
-
 
 include "../includes/sidebar.php";
 
@@ -62,7 +30,6 @@ include "../includes/sidebar.php";
 داشبورد مدیریت
 </h2>
 
-
 </div>
 
 
@@ -70,9 +37,7 @@ include "../includes/sidebar.php";
 <div class="row">
 
 
-
 <div class="card">
-
 
 <h3>
 کل کاربران
@@ -80,9 +45,7 @@ include "../includes/sidebar.php";
 
 
 <div class="stat">
-
-<?= $total_users ?>
-
+0
 </div>
 
 
@@ -96,9 +59,7 @@ include "../includes/sidebar.php";
 
 
 
-
 <div class="card">
-
 
 <h3>
 کاربران فعال
@@ -106,9 +67,7 @@ include "../includes/sidebar.php";
 
 
 <div class="stat">
-
-<?= $active_users ?>
-
+0
 </div>
 
 
@@ -122,9 +81,7 @@ include "../includes/sidebar.php";
 
 
 
-
 <div class="card">
-
 
 <h3>
 ترافیک مصرفی
@@ -133,9 +90,7 @@ include "../includes/sidebar.php";
 
 <div class="stat">
 
-<?= round($total_traffic,2) ?>
-
-GB
+0 GB
 
 </div>
 
@@ -147,34 +102,6 @@ GB
 
 </div>
 
-
-
-</div>
-
-
-
-
-
-<div class="card">
-
-
-<h3>
-وضعیت پنل
-</h3>
-
-
-<p>
-سیستم فعال است
-</p>
-
-
-<p>
-
-مدیر وارد شده:
-
-<?=htmlspecialchars($_SESSION['admin']);?>
-
-</p>
 
 
 </div>
