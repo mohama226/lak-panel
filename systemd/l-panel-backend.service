@@ -1,22 +1,30 @@
 [Unit]
+
 Description=L-Panel Backend Service
-After=network.target postgresql.service redis.service
+
+After=network.target
+
 
 
 [Service]
 
 Type=simple
 
+
 User=root
+
 
 WorkingDirectory=/opt/l-panel/backend
 
+
 Environment="PATH=/opt/l-panel/backend/venv/bin"
+
 
 ExecStart=/opt/l-panel/backend/venv/bin/gunicorn \
     --workers 3 \
     --bind 127.0.0.1:8000 \
     main:app
+
 
 
 Restart=always
