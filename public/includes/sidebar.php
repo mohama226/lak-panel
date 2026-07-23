@@ -15,7 +15,15 @@ L-PANEL
 👥 کاربران VPN
 </a>
 
+<a href="/modiran/users/create.php">
+➕ افزودن کاربر
+</a>
 
+
+<a href="/modiran/users/bulk.php">
+👥 افزودن گروهی
+</a>
+  
 <a href="#">
 ⚙ تنظیمات
 </a>
