@@ -100,18 +100,26 @@ echo "Installing version: $VERSION"
 
 git checkout "$VERSION"
 
-echo "Preparing OCServ build"
+echo "Checking configure script"
 
-if [ ! -f "./configure" ]; then
-    echo "Generating configure script"
-    ./bootstrap
+if [ -f "./configure" ]; then
+    echo "configure found"
+else
+    echo "configure missing"
+    exit 1
 fi
+
+echo "Configuring OCServ"
 
 ./configure \
     --prefix=/usr \
     --sysconfdir=/etc
 
+echo "Building OCServ"
+
 make -j$(nproc)
+
+echo "Installing OCServ"
 
 make install
 
