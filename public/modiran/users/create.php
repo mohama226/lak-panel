@@ -1,7 +1,6 @@
 <?php
 
 require "../../../app/auth.php";
-
 checkLogin();
 
 require "../../../app/database.php";
@@ -12,15 +11,10 @@ $msg="";
 
 if($_POST){
 
-
 $username=$_POST['username'];
-
 $password=$_POST['password'];
-
 $expire=$_POST['expire_date'];
-
 $volume=$_POST['total_gb'];
-
 
 
 $hash=password_hash(
@@ -31,59 +25,46 @@ PASSWORD_DEFAULT
 
 
 $stmt=$db->prepare(
-
 "INSERT INTO users
 (username,password,expire_date,total_gb)
 VALUES
 (?,?,?,?)"
-
 );
 
 
-
 $stmt->execute([
-
 $username,
 $hash,
 $expire,
 $volume
-
 ]);
-
 
 
 $msg="کاربر با موفقیت ساخته شد";
 
-
 }
 
 
-
 include "../../includes/header.php";
-
 include "../../includes/sidebar.php";
 
 ?>
 
 
-<div class="container">
+<div class="main">
 
 
-<div class="page-title">
-
-افزودن کاربر VPN
-
-</div>
+<div class="form-card">
 
 
-
-<div class="panel-card">
-
+<h2>
+➕ افزودن کاربر VPN
+</h2>
 
 
 <?php if($msg): ?>
 
-<div class="success-message">
+<div class="alert-success">
 
 <?=$msg?>
 
@@ -93,12 +74,7 @@ include "../../includes/sidebar.php";
 
 
 
-
 <form method="post">
-
-
-
-<div class="grid-form">
 
 
 <div class="form-group">
@@ -108,14 +84,11 @@ include "../../includes/sidebar.php";
 </label>
 
 <input 
-class="form-input"
+class="form-control"
 name="username"
-placeholder="نام کاربری">
-
+required>
 
 </div>
-
-
 
 
 
@@ -126,14 +99,11 @@ placeholder="نام کاربری">
 </label>
 
 <input 
-class="form-input"
+class="form-control"
 name="password"
-placeholder="رمز عبور">
-
+required>
 
 </div>
-
-
 
 
 
@@ -144,45 +114,33 @@ placeholder="رمز عبور">
 </label>
 
 <input 
-class="form-input"
+class="form-control"
 type="date"
 name="expire_date">
 
-
 </div>
-
-
 
 
 
 <div class="form-group">
 
 <label>
-حجم مجاز (GB)
+حجم مجاز GB
 </label>
 
 <input 
-class="form-input"
-name="total_gb"
-placeholder="مثال 50">
-
-
-</div>
-
+class="form-control"
+name="total_gb">
 
 </div>
 
 
 
-<br>
+<button class="btn-primary">
 
-
-<button class="btn">
-
-ذخیره کاربر
+ساخت کاربر
 
 </button>
-
 
 
 </form>
@@ -192,7 +150,6 @@ placeholder="مثال 50">
 
 
 </div>
-
 
 
 <?php
