@@ -4,82 +4,61 @@ require "../../../app/auth.php";
 
 checkLogin();
 
-
 require "../../../app/database.php";
 
 
 $id=$_GET['id'];
 
 
-
 $stmt=$db->prepare(
-
 "SELECT * FROM users WHERE id=?"
-
 );
-
 
 $stmt->execute([$id]);
 
-
 $user=$stmt->fetch();
 
+
+$msg="";
 
 
 if($_POST){
 
 
-
-$status=$_POST['status'];
-
-$volume=$_POST['total_gb'];
+$username=$_POST['username'];
 
 $expire=$_POST['expire_date'];
 
+$total=$_POST['total_gb'];
 
 
-$update=$db->prepare(
 
-"UPDATE users SET
-
-status=?,
-
-total_gb=?,
-
-expire_date=?
-
-WHERE id=?"
-
+$stmt=$db->prepare(
+"
+UPDATE users SET
+username=?,
+expire_date=?,
+total_gb=?
+WHERE id=?
+"
 );
 
 
+$stmt->execute([
 
-$update->execute([
-
-$status,
-
-$volume,
-
+$username,
 $expire,
-
+$total,
 $id
 
 ]);
 
 
+$msg="اطلاعات کاربر بروزرسانی شد";
 
-header(
-
-"Location: /modiran/users"
-
-);
-
-
-exit;
 
 
 }
-
 
 
 
@@ -87,110 +66,78 @@ include "../../includes/header.php";
 
 include "../../includes/sidebar.php";
 
-
 ?>
 
 
-<div class="card">
+<main class="content">
+
+
+<div class="card form-card">
 
 
 <h2>
-
-ویرایش کاربر
-
-<?= $user['username']; ?>
-
+✏ ویرایش پروفایل کاربر
 </h2>
+
+
+<?php if($msg): ?>
+
+<div class="success">
+
+<?=$msg?>
+
+</div>
+
+<?php endif; ?>
 
 
 
 <form method="post">
 
 
-
 <label>
-وضعیت
-</label>
-
-
-<select name="status" class="form-control">
-
-
-<option value="active"
-
-<?=
-
-$user['status']=="active"?"selected":""
-
-?>
-
->
-
-فعال
-
-</option>
-
-
-
-<option value="blocked"
-
-<?=
-
-$user['status']=="blocked"?"selected":""
-
-?>
-
->
-
-مسدود
-
-</option>
-
-
-</select>
-
-
-
-
-<label>
-
-حجم کل
-
+نام کاربری
 </label>
 
 
 <input
-
 class="form-control"
-
-name="total_gb"
-
-value="<?= $user['total_gb']; ?>">
+name="username"
+value="<?=$user['username']?>"
+>
 
 
 
 <label>
-
 تاریخ انقضا
-
 </label>
 
 
 <input
-
 class="form-control"
-
 type="date"
-
 name="expire_date"
+value="<?=$user['expire_date']?>"
+>
 
-value="<?= $user['expire_date']; ?>">
+
+
+<label>
+حجم مجاز GB
+</label>
+
+
+<input
+class="form-control"
+name="total_gb"
+value="<?=$user['total_gb']?>"
+>
 
 
 
 <button class="login-btn">
 
-ذخیره
+ذخیره تغییرات
 
 </button>
 
@@ -199,7 +146,11 @@ value="<?= $user['expire_date']; ?>">
 </form>
 
 
+
 </div>
+
+
+</main>
 
 
 
