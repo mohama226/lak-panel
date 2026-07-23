@@ -1,109 +1,9 @@
-*{
-    box-sizing:border-box;
-}
+/* =========================
+   Admin Users Pages
+========================= */
 
 
-body{
-
-    margin:0;
-
-    font-family:tahoma,Arial;
-
-    background:#f1f5f9;
-
-    direction:rtl;
-
-    color:#1e293b;
-
-}
-
-
-
-/* Sidebar */
-
-.sidebar{
-
-    position:fixed;
-
-    right:0;
-
-    top:0;
-
-    width:250px;
-
-    height:100vh;
-
-    background:#0f172a;
-
-    padding:25px 15px;
-
-    z-index:100;
-
-}
-
-
-
-.sidebar h2{
-
-    color:#38bdf8;
-
-    text-align:center;
-
-    margin-bottom:35px;
-
-}
-
-
-
-.sidebar a{
-
-    display:block;
-
-    color:#cbd5e1;
-
-    text-decoration:none;
-
-    padding:14px;
-
-    margin-bottom:10px;
-
-    border-radius:12px;
-
-    transition:.3s;
-
-}
-
-
-
-.sidebar a:hover{
-
-    background:#1e293b;
-
-    color:white;
-
-}
-
-
-
-/* Main area */
-
-
-.container{
-
-
-    margin-right:250px;
-
-    padding:30px;
-
-}
-
-
-
-/* Topbar */
-
-
-.topbar{
-
+.page-title{
 
     background:white;
 
@@ -114,121 +14,56 @@ body{
     margin-bottom:25px;
 
     box-shadow:
-
     0 8px 25px rgba(0,0,0,.06);
 
-}
+    font-size:22px;
 
-
-
-.topbar h2{
-
-    margin:0;
+    font-weight:bold;
 
 }
 
 
 
-/* Cards */
-
-
-.row{
-
-    display:grid;
-
-    grid-template-columns:
-
-    repeat(auto-fit,minmax(220px,1fr));
-
-    gap:20px;
-
-}
-
-
-
-.card{
-
+.table-box{
 
     background:white;
 
-    padding:25px;
+    padding:20px;
 
     border-radius:20px;
 
     box-shadow:
-
     0 8px 25px rgba(0,0,0,.06);
 
-    margin-bottom:20px;
-
-
-}
-
-
-
-.card h3{
-
-    color:#475569;
+    overflow-x:auto;
 
 }
 
-
-
-.stat{
-
-
-    font-size:38px;
-
-    font-weight:bold;
-
-    color:#2563eb;
-
-    margin:15px 0;
-
-}
-
-
-
-
-/* Table */
 
 
 table{
 
-
-    width:100%;
-
-    background:white;
-
-    border-radius:15px;
-
-    overflow:hidden;
+    border-collapse:collapse;
 
 }
 
 
 
-th{
+table th{
 
-    background:#f8fafc;
+    background:#0f172a;
 
-    color:#475569;
+    color:white;
 
-}
-
-
-
-td,th{
-
-    padding:14px;
-
-    text-align:center;
+    padding:15px;
 
 }
 
 
 
-tr{
+table td{
+
+    padding:15px;
 
     border-bottom:1px solid #e2e8f0;
 
@@ -236,63 +71,94 @@ tr{
 
 
 
-/* Inputs */
+table tr:hover{
 
-
-.form-control{
-
-
-    width:100%;
-
-    padding:13px;
-
-    margin:10px 0;
-
-    border:1px solid #cbd5e1;
-
-    border-radius:12px;
+    background:#f8fafc;
 
 }
 
 
 
-/* Buttons */
+/* forms */
 
 
-button,
-.login-btn{
+.form-box{
 
+
+    background:white;
+
+    padding:30px;
+
+    border-radius:20px;
+
+    box-shadow:
+    0 8px 25px rgba(0,0,0,.06);
+
+
+}
+
+
+
+.form-box label{
+
+
+    display:block;
+
+    margin-top:15px;
+
+    margin-bottom:5px;
+
+    font-weight:bold;
+
+
+}
+
+
+
+.form-box input,
+.form-box select,
+.form-box textarea{
+
+
+    width:100%;
+
+    padding:14px;
+
+    border-radius:12px;
+
+    border:1px solid #cbd5e1;
+
+    font-size:15px;
+
+
+}
+
+
+
+.form-box button{
+
+
+    margin-top:25px;
+
+    width:180px;
+
+
+}
+
+
+
+/* action buttons */
+
+
+.btn-edit{
 
     background:#2563eb;
 
     color:white;
 
-    border:0;
+    padding:8px 15px;
 
-    padding:12px 25px;
-
-    border-radius:12px;
-
-    cursor:pointer;
-
-
-}
-
-
-
-button:hover{
-
-    background:#1d4ed8;
-
-}
-
-
-
-/* Links */
-
-
-.card a{
-
+    border-radius:10px;
 
     text-decoration:none;
 
@@ -300,29 +166,16 @@ button:hover{
 
 
 
-/* Mobile */
+.btn-delete{
 
+    background:#dc2626;
 
-@media(max-width:900px){
+    color:white;
 
+    padding:8px 15px;
 
-.sidebar{
+    border-radius:10px;
 
-    position:relative;
-
-    width:100%;
-
-    height:auto;
-
-}
-
-
-
-.container{
-
-    margin-right:0;
-
-}
-
+    text-decoration:none;
 
 }
