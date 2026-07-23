@@ -1,0 +1,5 @@
+ALTER TABLE users
+
+ADD COLUMN download_mb BIGINT DEFAULT 0,
+
+ADD COLUMN upload_mb BIGINT DEFAULT 0;
