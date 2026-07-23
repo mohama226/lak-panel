@@ -26,4 +26,3 @@ L-PANEL
 <body>
 
 
-<div class="container">
