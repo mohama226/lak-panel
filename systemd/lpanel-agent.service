@@ -1,21 +1,13 @@
 [Unit]
-
 Description=L-PANEL OCServ Agent
-
 After=network.target
 
 
-
 [Service]
-
 Type=simple
-
 ExecStart=/usr/bin/php /usr/local/bin/lpanel-agent.php
-
 Restart=always
 
 
-
 [Install]
-
 WantedBy=multi-user.target
