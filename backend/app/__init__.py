@@ -42,7 +42,7 @@ def create_app():
 
     # Authentication Routes
 
-    from app.routes.auth import auth
+    from routes.auth import auth
 
     app.register_blueprint(
 
