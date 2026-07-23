@@ -1,5 +1,6 @@
 <div class="sidebar">
 
+
 <h3>
 L-PANEL
 </h3>
@@ -11,12 +12,7 @@ L-PANEL
 
 
 <a href="#">
-👥 کاربران
-</a>
-
-
-<a href="#">
-👮 مدیران
+👥 کاربران VPN
 </a>
 
 
@@ -30,7 +26,7 @@ L-PANEL
 </a>
 
 
-<a href="logout.php">
+<a href="../logout.php">
 🚪 خروج
 </a>
 
