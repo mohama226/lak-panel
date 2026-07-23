@@ -37,7 +37,8 @@ then
         ninja-build \
         pkgconf-pkg-config \
         gettext \
-        which
+        which \
+        gperf
 
     echo "Installing missing libraries"
 
