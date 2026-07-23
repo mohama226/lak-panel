@@ -1,7 +1,6 @@
 <?php
 
 require "../../../app/auth.php";
-
 checkLogin();
 
 require "../../../app/database.php";
@@ -13,14 +12,17 @@ $msg="";
 if($_POST){
 
 
-$username=$_POST['username'];
+$username=trim($_POST['username']);
 
-$password=$_POST['password'];
+$password=trim($_POST['password']);
 
 $expire=$_POST['expire_date'];
 
 $volume=$_POST['total_gb'];
 
+
+
+if($username && $password){
 
 
 $hash=password_hash(
@@ -58,6 +60,9 @@ $msg="کاربر با موفقیت ساخته شد";
 }
 
 
+}
+
+
 
 include "../../includes/header.php";
 
@@ -66,10 +71,11 @@ include "../../includes/sidebar.php";
 ?>
 
 
-<main class="content">
+
+<div class="content">
 
 
-<div class="card form-card">
+<div class="form-box">
 
 
 <h2>
@@ -80,7 +86,7 @@ include "../../includes/sidebar.php";
 
 <?php if($msg): ?>
 
-<div class="success">
+<div class="alert-success">
 
 <?=$msg?>
 
@@ -90,7 +96,9 @@ include "../../includes/sidebar.php";
 
 
 
+
 <form method="post">
+
 
 
 <label>
@@ -100,7 +108,7 @@ include "../../includes/sidebar.php";
 <input 
 class="form-control"
 name="username"
-placeholder="username"
+placeholder="مثلا user100"
 required>
 
 
@@ -109,12 +117,12 @@ required>
 رمز عبور
 </label>
 
-
 <input 
 class="form-control"
 name="password"
-placeholder="password"
+placeholder="رمز عبور"
 required>
+
 
 
 
@@ -123,10 +131,14 @@ required>
 </label>
 
 
-<input 
+<input
+
 class="form-control"
+
 type="date"
+
 name="expire_date"
+
 required>
 
 
@@ -136,19 +148,24 @@ required>
 </label>
 
 
-<input 
+<input
+
 class="form-control"
+
 name="total_gb"
-placeholder="مثلا 100"
-required>
+
+placeholder="مثلا 100">
 
 
 
-<button class="login-btn">
+
+
+<button class="form-btn">
 
 ساخت کاربر
 
 </button>
+
 
 
 </form>
@@ -158,7 +175,8 @@ required>
 </div>
 
 
-</main>
+</div>
+
 
 
 
