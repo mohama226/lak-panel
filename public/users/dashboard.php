@@ -15,7 +15,7 @@ exit;
 
 require "../../app/database.php";
 
-
+require "../../app/jalali.php";
 
 $stmt=$db->prepare(
 
@@ -119,7 +119,19 @@ VPN User Panel
 
 <div class="value">
 
+<div class="value">
+
 <?= $user['expire_date']; ?>
+
+<br>
+
+<small>
+
+<?= jalali_date($user['expire_date']); ?>
+
+</small>
+
+</div>
 
 </div>
 
