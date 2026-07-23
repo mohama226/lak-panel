@@ -12,14 +12,33 @@ body{
     Arial,
     sans-serif;
 
-    background:#f3f6fb;
-
     direction:rtl;
+
+    background:#f1f5f9;
+
+    color:#1e293b;
 
 }
 
 
-/* sidebar */
+
+/* Layout */
+
+.container{
+
+    width:calc(100% - 280px);
+
+    margin-right:280px;
+
+    padding:30px;
+
+    min-height:100vh;
+
+}
+
+
+
+/* Sidebar */
 
 .sidebar{
 
@@ -29,13 +48,11 @@ body{
 
     top:0;
 
-    width:270px;
+    width:280px;
 
     height:100vh;
 
-    background:#111827;
-
-    color:white;
+    background:#0f172a;
 
     padding:30px 20px;
 
@@ -49,9 +66,11 @@ body{
 
     text-align:center;
 
-    margin-bottom:40px;
+    color:white;
 
     font-size:28px;
+
+    margin-bottom:40px;
 
 }
 
@@ -61,17 +80,19 @@ body{
 
     display:block;
 
-    color:#d1d5db;
+    color:#e2e8f0;
 
     text-decoration:none;
 
     padding:15px;
 
-    margin-bottom:8px;
+    margin-bottom:10px;
 
     border-radius:12px;
 
     transition:.3s;
+
+    font-size:16px;
 
 }
 
@@ -87,67 +108,45 @@ body{
 
 
 
-
-/* بخش اصلی سایت */
-
-.container,
-.main{
+/* Cards */
 
 
-    margin-right:300px;
-
-
-    padding:40px;
-
-
-    min-height:100vh;
-
-
-}
-
-
-
-
-/* کارت ها */
-
-.card,
-.form-card{
-
+.card{
 
     background:white;
 
-
     border-radius:20px;
-
 
     padding:30px;
 
+    margin-bottom:25px;
 
     box-shadow:
 
-    0 10px 30px rgba(0,0,0,.08);
-
+    0 10px 30px rgba(0,0,0,.06);
 
 }
 
 
 
+.card h2{
 
-/* dashboard cards */
+    margin-top:0;
 
+}
+
+
+
+/* Dashboard */
 
 .row{
 
-
     display:grid;
-
 
     grid-template-columns:
     repeat(3,1fr);
 
-
     gap:25px;
-
 
 }
 
@@ -155,8 +154,7 @@ body{
 
 .stat{
 
-
-    font-size:40px;
+    font-size:42px;
 
     font-weight:bold;
 
@@ -168,41 +166,24 @@ body{
 
 
 
-
-/* فرم ها */
-
-
-.form-card{
-
-    max-width:900px;
-
-}
-
+/* Forms */
 
 
 .form-control{
 
-
     width:100%;
 
+    padding:15px;
 
-    height:50px;
+    border:
 
-
-    padding:0 15px;
-
-
-    margin-bottom:20px;
-
-
-    border:1px solid #ddd;
-
+    1px solid #cbd5e1;
 
     border-radius:12px;
 
+    margin-bottom:18px;
 
-    font-size:16px;
-
+    font-size:15px;
 
 }
 
@@ -210,53 +191,117 @@ body{
 
 .form-control:focus{
 
-
     outline:none;
-
 
     border-color:#2563eb;
 
-
 }
 
 
 
-
-.btn-primary,
 .login-btn{
-
 
     background:#2563eb;
 
-
     color:white;
 
+    border:0;
 
-    border:none;
-
-
-    padding:14px 35px;
-
+    padding:15px 35px;
 
     border-radius:12px;
 
-
     cursor:pointer;
-
 
     font-size:16px;
 
+}
+
+
+.login-btn:hover{
+
+    background:#1d4ed8;
+
+}
+
+
+
+/* Tables */
+
+
+table{
+
+    width:100%;
+
+    border-collapse:collapse;
+
+    background:white;
+
+    border-radius:15px;
+
+    overflow:hidden;
+
+}
+
+
+
+th{
+
+    background:#0f172a;
+
+    color:white;
+
+    padding:15px;
+
+}
+
+
+
+td{
+
+    padding:15px;
+
+    border-bottom:1px solid #e2e8f0;
+
+}
+
+
+
+tr:hover{
+
+    background:#f8fafc;
 
 }
 
 
 
 
-.btn-primary:hover,
-.login-btn:hover{
+/* Responsive */
+
+@media(max-width:900px){
 
 
-    background:#1d4ed8;
+.sidebar{
+
+    width:220px;
+
+}
+
+
+.container{
+
+    width:calc(100% - 220px);
+
+    margin-right:220px;
+
+}
+
+
+.row{
+
+    grid-template-columns:1fr;
+
+}
 
 
 }
