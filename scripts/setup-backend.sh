@@ -51,8 +51,7 @@ WorkingDirectory=/opt/l-panel/backend
 
 Environment="PATH=/opt/l-panel/backend/venv/bin"
 
-ExecStart=/opt/l-panel/backend/venv/bin/gunicorn main:app --bind 127.0.0.1:8000 --workers 3
-
+ExecStart=/opt/l-panel/backend/venv/bin/gunicorn wsgi:app --bind 127.0.0.1:8000 --workers 3
 Restart=always
 
 RestartSec=5
