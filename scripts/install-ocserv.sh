@@ -60,11 +60,18 @@ then
         ninja-build \
         pkgconf-pkg-config \
         gettext \
-        which
+        which \
+        gperf
 
     echo "Installing missing libraries"
 
-    dnf install -y protobuf-c protobuf protobuf-devel || true
+    dnf install -y \
+        protobuf-c \
+        protobuf-c-devel \
+        protobuf-c-compiler \
+        protobuf \
+        protobuf-devel || true
+
     dnf install -y libev libev-devel || true
 
 else
