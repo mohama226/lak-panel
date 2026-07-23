@@ -82,7 +82,11 @@ include "../../includes/header.php";
 
 include "../../includes/sidebar.php";
 
+<main class="content">
 
+
+<div class="card form-card">
+  
 ?>
 
 
@@ -195,6 +199,10 @@ name="total_gb">
 
 <?php
 
+</div>
+
+</main>
+  
 include "../../includes/footer.php";
 
 ?>
