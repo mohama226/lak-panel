@@ -1,41 +1,154 @@
-/* =========================
-   Admin Users Pages
-========================= */
+*{
+box-sizing:border-box;
+}
 
 
-.page-title{
+body{
 
-    background:white;
+margin:0;
 
-    padding:20px 25px;
+font-family:tahoma,Arial;
 
-    border-radius:18px;
+background:#f1f5f9;
 
-    margin-bottom:25px;
+direction:rtl;
 
-    box-shadow:
-    0 8px 25px rgba(0,0,0,.06);
-
-    font-size:22px;
-
-    font-weight:bold;
+color:#1e293b;
 
 }
 
 
 
-.table-box{
+/* layout */
 
-    background:white;
+.sidebar{
 
-    padding:20px;
+position:fixed;
 
-    border-radius:20px;
+right:0;
 
-    box-shadow:
-    0 8px 25px rgba(0,0,0,.06);
+top:0;
 
-    overflow-x:auto;
+width:260px;
+
+height:100vh;
+
+background:#0f172a;
+
+padding:25px 15px;
+
+}
+
+
+
+.sidebar h2{
+
+color:white;
+
+text-align:center;
+
+margin-bottom:35px;
+
+}
+
+
+
+.sidebar a{
+
+display:block;
+
+color:#cbd5e1;
+
+text-decoration:none;
+
+padding:14px;
+
+margin-bottom:8px;
+
+border-radius:12px;
+
+transition:.3s;
+
+font-size:15px;
+
+}
+
+
+
+.sidebar a:hover{
+
+background:#1e293b;
+
+color:white;
+
+}
+
+
+
+
+.container{
+
+margin-right:260px;
+
+padding:30px;
+
+}
+
+
+
+
+.topbar{
+
+background:white;
+
+padding:20px;
+
+border-radius:18px;
+
+margin-bottom:25px;
+
+box-shadow:0 8px 25px rgba(0,0,0,.06);
+
+}
+
+
+
+
+.card{
+
+background:white;
+
+border-radius:20px;
+
+padding:25px;
+
+box-shadow:0 8px 25px rgba(0,0,0,.06);
+
+}
+
+
+
+.row{
+
+display:grid;
+
+grid-template-columns:
+
+repeat(auto-fit,minmax(230px,1fr));
+
+gap:25px;
+
+}
+
+
+
+.stat{
+
+font-size:40px;
+
+font-weight:bold;
+
+color:#2563eb;
 
 }
 
@@ -43,139 +156,57 @@
 
 table{
 
-    border-collapse:collapse;
+width:100%;
+
+background:white;
+
+border-collapse:collapse;
+
+border-radius:15px;
+
+overflow:hidden;
+
+}
+
+
+th,td{
+
+padding:15px;
+
+text-align:center;
+
+}
+
+
+th{
+
+background:#f8fafc;
 
 }
 
 
 
-table th{
 
-    background:#0f172a;
-
-    color:white;
-
-    padding:15px;
-
-}
+@media(max-width:900px){
 
 
+.sidebar{
 
-table td{
+position:relative;
 
-    padding:15px;
+width:100%;
 
-    border-bottom:1px solid #e2e8f0;
+height:auto;
 
 }
 
 
 
-table tr:hover{
+.container{
 
-    background:#f8fafc;
-
-}
-
-
-
-/* forms */
-
-
-.form-box{
-
-
-    background:white;
-
-    padding:30px;
-
-    border-radius:20px;
-
-    box-shadow:
-    0 8px 25px rgba(0,0,0,.06);
-
+margin-right:0;
 
 }
 
-
-
-.form-box label{
-
-
-    display:block;
-
-    margin-top:15px;
-
-    margin-bottom:5px;
-
-    font-weight:bold;
-
-
-}
-
-
-
-.form-box input,
-.form-box select,
-.form-box textarea{
-
-
-    width:100%;
-
-    padding:14px;
-
-    border-radius:12px;
-
-    border:1px solid #cbd5e1;
-
-    font-size:15px;
-
-
-}
-
-
-
-.form-box button{
-
-
-    margin-top:25px;
-
-    width:180px;
-
-
-}
-
-
-
-/* action buttons */
-
-
-.btn-edit{
-
-    background:#2563eb;
-
-    color:white;
-
-    padding:8px 15px;
-
-    border-radius:10px;
-
-    text-decoration:none;
-
-}
-
-
-
-.btn-delete{
-
-    background:#dc2626;
-
-    color:white;
-
-    padding:8px 15px;
-
-    border-radius:10px;
-
-    text-decoration:none;
 
 }
