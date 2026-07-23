@@ -65,6 +65,13 @@ elif [ -f /etc/redhat-release ]; then
 
 fi
 
+echo "Configuring ocserv permissions"
+
+if [ -f /etc/ocserv/ocpasswd ]; then
+    chmod 640 /etc/ocserv/ocpasswd
+    chown apache:apache /etc/ocserv/ocpasswd
+fi
+
 
 echo "Downloading L-PANEL"
 
@@ -77,7 +84,6 @@ mkdir -p /var/www/html/l-panel/storage
 
 echo "Creating database"
 
-# اصلاح کامل ساخت دیتابیس
 mysql <<EOF
 DROP DATABASE IF EXISTS lpanel;
 
@@ -94,10 +100,8 @@ EOF
 
 mysql lpanel < /var/www/html/l-panel/database/schema.sql
 
-# اصلاح Hash پسورد
 HASH=$(php -r 'echo password_hash($argv[1], PASSWORD_DEFAULT);' "$ADMIN_PASS")
 
-# اصلاح INSERT → حذف قبلی + درج جدید
 mysql lpanel <<EOF
 DELETE FROM admins;
 
