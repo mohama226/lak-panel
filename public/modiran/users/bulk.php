@@ -17,7 +17,6 @@ $msg="";
 if($_POST){
 
 
-
 $prefix=$_POST['prefix'];
 
 $count=$_POST['count'];
@@ -83,7 +82,6 @@ $volume
 $msg=$count." کاربر ساخته شد";
 
 
-
 }
 
 
@@ -96,71 +94,140 @@ include "../../includes/sidebar.php";
 ?>
 
 
-
-<div class="card">
-
-
-<h2>
-
-افزودن گروهی کاربران
-
-</h2>
+<div class="container">
 
 
+<div class="page-title">
 
-<p>
+افزودن گروهی کاربران VPN
+
+</div>
+
+
+
+
+<div class="panel-card">
+
+
+<?php if($msg): ?>
+
+<div class="success-message">
 
 <?=$msg?>
 
-</p>
+</div>
+
+<?php endif; ?>
+
+
 
 
 
 <form method="post">
 
 
+<div class="grid-form">
 
-<input class="form-control"
 
+
+<div class="form-group">
+
+
+<label>
+پیشوند کاربران
+</label>
+
+
+<input
+class="form-input"
 name="prefix"
-
-placeholder="پیشوند مثال: user">
-
+placeholder="مثال: user">
 
 
-<input class="form-control"
+</div>
 
+
+
+
+
+<div class="form-group">
+
+
+<label>
+تعداد کاربران
+</label>
+
+
+<input
+class="form-input"
 name="count"
-
-placeholder="تعداد کاربران">
-
+placeholder="مثال: 100">
 
 
-<input class="form-control"
+</div>
 
+
+
+
+
+<div class="form-group">
+
+
+<label>
+تاریخ انقضا
+</label>
+
+
+<input
+class="form-input"
 type="date"
-
 name="expire_date">
 
 
+</div>
 
-<input class="form-control"
 
+
+
+
+<div class="form-group">
+
+
+<label>
+حجم مجاز GB
+</label>
+
+
+<input
+class="form-input"
 name="total_gb"
-
-placeholder="حجم GB">
-
+placeholder="مثال: 50">
 
 
-<button class="login-btn">
+</div>
+
+
+
+</div>
+
+
+
+<br>
+
+
+<button class="btn btn-success">
 
 ساخت کاربران
 
 </button>
 
 
+
 </form>
 
+
+
+</div>
 
 
 </div>
