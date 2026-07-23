@@ -1,124 +1,57 @@
-<?php
-
-require "../../app/auth.php";
-
-checkLogin();
-
-include "../includes/header.php";
-
-include "../includes/sidebar.php";
-
-?>
-
-
-<div class="topbar">
-
-    <h2>
-        داشبورد مدیریت
-    </h2>
-
-
-    <p>
-        خوش آمدید
-        <?= $_SESSION['admin']; ?>
-    </p>
-
-
-</div>
-
-
-
 <div class="row">
 
 
 <div class="card">
 
-    <h3>
-        کاربران VPN
-    </h3>
+<h3>
+کل کاربران
+</h3>
 
-
-    <div class="stat">
-        0
-    </div>
-
-
-    <p>
-        تعداد کاربران
-    </p>
-
-
+<div class="stat">
+0
 </div>
 
+<p>
+کاربران ثبت شده
+</p>
 
-
-<br>
+</div>
 
 
 
 <div class="card">
 
-    <h3>
-        کاربران فعال
-    </h3>
+<h3>
+کاربران فعال
+</h3>
 
-
-    <div class="stat">
-        0
-    </div>
-
-
-    <p>
-        اتصال فعال
-    </p>
-
-
+<div class="stat">
+0
 </div>
 
+<p>
+آنلاین
+</p>
 
-
-<br>
+</div>
 
 
 
 <div class="card">
 
-    <h3>
-        سرورها
-    </h3>
+<h3>
+ترافیک مصرفی
+</h3>
 
+<div class="stat">
+0 GB
+</div>
 
-    <div class="stat">
-        1
-    </div>
-
-
-    <p>
-        سرورهای متصل
-    </p>
-
+<p>
+دانلود + آپلود
+</p>
 
 </div>
 
 
-
 </div>
-
-
-
-<br>
-
-
-<a href="/logout.php">
-
-    خروج از پنل
-
-</a>
-
-
-
-<?php
-
-include "../includes/footer.php";
-
-?>
