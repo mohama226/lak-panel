@@ -100,7 +100,7 @@ mysql lpanel < /var/www/html/l-panel/database/schema.sql
 
 
 
-HASH=$(php -r "echo password_hash('$ADMIN_PASS', PASSWORD_DEFAULT);")
+HASH=$(php -r 'echo password_hash($argv[1], PASSWORD_DEFAULT);' "$ADMIN_PASS")
 
 mysql lpanel <<EOF
 
