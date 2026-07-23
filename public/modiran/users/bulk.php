@@ -2,16 +2,13 @@
 
 
 require "../../../app/auth.php";
-
 checkLogin();
 
 
 require "../../../app/database.php";
 
 
-
 $msg="";
-
 
 
 if($_POST){
@@ -55,23 +52,19 @@ PASSWORD_DEFAULT
 
 
 $stmt=$db->prepare(
-
 "INSERT INTO users
 (username,password,expire_date,total_gb)
 VALUES
 (?,?,?,?)"
-
 );
 
 
 
 $stmt->execute([
-
 $username,
 $hash,
 $expire,
 $volume
-
 ]);
 
 
@@ -85,7 +78,6 @@ $msg=$count." کاربر ساخته شد";
 }
 
 
-
 include "../../includes/header.php";
 
 include "../../includes/sidebar.php";
@@ -94,24 +86,21 @@ include "../../includes/sidebar.php";
 ?>
 
 
-<div class="container">
+<div class="main">
 
 
-<div class="page-title">
-
-افزودن گروهی کاربران VPN
-
-</div>
+<div class="form-card">
 
 
+<h2>
+👥 افزودن گروهی کاربران
+</h2>
 
-
-<div class="panel-card">
 
 
 <?php if($msg): ?>
 
-<div class="success-message">
+<div class="alert-success">
 
 <?=$msg?>
 
@@ -121,110 +110,80 @@ include "../../includes/sidebar.php";
 
 
 
-
-
 <form method="post">
-
-
-<div class="grid-form">
 
 
 
 <div class="form-group">
-
 
 <label>
 پیشوند کاربران
 </label>
 
 
-<input
-class="form-input"
+<input 
+class="form-control"
 name="prefix"
-placeholder="مثال: user">
-
+placeholder="مثلا user">
 
 </div>
 
 
 
-
-
 <div class="form-group">
-
 
 <label>
 تعداد کاربران
 </label>
 
 
-<input
-class="form-input"
-name="count"
-placeholder="مثال: 100">
-
+<input 
+class="form-control"
+name="count">
 
 </div>
 
 
 
-
-
 <div class="form-group">
-
 
 <label>
 تاریخ انقضا
 </label>
 
 
-<input
-class="form-input"
+<input 
+class="form-control"
 type="date"
 name="expire_date">
 
-
 </div>
-
-
 
 
 
 <div class="form-group">
 
-
 <label>
-حجم مجاز GB
+حجم GB
 </label>
 
 
-<input
-class="form-input"
-name="total_gb"
-placeholder="مثال: 50">
-
+<input 
+class="form-control"
+name="total_gb">
 
 </div>
 
 
 
-</div>
-
-
-
-<br>
-
-
-<button class="btn btn-success">
+<button class="btn-primary">
 
 ساخت کاربران
 
 </button>
 
 
-
 </form>
-
 
 
 </div>
