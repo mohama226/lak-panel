@@ -1,21 +1,14 @@
 [Unit]
-
 Description=OpenConnect VPN Server
-
 After=network.target
 
-
-
 [Service]
-
 Type=simple
 
-ExecStart=/usr/sbin/ocserv -c /etc/ocserv/ocserv.conf
+ExecStart=/usr/sbin/ocserv -f -c /etc/ocserv/ocserv.conf
 
 Restart=always
-
-
+RestartSec=5
 
 [Install]
-
 WantedBy=multi-user.target
