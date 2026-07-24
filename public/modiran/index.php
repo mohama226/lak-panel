@@ -1,8 +1,6 @@
 <?php
-require_once "../../../app/session.php";
-require "../../app/database.php";
-require "../../app/logger.php";
-require "../../app/auth.php";
+
+require_once __DIR__.'/../../app/bootstrap.php';
 
 $error = "";
 
@@ -19,23 +17,25 @@ if($_POST){
 
     $user = $stmt->fetch();
 
-    if($user && password_verify($password, $user['password'])){
+    if($user && password_verify($password,$user['password'])){
 
-        $_SESSION['admin'] = $user['username'];
+        $_SESSION['admin']=$user['username'];
+        $_SESSION['role']=$user['role'];
 
         writeLog(
             "admin.log",
-            "ورود مدیر ".$user['username']." به پنل"
+            "ورود مدیر ".$user['username']
         );
-
-        $_SESSION['role']  = $user['role'];
 
         header("Location: dashboard.php");
         exit;
 
-    } else {
-        $error = "نام کاربری یا رمز عبور اشتباه است";
+    }else{
+
+        $error="نام کاربری یا رمز عبور اشتباه است";
+
     }
+
 }
 
 ?>
