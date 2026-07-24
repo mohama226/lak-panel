@@ -33,11 +33,8 @@ if($_POST){
             $volume
         ]);
 
-        // 🔥 ساخت کاربر در ocserv
+        // 🔥 اضافه شد: ساخت کاربر در ocserv
         ocserv_add_user($username, $password);
-
-        // 🔥 ریستارت ocserv
-        ocserv_restart();
 
         $msg = "کاربر با موفقیت ساخته شد";
     }
