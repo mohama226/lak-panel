@@ -1,32 +1,27 @@
 <?php
 
 
-require_once __DIR__.'/database.php';
+function admin_log($db,$action,$target=""){
 
 
+$admin = $_SESSION['admin'] ?? 'unknown';
 
-function admin_log($action,$target,$description){
+$ip = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
 
-
-if(!isset($_SESSION['admin'])){
-    return;
-}
 
 
 $stmt=$db->prepare("
 INSERT INTO admin_logs
-(admin,action,target_user,description)
-VALUES(?,?,?,?)
+(admin,action,target_user,ip)
+VALUES (?,?,?,?)
 ");
 
 
 $stmt->execute([
-
-$_SESSION['admin'],
+$admin,
 $action,
 $target,
-$description
-
+$ip
 ]);
 
 
