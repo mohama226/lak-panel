@@ -57,6 +57,14 @@ if($_POST){
         "مدیر ".$_SESSION['admin']." کاربر ".$username." را ویرایش کرد"
     );
 
+    // 🔥 لاگ جدید قبل از انتقال صفحه
+    if(function_exists('writeLog')){
+        writeLog(
+            $_SESSION['admin'],
+            "ویرایش کاربر VPN: ".$username
+        );
+    }
+
     // 🔥 تغییر رمز در ocserv (اگر رمز جدید ارسال شده باشد)
     if(isset($_POST['password']) && trim($_POST['password']) !== ""){
         ocserv_change_password(
