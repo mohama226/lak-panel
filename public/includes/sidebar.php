@@ -24,6 +24,10 @@ L-PANEL
 ⚙ تنظیمات
 </a>
 
+<a href="/modiran/logs/admin.php">
+📋 لاگ مدیران
+</a>
+
 <a href="/modiran/logs.php">
 📋 لاگ مدیران
 </a>
