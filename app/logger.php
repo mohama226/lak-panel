@@ -1,27 +1,18 @@
 <?php
 
-function writeLog($file,$message){
+function writeLog($admin,$action){
 
-$dir = __DIR__ . "/../storage/logs/";
+global $db;
 
-if(!is_dir($dir)){
-    mkdir($dir,0777,true);
-}
-
-
-$time = date("Y-m-d H:i:s");
-
-
-$data = "[".$time."] ".$message."\n";
-
-
-file_put_contents(
-    $dir.$file,
-    $data,
-    FILE_APPEND
+$stmt=$db->prepare(
+"INSERT INTO admin_logs
+(admin,action,created_at)
+VALUES (?,?,NOW())"
 );
 
+$stmt->execute([
+$admin,
+$action
+]);
 
 }
-
-?>
