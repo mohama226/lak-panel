@@ -3,10 +3,14 @@
 OCSERV_PASS="/etc/ocserv/ocpasswd"
 SERVICE="ocserv"
 
+
 ACTION=$1
 
 
-if [ "$ACTION" = "add" ]; then
+case "$ACTION" in
+
+
+add)
 
 USERNAME=$2
 PASSWORD=$3
@@ -19,7 +23,7 @@ fi
 
 /usr/bin/ocpasswd \
 -c "$OCSERV_PASS" \
--g users \
+-g "$USERNAME" \
 "$USERNAME" <<EOF
 $PASSWORD
 $PASSWORD
@@ -29,15 +33,17 @@ EOF
 systemctl restart $SERVICE
 
 
-exit 0
-
-fi
+;;
 
 
-
-if [ "$ACTION" = "delete" ]; then
+delete)
 
 USERNAME=$2
+
+
+if [ -z "$USERNAME" ]; then
+    exit 1
+fi
 
 
 /usr/bin/ocpasswd \
@@ -48,10 +54,14 @@ USERNAME=$2
 systemctl restart $SERVICE
 
 
-exit 0
-
-fi
+;;
 
 
+*)
 
 exit 1
+
+
+;;
+
+esac
