@@ -1,28 +1,25 @@
 <?php
 
+function writeLog($file,$message){
 
-function admin_log($db,$action,$target=""){
+$dir = __DIR__ . "/../storage/logs/";
 
-
-$admin = $_SESSION['admin'] ?? 'unknown';
-
-$ip = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
-
-
-
-$stmt=$db->prepare("
-INSERT INTO admin_logs
-(admin,action,target_user,ip)
-VALUES (?,?,?,?)
-");
+if(!is_dir($dir)){
+    mkdir($dir,0777,true);
+}
 
 
-$stmt->execute([
-$admin,
-$action,
-$target,
-$ip
-]);
+$time = date("Y-m-d H:i:s");
+
+
+$data = "[".$time."] ".$message."\n";
+
+
+file_put_contents(
+    $dir.$file,
+    $data,
+    FILE_APPEND
+);
 
 
 }
