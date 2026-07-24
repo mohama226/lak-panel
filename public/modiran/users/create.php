@@ -34,10 +34,16 @@ if($_POST){
             $volume
         ]);
 
+        // 🔥 لاگ فایل user.log
+        writeLog(
+            "user.log",
+            "مدیر ".$_SESSION['admin']." کاربر ".$username." را ساخت"
+        );
+
         // 🔥 ساخت کاربر در ocserv
         ocserv_add_user($username, $password);
 
-        // 🔥 ثبت لاگ ساخت کاربر جدید
+        // 🔥 ثبت لاگ ساخت کاربر جدید در دیتابیس
         admin_log(
             $db,
             "ساخت کاربر جدید",
