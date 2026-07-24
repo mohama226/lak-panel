@@ -224,3 +224,70 @@ cursor:pointer;
 margin:5px;
 
 }
+.action-wrapper{
+    position:relative;
+}
+
+
+.action-btn{
+
+    cursor:pointer;
+    font-size:22px;
+    border:none;
+    background:none;
+
+}
+
+
+.action-menu{
+
+
+    display:none;
+
+    position:fixed;
+
+    background:white;
+
+    min-width:150px;
+
+    border-radius:10px;
+
+    box-shadow:0 10px 30px rgba(0,0,0,.18);
+
+    padding:8px;
+
+    z-index:99999;
+
+
+}
+
+
+.action-menu.show{
+
+    display:block;
+
+}
+
+
+
+.action-menu a{
+
+
+    display:block;
+
+    padding:10px;
+
+    text-decoration:none;
+
+    color:#222;
+
+    border-radius:6px;
+
+}
+
+
+.action-menu a:hover{
+
+    background:#f2f2f2;
+
+}
