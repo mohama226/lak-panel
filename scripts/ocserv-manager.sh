@@ -1,41 +1,63 @@
 #!/bin/bash
 
+
 ACTION=$1
-USERNAME=$2
-PASSWORD=$3
-
-OCFILE="/etc/ocserv/ocpasswd"
 
 
-case "$ACTION" in
+USER=$2
+
+PASS=$3
+
+
+OCUSER="/etc/ocserv/ocpasswd"
+
+
+
+case $ACTION in
+
 
 add)
 
-echo "$PASSWORD" | /usr/bin/ocpasswd -c "$OCFILE" "$USERNAME"
+if [ -z "$USER" ] || [ -z "$PASS" ]; then
+exit 1
+fi
 
-/usr/bin/systemctl restart ocserv
+
+echo "$PASS" | /usr/bin/ocpasswd \
+-c "$OCUSER" \
+"$USER"
+
+
+systemctl restart ocserv
+
 
 ;;
+
+
 
 delete)
 
- /usr/bin/ocpasswd -c "$OCFILE" -d "$USERNAME"
 
-/usr/bin/systemctl restart ocserv
+sed -i "/^$USER:/d" "$OCUSER"
 
-;;
 
-restart)
+systemctl restart ocserv
 
-/usr/bin/systemctl restart ocserv
 
 ;;
+
 
 *)
 
-echo "Invalid action"
+echo "Usage:"
+echo "add username password"
+echo "delete username"
+
 exit 1
+
 
 ;;
 
 esac
+
+exit 0
