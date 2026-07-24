@@ -185,7 +185,7 @@ chmod +x /var/www/html/l-panel/scripts/install-ocserv.sh
 
 echo "Scripts installed"
 
-# 🔥 اجرای post-install
+# 🔥 اجرای post-install اصلی پنل
 if [ -f /var/www/html/l-panel/scripts/post-install.sh ]; then
     echo "Running post-install..."
     cd /var/www/html/l-panel
@@ -193,6 +193,10 @@ if [ -f /var/www/html/l-panel/scripts/post-install.sh ]; then
 else
     echo "post-install.sh not found — skipping"
 fi
+
+# 🔥 اجرای OCServ post-install
+echo "Running OCServ post installation..."
+bash /var/www/html/l-panel/scripts/post-install.sh
 
 echo ""
 echo "=============================="
