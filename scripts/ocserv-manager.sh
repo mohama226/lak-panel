@@ -5,53 +5,64 @@ SERVICE="ocserv"
 
 ACTION=$1
 
-
 case "$ACTION" in
 
 add)
 
-USERNAME=$2
-PASSWORD=$3
+    USERNAME=$2
+    PASSWORD=$3
 
-if [ -z "$USERNAME" ] || [ -z "$PASSWORD" ]; then
-exit 1
-fi
+    if [ -z "$USERNAME" ] || [ -z "$PASSWORD" ]; then
+        exit 1
+    fi
 
-
-/usr/bin/ocpasswd \
--c "$OCSERV_PASS" \
-"$USERNAME" <<EOF
+    /usr/bin/ocpasswd \
+    -c "$OCSERV_PASS" \
+    "$USERNAME" <<EOF
 $PASSWORD
 $PASSWORD
 EOF
 
-
-systemctl restart $SERVICE
-
+    systemctl restart $SERVICE
 ;;
 
 delete)
 
-USERNAME=$2
+    USERNAME=$2
 
-if [ -z "$USERNAME" ]; then
-exit 1
-fi
+    if [ -z "$USERNAME" ]; then
+        exit 1
+    fi
 
+    /usr/bin/ocpasswd \
+    -c "$OCSERV_PASS" \
+    -d "$USERNAME"
 
-/usr/bin/ocpasswd \
--c "$OCSERV_PASS" \
--d "$USERNAME"
+    systemctl restart $SERVICE
+;;
 
+password)
 
-systemctl restart $SERVICE
+    USERNAME=$2
+    PASSWORD=$3
 
+    if [ -z "$USERNAME" ] || [ -z "$PASSWORD" ]; then
+        exit 1
+    fi
+
+    /usr/bin/ocpasswd \
+    -c "$OCSERV_PASS" \
+    "$USERNAME" <<EOF
+$PASSWORD
+$PASSWORD
+EOF
+
+    systemctl restart $SERVICE
 ;;
 
 *)
 
-exit 1
-
+    exit 1
 ;;
 
 esac
