@@ -2,211 +2,179 @@
 
 set -e
 
-echo "=============================="
-echo " L-PANEL PHP INSTALLER"
-echo "=============================="
+echo "
+==============================
+ L-PANEL PHP INSTALLER
+==============================
+"
 
 read -p "Super Admin Username: " ADMIN_USER
-
-# اصلاح بخش گرفتن پسورد (نباید خالی باشد)
-while [ -z "$ADMIN_PASS" ]
-do
-    read -s -p "Super Admin Password: " ADMIN_PASS
-    echo
-
-    if [ -z "$ADMIN_PASS" ]; then
-        echo "Password cannot be empty"
-    fi
-done
+read -s -p "Super Admin Password: " ADMIN_PASS
+echo
 
 read -p "Panel Port [8080]: " PORT
 PORT=${PORT:-8080}
 
-if [ -f /etc/debian_version ]; then
 
-    echo "Ubuntu/Debian detected"
+echo "Installing dependencies..."
 
-    apt update
+dnf install -y \
+httpd \
+php \
+php-mysqlnd \
+mariadb-server \
+git \
+curl \
+unzip
 
-    apt install -y \
-        apache2 \
-        php \
-        php-mysql \
-        mariadb-server \
-        git \
-        curl \
-        unzip
 
-    systemctl enable apache2
-    systemctl enable mariadb
+systemctl enable mariadb
+systemctl start mariadb
 
-    systemctl start apache2
-    systemctl start mariadb
 
-elif [ -f /etc/redhat-release ]; then
-
-    echo "AlmaLinux detected"
-
-    dnf install -y \
-        httpd \
-        php \
-        php-mysqlnd \
-        mariadb-server \
-        git \
-        curl \
-        unzip
-
-    systemctl enable httpd
-    systemctl enable mariadb
-
-    systemctl start httpd
-    systemctl start mariadb
-
-fi
-
-echo "Configuring ocserv permissions"
-
-if [ -f /etc/ocserv/ocpasswd ]; then
-    chmod 640 /etc/ocserv/ocpasswd
-    chown apache:apache /etc/ocserv/ocpasswd
-fi
-
-echo "Downloading L-PANEL"
+echo "Removing old panel..."
 
 rm -rf /var/www/html/l-panel
 
-git clone https://github.com/mohama226/l-panel.git /var/www/html/l-panel
 
-mkdir -p /var/www/html/l-panel/storage
+echo "Downloading L-PANEL"
+
+
+git clone \
+https://github.com/mohama226/l-panel.git \
+/var/www/html/l-panel
+
+
+
+cd /var/www/html/l-panel
+
+
+
+echo "Checking structure..."
+
+if [ ! -f database/schema.sql ]; then
+
+echo "ERROR:"
+echo "database/schema.sql missing"
+
+find . -maxdepth 2 -type f
+
+exit 1
+
+fi
+
+
+
+echo "Fixing permissions"
+
+
+chown -R apache:apache /var/www/html/l-panel
+
+chmod -R 755 /var/www/html/l-panel
+
 
 echo "Creating database"
 
+
 mysql <<EOF
-DROP DATABASE IF EXISTS lpanel;
 
-CREATE DATABASE lpanel;
+CREATE DATABASE IF NOT EXISTS lpanel
+CHARACTER SET utf8mb4
+COLLATE utf8mb4_unicode_ci;
 
-CREATE USER IF NOT EXISTS 'lpanel'@'localhost'
+
+CREATE USER IF NOT EXISTS
+'lpanel'@'localhost'
 IDENTIFIED BY 'lpanel123';
 
-GRANT ALL PRIVILEGES ON lpanel.*
+
+GRANT ALL PRIVILEGES
+ON lpanel.*
 TO 'lpanel'@'localhost';
 
+
 FLUSH PRIVILEGES;
+
 EOF
 
-mysql -u root lpanel < database/schema.sql
 
-HASH=$(php -r 'echo password_hash($argv[1], PASSWORD_DEFAULT);' "$ADMIN_PASS")
+
+mysql lpanel < database/schema.sql
+
+
+
+HASH=$(php -r "echo password_hash('$ADMIN_PASS', PASSWORD_DEFAULT);")
+
 
 mysql lpanel <<EOF
+
 DELETE FROM admins;
+
 
 INSERT INTO admins
 (username,password,role)
 VALUES
 ('$ADMIN_USER','$HASH','superadmin');
+
 EOF
 
-if [ -f /etc/debian_version ]; then
 
-    cat >/etc/apache2/sites-available/lpanel.conf <<EOF
+
+echo "Creating apache config"
+
+
+cat >/etc/httpd/conf.d/lpanel.conf <<EOF
+
 Listen $PORT
 
 <VirtualHost *:$PORT>
-    DocumentRoot /var/www/html/l-panel/public
 
-    <Directory /var/www/html/l-panel/public>
-        AllowOverride All
-        Require all granted
-    </Directory>
+DocumentRoot /var/www/html/l-panel/public
+
+
+<Directory /var/www/html/l-panel/public>
+
+AllowOverride All
+Require all granted
+
+</Directory>
+
+
+DirectoryIndex index.php
+
+
 </VirtualHost>
+
 EOF
 
-    a2ensite lpanel.conf
-    systemctl restart apache2
 
-else
 
-    cat >/etc/httpd/conf.d/lpanel.conf <<EOF
-Listen $PORT
+echo "Fixing PHP paths"
 
-<VirtualHost *:$PORT>
-    DocumentRoot /var/www/html/l-panel/public
 
-    <Directory /var/www/html/l-panel/public>
-        AllowOverride All
-        Require all granted
-    </Directory>
-</VirtualHost>
-EOF
 
-    systemctl restart httpd
+sed -i \
+'s#../../../app/session.php#../../app/session.php#g' \
+public/modiran/index.php
 
-fi
 
-# 🔥 نصب Agent
-echo "Installing L-PANEL Agent..."
 
-mkdir -p /usr/local/bin
+systemctl restart php-fpm
+systemctl restart httpd
 
-cp /var/www/html/l-panel/agent/lpanel-agent.php \
-/usr/local/bin/lpanel-agent.php
 
-chmod +x /usr/local/bin/lpanel-agent.php
 
-cp /var/www/html/l-panel/systemd/lpanel-agent.service \
-/etc/systemd/system/lpanel-agent.service
+echo "
+==============================
+ INSTALL COMPLETE
+==============================
 
-systemctl daemon-reload
-systemctl enable lpanel-agent
-systemctl restart lpanel-agent
+URL:
 
-echo "L-PANEL Agent Installed"
+http://SERVER:$PORT/modiran/
 
-# 🔥 نصب CLI Manager
-echo "Installing CLI Manager"
 
-mkdir -p /usr/local/bin
+User:
+$ADMIN_USER
 
-cp /var/www/html/l-panel/cli/l-panel /usr/local/bin/l-panel
-
-chmod +x /usr/local/bin/l-panel
-
-echo "Command installed:"
-echo "Type: l-panel"
-
-# 🔥 بخش جدید: کپی اسکریپت‌ها
-echo "Copying scripts..."
-
-mkdir -p /var/www/html/l-panel/scripts
-
-chmod +x /var/www/html/l-panel/scripts/install-ocserv.sh
-
-echo "Scripts installed"
-
-# 🔥 اجرای post-install اصلی پنل
-if [ -f /var/www/html/l-panel/scripts/post-install.sh ]; then
-    echo "Running post-install..."
-    cd /var/www/html/l-panel
-    bash scripts/post-install.sh
-else
-    echo "post-install.sh not found — skipping"
-fi
-
-# 🔥 اجرای OCServ post-install
-echo "Running OCServ post installation..."
-bash /var/www/html/l-panel/scripts/post-install.sh
-
-# 🔥 بخش جدید — تنظیم مالکیت و دسترسی‌ها
-chown -R apache:apache /var/www/html/l-panel
-chmod -R 755 /var/www/html/l-panel
-chmod -R 775 /var/www/html/l-panel/storage
-
-echo ""
-echo "=============================="
-echo " L-PANEL INSTALLED"
-echo ""
-echo "Open:"
-echo "http://SERVER-IP:$PORT"
-echo "=============================="
+"
