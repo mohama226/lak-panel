@@ -418,3 +418,48 @@ padding:15px;
 }
 
 }
+
+html,body{
+    overflow-x:hidden;
+}
+
+
+.content{
+
+    width:calc(100% - 280px);
+
+    max-width:none;
+
+    box-sizing:border-box;
+
+    overflow-x:hidden;
+
+}
+
+
+.table-box{
+
+    width:100%;
+
+    overflow-x:auto;
+
+}
+
+
+table{
+
+    width:100%;
+
+    table-layout:auto;
+
+}
+
+
+
+.users-box{
+
+    max-width:100%;
+
+    box-sizing:border-box;
+
+}
