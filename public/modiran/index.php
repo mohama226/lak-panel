@@ -1,6 +1,7 @@
 <?php
 
 require "../../app/database.php";
+require "../../app/logger.php";
 require "../../app/auth.php";
 
 $error = "";
@@ -21,6 +22,12 @@ if($_POST){
     if($user && password_verify($password, $user['password'])){
 
         $_SESSION['admin'] = $user['username'];
+
+        writeLog(
+            "admin.log",
+            "ورود مدیر ".$user['username']." به پنل"
+        );
+
         $_SESSION['role']  = $user['role'];
 
         header("Location: dashboard.php");
