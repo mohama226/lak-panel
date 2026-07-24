@@ -4,7 +4,7 @@
 L-PANEL
 </h2>
 
-<a href="/modiran">
+<a href="/modiran/dashboard.php">
 🏠 داشبورد
 </a>
 
@@ -24,6 +24,7 @@ L-PANEL
 ⚙ تنظیمات
 </a>
 
+<!-- 🔥 لینک جدید که خواستی -->
 <a href="/users">
 👤 ورود کاربران VPN
 </a>
