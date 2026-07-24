@@ -14,10 +14,10 @@ PDO::ERRMODE_EXCEPTION
 );
 
 
-}catch(Exception $e){
+} catch(Exception $e){
 
-die(
-"Database Error"
-);
+die("Database connection failed");
 
 }
+
+?>
