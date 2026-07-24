@@ -1,111 +1,42 @@
 <?php
 
 
-function ocserv_request($data){
+function ocserv_add_user($username,$password)
+{
+
+$cmd="echo '$password' | ocpasswd -c /etc/ocserv/ocpasswd $username";
+
+exec($cmd,$output,$result);
 
 
-$socket="/var/run/lpanel-agent.sock";
-
-
-$fp=stream_socket_client(
-
-"unix://".$socket,
-
-$errno,
-
-$errstr,
-
-3
-
-);
-
-
-
-if(!$fp){
-
-return false;
+return $result===0;
 
 }
 
 
 
-fwrite(
+function ocserv_delete_user($username)
+{
 
-$fp,
-
-json_encode($data)
-
-);
+$cmd="ocpasswd -c /etc/ocserv/ocpasswd -d $username";
 
 
-
-$result=fread($fp,4096);
-
+exec($cmd,$output,$result);
 
 
-fclose($fp);
-
-
-
-return json_decode($result,true);
-
+return $result===0;
 
 }
 
 
 
+function ocserv_restart()
+{
 
-function ocserv_user_add($username,$password){
-
-
-return ocserv_request([
-
-"action"=>"add",
-
-"username"=>$username,
-
-"password"=>$password
-
-]);
-
+exec("systemctl restart ocserv");
 
 }
 
-
-
-
-function ocserv_user_delete($username){
-
-
-return ocserv_request([
-
-"action"=>"delete",
-
-"username"=>$username
-
-]);
-
-
-}
-
-
-
-
-function ocserv_user_password($username,$password){
-
-
-return ocserv_request([
-
-"action"=>"password",
-
-"username"=>$username,
-
-"password"=>$password
-
-]);
-
-
-}
 
 
 ?>
